@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/rss"
@@ -46,6 +45,11 @@ func main() {
 	defer storage.Close()
 	flag.Parse()
 
+	if flag.NFlag() <= 0 {
+		flag.Usage()
+		os.Exit(2)
+	}
+
 	if err := processFlags(); err != nil {
 		panic(err)
 	}
@@ -66,7 +70,7 @@ func processFlags() (err error) {
 		return importCmd(*opmlImport)
 	}
 
-	return errors.New("No operation specified")
+	return
 }
 
 func updateCmd() (err error) {
