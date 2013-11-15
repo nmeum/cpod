@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	update     = flag.Bool("u", false, "update all feeds")
-	opmlImport = flag.String("i", "", "import opml file")
+	update      = flag.Bool("u", false, "update all feeds")
+	opmlImport  = flag.String("i", "", "import opml file")
+	downloadNew = flag.Bool("d", false, "download new episodes")
 )
 
 var (
@@ -57,6 +58,10 @@ func processFlags() (err error) {
 		return updateCmd()
 	}
 
+	if *downloadNew {
+		return downloadCmd()
+	}
+
 	if len(*opmlImport) > 0 {
 		return importCmd(*opmlImport)
 	}
@@ -64,7 +69,25 @@ func processFlags() (err error) {
 	return errors.New("No operation specified")
 }
 
-func updateCmd() error {
+func updateCmd() (err error) {
+	for _, f := range storage.Feeds {
+		xml, err := rss.Parse(f.Url)
+		if err != nil {
+			return err
+		}
+
+		date, err := parseDate(xml.Channel.Items[0].PubDate)
+		if err != nil {
+			return err
+		}
+
+		f.Latest = date.Unix()
+	}
+
+	return
+}
+
+func downloadCmd() error {
 	for _, f := range storage.Feeds {
 		xml, err := rss.Parse(f.Url)
 		if err != nil {
@@ -88,13 +111,6 @@ func updateCmd() error {
 				}
 			}
 		}
-
-		date, err := parseDate(xml.Channel.Items[0].PubDate)
-		if err != nil {
-			return err
-		}
-
-		f.Latest = date.Unix()
 	}
 
 	return nil
