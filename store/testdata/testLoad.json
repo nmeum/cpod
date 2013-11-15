@@ -1,0 +1,14 @@
+{
+  "feeds": [
+    {
+      "latest": 42,
+      "title": "Foo",
+      "url": "http://example.com/rss.xml"
+    },
+    {
+      "latest": 23,
+      "title": "Bar",
+      "url": "http://example.org/rss.xml"
+    }
+  ]
+}

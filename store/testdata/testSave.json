@@ -1,0 +1,9 @@
+{
+  "feeds": [
+    {
+      "latest": 0,
+      "title": "test",
+      "url": "http://example.com/test.xml"
+    }
+  ]
+}
