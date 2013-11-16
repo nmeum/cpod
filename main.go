@@ -60,16 +60,22 @@ func getDirs() (s string, d string) {
 }
 
 func processFlags() (err error) {
+	if len(*opmlImport) > 0 {
+		if err = importCmd(*opmlImport); err != nil {
+			return
+		}
+	}
+
 	if *update {
-		return updateCmd()
+		if err = updateCmd(); err != nil {
+			return
+		}
 	}
 
 	if *downloadNew {
-		return downloadCmd()
-	}
-
-	if len(*opmlImport) > 0 {
-		return importCmd(*opmlImport)
+		if err = downloadCmd(); err != nil {
+			return
+		}
 	}
 
 	return
