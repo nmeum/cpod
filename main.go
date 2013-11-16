@@ -21,33 +21,20 @@ var (
 )
 
 func main() {
-	storeDir := os.Getenv("XDG_DATA_HOME")
-	if len(storeDir) <= 0 {
-		storeDir = filepath.Join(os.Getenv("HOME"), ".local", "share")
-	}
-
-	downloadDir = os.Getenv("CPOD_DOWNLOAD_DIR")
-	if len(downloadDir) <= 0 {
-		downloadDir = filepath.Join(os.Getenv("HOME"), "Podcasts")
-	}
-
-	storeDir = filepath.Join(storeDir, "cpod")
-	if err := os.Mkdir(storeDir, 0755); err != nil && !os.IsExist(err) {
-		panic(err)
-	}
-
 	var err error
+	var storeDir string
+
+	storeDir, downloadDir = getDirs()
+	if err := os.Mkdir(storeDir, 0755); err != nil && !os.IsExist(err) {
+		return
+	}
+
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
 		panic(err)
 	}
 
 	flag.Parse()
-	if flag.NFlag() <= 0 {
-		flag.Usage()
-		os.Exit(2)
-	}
-
 	if err := processFlags(); err != nil {
 		panic(err)
 	}
@@ -55,6 +42,21 @@ func main() {
 	if err := storage.Save(); err != nil {
 		panic(err)
 	}
+}
+
+func getDirs() (s string, d string) {
+	s = os.Getenv("XDG_DATA_HOME")
+	if len(s) <= 0 {
+		s = filepath.Join(os.Getenv("HOME"), ".local", "share")
+	}
+
+	s = filepath.Join(s, "cpod")
+	d = os.Getenv("CPOD_DOWNLOAD_DIR")
+	if len(d) <= 0 {
+		d = filepath.Join(os.Getenv("HOME"), "Podcasts")
+	}
+
+	return
 }
 
 func processFlags() (err error) {
