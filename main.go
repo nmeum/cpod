@@ -82,7 +82,7 @@ func processFlags() (err error) {
 }
 
 func updateCmd() (err error) {
-	for _, f := range storage.Feeds {
+	for n, f := range storage.Feeds {
 		xml, err := rss.Parse(f.Url)
 		if err != nil {
 			return err
@@ -93,7 +93,7 @@ func updateCmd() (err error) {
 			return err
 		}
 
-		f.Latest = date.Unix()
+		storage.Feeds[n].Latest = date.Unix()
 	}
 
 	return
