@@ -9,7 +9,13 @@ import (
 )
 
 func parseDate(date string) (t time.Time, err error) {
-	for _, format := range []string{time.RFC1123Z, time.RFC1123, time.RFC822Z, time.RFC822} {
+	formats := []string{
+		time.RFC1123Z, time.RFC1123, time.RFC822Z,
+		time.RFC822, time.ANSIC, time.RFC3339,
+		time.RFC850, time.RubyDate, time.UnixDate,
+	}
+
+	for _, format := range formats {
 		t, err = time.Parse(format, date)
 		if err == nil {
 			return
