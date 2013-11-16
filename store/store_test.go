@@ -39,10 +39,8 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	os.Remove("testdata/testSave.json")
-
 	store, err := Load("testdata/testSave.json")
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		t.Fatal(err)
 	}
 
@@ -59,4 +57,6 @@ func TestSave(t *testing.T) {
 	if loaded.Feeds[0].Title != "test" {
 		t.Fatalf("Expected %q - got %q", "test", loaded.Feeds[0].Title)
 	}
+
+	os.Remove("testdata/testSave.json")
 }

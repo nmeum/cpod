@@ -38,13 +38,11 @@ func main() {
 
 	var err error
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		panic(err)
 	}
 
-	defer storage.Close()
 	flag.Parse()
-
 	if flag.NFlag() <= 0 {
 		flag.Usage()
 		os.Exit(2)
@@ -54,7 +52,9 @@ func main() {
 		panic(err)
 	}
 
-	storage.Save()
+	if err := storage.Save(); err != nil {
+		panic(err)
+	}
 }
 
 func processFlags() (err error) {

@@ -8,7 +8,6 @@ import (
 
 type Store struct {
 	path  string
-	file  *os.File
 	Feeds []Feed `json:"feeds"`
 }
 
@@ -18,19 +17,15 @@ type Feed struct {
 	Url    string `json:"url"`
 }
 
-// TODO seperate Load() and New()
 func Load(path string) (s *Store, err error) {
 	s = &Store{path: path}
 
-	s.file, err = os.Open(s.path)
-	if os.IsNotExist(err) {
-		s.file, err = os.Create(s.path)
-		return
-	} else if err != nil {
+	file, err := os.Open(s.path)
+	if err != nil {
 		return
 	}
 
-	data, err := ioutil.ReadAll(s.file)
+	data, err := ioutil.ReadAll(file)
 	if err != nil {
 		return
 	}
@@ -42,22 +37,23 @@ func Load(path string) (s *Store, err error) {
 	return
 }
 
-func (s *Store) Close() {
-	s.file.Close()
-}
-
 func (s *Store) Add(title string, url string) {
 	feed := Feed{Title: title, Url: url}
 	s.Feeds = append(s.Feeds, feed)
 }
 
 func (s *Store) Save() (err error) {
+	file, err := os.Create(s.path)
+	if err != nil {
+		return
+	}
+
 	data, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return
 	}
 
-	if _, err = s.file.Write(data); err != nil {
+	if _, err = file.Write(data); err != nil {
 		return
 	}
 
