@@ -5,12 +5,14 @@ import (
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/rss"
 	"github.com/nmeum/cpod/store"
+	"time"
 	"os"
 	"path/filepath"
 )
 
 var (
 	update     = flag.Bool("u", false, "update all feeds")
+	noDownload = flag.Bool("d", false, "don't download new episodes during update")
 	opmlImport = flag.String("i", "", "import opml file")
 )
 
@@ -81,28 +83,26 @@ func updateCmd() error {
 			return err
 		}
 
-		items := xml.Channel.Items
-		for n, i := range xml.Channel.Items {
+		var date time.Time
+		for _, i := range xml.Channel.Items {
 			if len(i.Enclosure.Url) <= 0 {
 				continue
 			}
 
-			date, err := parseDate(i.PubDate)
+			date, err = parseDate(i.PubDate)
 			if err != nil {
 				return err
 			}
 
-			if f.Latest < date.Unix() {
+			if f.Latest < date.Unix() && !*noDownload {
 				dir := filepath.Join(downloadDir, f.Title)
 				if err = download(i.Enclosure.Url, dir); err != nil {
 					return err
 				}
 			}
-
-			if len(items) == n {
-				storage.Feeds[n].Latest = date.Unix()
-			}
 		}
+
+		f.Latest = date.Unix()
 	}
 
 	return nil
