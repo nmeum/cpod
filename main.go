@@ -10,9 +10,8 @@ import (
 )
 
 var (
-	update      = flag.Bool("u", false, "update all feeds")
-	opmlImport  = flag.String("i", "", "import opml file")
-	downloadNew = flag.Bool("d", false, "download new episodes")
+	update     = flag.Bool("u", false, "update all feeds")
+	opmlImport = flag.String("i", "", "import opml file")
 )
 
 var (
@@ -72,41 +71,18 @@ func processFlags() (err error) {
 		}
 	}
 
-	if *downloadNew {
-		if err = downloadCmd(); err != nil {
-			return
-		}
-	}
-
 	return
 }
 
-func updateCmd() (err error) {
-	for n, f := range storage.Feeds {
-		xml, err := rss.Parse(f.Url)
-		if err != nil {
-			return err
-		}
-
-		date, err := parseDate(xml.Channel.Items[0].PubDate)
-		if err != nil {
-			return err
-		}
-
-		storage.Feeds[n].Latest = date.Unix()
-	}
-
-	return
-}
-
-func downloadCmd() error {
+func updateCmd() error {
 	for _, f := range storage.Feeds {
 		xml, err := rss.Parse(f.Url)
 		if err != nil {
 			return err
 		}
 
-		for _, i := range xml.Channel.Items {
+		items := xml.Channel.Items
+		for n, i := range xml.Channel.Items {
 			if len(i.Enclosure.Url) <= 0 {
 				continue
 			}
@@ -121,6 +97,10 @@ func downloadCmd() error {
 				if err = download(i.Enclosure.Url, dir); err != nil {
 					return err
 				}
+			}
+
+			if len(items) == n {
+				storage.Feeds[n].Latest = date.Unix()
 			}
 		}
 	}
