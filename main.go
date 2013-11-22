@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/rss"
@@ -10,9 +11,12 @@ import (
 )
 
 var (
-	update     = flag.Bool("u", false, "update all feeds")
-	noDownload = flag.Bool("d", false, "don't download new episodes during update")
+	keep       = flag.Int("k", 1, "keep n episodes during cleanup")
+	recent     = flag.Int("r", 0, "download latest n episodes")
+	cleanup    = flag.Bool("c", false, "remove old episodes")
+	noDownload = flag.Bool("d", false, "don't download new episodes")
 	opmlImport = flag.String("i", "", "import opml file")
+	opmlExport = flag.String("e", "", "export opml file")
 )
 
 var (
@@ -35,7 +39,7 @@ func main() {
 	}
 
 	flag.Parse()
-	if err := processFlags(); err != nil {
+	if err := processInput(); err != nil {
 		panic(err)
 	}
 
@@ -59,15 +63,25 @@ func getDirs() (s string, d string) {
 	return
 }
 
-func processFlags() (err error) {
+func processInput() (err error) {
+	if err = updateCmd(); err != nil {
+		return
+	}
+
 	if len(*opmlImport) > 0 {
 		if err = importCmd(*opmlImport); err != nil {
 			return
 		}
 	}
 
-	if *update {
-		if err = updateCmd(); err != nil {
+	if len(*opmlExport) > 0 {
+		if err = exportCmd(*opmlExport); err != nil {
+			return
+		}
+	}
+
+	if *cleanup {
+		if err = cleanupCmd(); err != nil {
 			return
 		}
 	}
@@ -83,7 +97,13 @@ func updateCmd() error {
 		}
 
 		var latest int64
-		for _, i := range xml.Channel.Items {
+		items := xml.Channel.Items
+
+		if *recent > 0 {
+			items = items[0:*recent]
+		}
+
+		for _, i := range items {
 			if len(i.Enclosure.Url) <= 0 {
 				continue
 			}
@@ -125,4 +145,12 @@ func importCmd(path string) (err error) {
 	}
 
 	return
+}
+
+func exportCmd(path string) (err error) {
+	return errors.New("Not implemented yet!")
+}
+
+func cleanupCmd() (err error) {
+	return errors.New("Not implemented yet!")
 }
