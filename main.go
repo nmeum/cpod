@@ -5,7 +5,6 @@ import (
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/rss"
 	"github.com/nmeum/cpod/store"
-	"time"
 	"os"
 	"path/filepath"
 )
@@ -77,21 +76,28 @@ func processFlags() (err error) {
 }
 
 func updateCmd() error {
-	for _, f := range storage.Feeds {
+	for n, f := range storage.Feeds {
 		xml, err := rss.Parse(f.Url)
 		if err != nil {
 			return err
 		}
 
-		var date time.Time
+		var latest int64
 		for _, i := range xml.Channel.Items {
 			if len(i.Enclosure.Url) <= 0 {
 				continue
 			}
 
-			date, err = parseDate(i.PubDate)
+			date, err := parseDate(i.PubDate)
 			if err != nil {
 				return err
+			}
+
+			if latest == 0 {
+				latest = date.Unix()
+				if *noDownload {
+					break
+				}
 			}
 
 			if f.Latest < date.Unix() && !*noDownload {
@@ -102,7 +108,7 @@ func updateCmd() error {
 			}
 		}
 
-		f.Latest = date.Unix()
+		storage.Feeds[n].Latest = latest
 	}
 
 	return nil
