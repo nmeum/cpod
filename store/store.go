@@ -25,6 +25,7 @@ func Load(path string) (s *Store, err error) {
 		return
 	}
 
+	defer file.Close()
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
 		return
@@ -48,6 +49,7 @@ func (s *Store) Save() (err error) {
 		return
 	}
 
+	defer file.Close()
 	data, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return
