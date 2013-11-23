@@ -62,6 +62,10 @@ func cleanupDir(path string) (err error) {
 		return
 	}
 
+	if len(files) <= 1 {
+		return
+	}
+
 	latest := latestFile(files)
 	for _, file := range files {
 		if file.Name() == latest.Name() {
