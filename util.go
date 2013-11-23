@@ -27,12 +27,13 @@ func parseDate(date string) (t time.Time, err error) {
 	return
 }
 
-func download(url string, dir string) (err error) {
-	if err = os.MkdirAll(dir, 0755); err != nil && !os.IsExist(err) {
+func download(url string, target string, name string) (err error) {
+	if err = os.MkdirAll(target, 0755); err != nil && !os.IsExist(err) {
 		return
 	}
 
-	file, err := os.Create(filepath.Join(dir, filepath.Base(url)))
+	path := filepath.Join(target, name, filepath.Ext(url))
+	file, err := os.Create(path)
 	if err != nil {
 		return
 	}

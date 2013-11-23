@@ -124,7 +124,7 @@ func updateCmd() error {
 
 			if f.Latest < date.Unix() && !*noDownload {
 				dir := filepath.Join(downloadDir, f.Title)
-				if err = download(i.Enclosure.Url, dir); err != nil {
+				if err = download(i.Enclosure.Url, dir, i.Title); err != nil {
 					return err
 				}
 			}
