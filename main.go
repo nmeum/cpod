@@ -13,6 +13,7 @@ import (
 var (
 	recent     = flag.Int("r", 0, "download latest n episodes")
 	cleanup    = flag.Bool("c", false, "remove old episodes")
+	noUpdate   = flag.Bool("u", false, "don't update feeds")
 	noDownload = flag.Bool("d", false, "don't download new episodes")
 	opmlImport = flag.String("i", "", "import opml file")
 	opmlExport = flag.String("e", "", "export opml file")
@@ -63,10 +64,6 @@ func getDirs() (s string, d string) {
 }
 
 func processInput() (err error) {
-	if err = updateCmd(); err != nil {
-		return
-	}
-
 	if len(*opmlImport) > 0 {
 		if err = importCmd(*opmlImport); err != nil {
 			return
@@ -75,6 +72,12 @@ func processInput() (err error) {
 
 	if len(*opmlExport) > 0 {
 		if err = exportCmd(*opmlExport); err != nil {
+			return
+		}
+	}
+
+	if !*noUpdate {
+		if err = updateCmd(); err != nil {
 			return
 		}
 	}
