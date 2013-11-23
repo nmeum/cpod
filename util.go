@@ -58,6 +58,7 @@ func cleanupDir(path string) (err error) {
 		return
 	}
 
+	defer dir.Close()
 	files, err := dir.Readdir(-1)
 	if err != nil {
 		return
