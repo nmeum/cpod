@@ -50,3 +50,39 @@ func download(url string, dir string) (err error) {
 
 	return
 }
+
+func cleanupDir(path string, keep int) (err error) {
+	dir, err := os.Open(path)
+	if err != nil {
+		return
+	}
+
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		return
+	}
+
+	latest := latestFile(files)
+	for _, file := range files {
+		if file.Name() == latest.Name() {
+			continue
+		}
+
+		path := filepath.Join(path, file.Name())
+		if err = os.Remove(path); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func latestFile(files []os.FileInfo) (f os.FileInfo) {
+	for _, file := range files {
+		if file.ModTime().Unix() > f.ModTime().Unix() {
+			f = file
+		}
+	}
+
+	return
+}

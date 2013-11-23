@@ -152,5 +152,27 @@ func exportCmd(path string) (err error) {
 }
 
 func cleanupCmd() (err error) {
-	return errors.New("Not implemented yet!")
+	dir, err := os.Open(downloadDir)
+	if err != nil {
+		return
+	}
+
+	defer dir.Close()
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		return
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			continue
+		}
+
+		path := filepath.Join(downloadDir, file.Name())
+		if err = cleanupDir(path, *keep); err != nil {
+			return
+		}
+	}
+
+	return
 }
