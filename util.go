@@ -86,7 +86,7 @@ func cleanupDir(path string) (err error) {
 func latestFile(files []os.FileInfo) (f os.FileInfo) {
 	f = files[0]
 	for _, file := range files {
-		if file.ModTime().Unix() > f.ModTime().Unix() {
+		if file.ModTime().After(f.ModTime()) {
 			f = file
 		}
 	}
