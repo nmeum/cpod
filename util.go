@@ -51,7 +51,7 @@ func download(url string, dir string) (err error) {
 	return
 }
 
-func cleanupDir(path string, keep int) (err error) {
+func cleanupDir(path string) (err error) {
 	dir, err := os.Open(path)
 	if err != nil {
 		return

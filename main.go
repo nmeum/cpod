@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	keep       = flag.Int("k", 1, "keep n episodes during cleanup")
 	recent     = flag.Int("r", 0, "download latest n episodes")
 	cleanup    = flag.Bool("c", false, "remove old episodes")
 	noDownload = flag.Bool("d", false, "don't download new episodes")
@@ -169,7 +168,7 @@ func cleanupCmd() (err error) {
 		}
 
 		path := filepath.Join(downloadDir, file.Name())
-		if err = cleanupDir(path, *keep); err != nil {
+		if err = cleanupDir(path); err != nil {
 			return
 		}
 	}
