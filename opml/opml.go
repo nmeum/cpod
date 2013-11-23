@@ -12,7 +12,7 @@ type Opml struct {
 		Created string `xml:"dateCreated"`
 	} `xml:"head"`
 	Body struct {
-		Outline []struct {
+		Outlines []struct {
 			Text   string `xml:"text,attr"`
 			Type   string `xml:"type,attr"`
 			XmlUrl string `xml:"xmlUrl,attr"`

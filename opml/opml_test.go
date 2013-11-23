@@ -18,7 +18,7 @@ func TestLoad(t *testing.T) {
 		t.Fatalf("Expected %q - got %q", "Wed, 15 May 2013 19:30:58 +0200", opml.Head.Created)
 	}
 
-	if opml.Body.Outline[0].Text != "Chaosradio" {
-		t.Fatalf("Expected %q - got %q", "Chaosradio", opml.Body.Outline[0].Text)
+	if opml.Body.Outlines[0].Text != "Chaosradio" {
+		t.Fatalf("Expected %q - got %q", "Chaosradio", opml.Body.Outlines[0].Text)
 	}
 }
