@@ -32,7 +32,7 @@ func download(url string, target string, name string) (err error) {
 		return
 	}
 
-	path := filepath.Join(target, name, filepath.Ext(url))
+	path := filepath.Join(target, name+filepath.Ext(url))
 	file, err := os.Create(path)
 	if err != nil {
 		return
