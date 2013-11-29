@@ -35,16 +35,16 @@ func main() {
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
-		panic(err)
+		handleError(err)
 	}
 
 	flag.Parse()
 	if err := processInput(); err != nil {
-		panic(err)
+		handleError(err)
 	}
 
 	if err := storage.Save(); err != nil {
-		panic(err)
+		handleError(err)
 	}
 }
 
