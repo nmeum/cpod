@@ -3,8 +3,16 @@ cpod
 
 Yet another cron friendly podcatcher.
 
+Introduction
+------------
+
+cpod is a small cron friendly podcatcher written in Go. It uses a tiny
+json file to store your feeds but it doesn't track downloaded episodes.
+When your are done with a podcast episode you can delete it and cpod
+won't fetch it again.
+
 Usage
-=====
+-----
 
 If you don't pass any command line flags to cpod it will automatically
 update all feeds and download all new episodes. The following command
@@ -39,7 +47,7 @@ line flags can be used to change this behaviour:
     Export all feeds as opml to <path>.
 
 Examples
-========
+--------
 
 Update all feeds and download new episodes:
 
@@ -62,7 +70,7 @@ Import a new opml file but don't download new episodes:
     $ cpod -d -i podcasts.opml
 
 License
-=======
+-------
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
