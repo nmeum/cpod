@@ -38,8 +38,8 @@ line flags can be used to change this behaviour:
 
     Export all feeds as opml to <path>.
 
-Example
-=======
+Examples
+========
 
 Update all feeds and download new episodes:
 
