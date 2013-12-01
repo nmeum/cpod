@@ -11,6 +11,13 @@ json file to store your feeds but it doesn't track downloaded episodes.
 When your are done with a podcast episode you can delete it and cpod
 won't fetch it again.
 
+Installation
+------------
+
+Install it using `go get`:
+
+    $ go get github.com/nmeum/cpod
+
 Usage
 -----
 
