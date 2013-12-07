@@ -8,7 +8,7 @@ import (
 
 type Store struct {
 	path  string
-	Feeds []Feed `json:"feeds"`
+	Feeds []Feed
 }
 
 type Feed struct {
@@ -31,7 +31,7 @@ func Load(path string) (s *Store, err error) {
 		return
 	}
 
-	if err = json.Unmarshal(data, &s); err != nil {
+	if err = json.Unmarshal(data, &s.Feeds); err != nil {
 		return
 	}
 
@@ -50,7 +50,7 @@ func (s *Store) Save() (err error) {
 	}
 
 	defer file.Close()
-	data, err := json.MarshalIndent(s, "", "  ")
+	data, err := json.MarshalIndent(s.Feeds, "", "  ")
 	if err != nil {
 		return
 	}
