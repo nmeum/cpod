@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"github.com/nmeum/cpod/opml"
-	"github.com/nmeum/cpod/rss"
+	"github.com/nmeum/cpod/feed"
 	"github.com/nmeum/cpod/store"
 	"os"
 	"path/filepath"
@@ -35,16 +35,16 @@ func main() {
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
-		handleError(err)
+		abort(err)
 	}
 
 	flag.Parse()
 	if err := processInput(); err != nil {
-		handleError(err)
+		abort(err)
 	}
 
 	if err := storage.Save(); err != nil {
-		handleError(err)
+		abort(err)
 	}
 }
 
@@ -93,24 +93,24 @@ func processInput() (err error) {
 
 func updateCmd() error {
 	for n, f := range storage.Feeds {
-		xml, err := rss.Parse(f.Url)
+		xml, err := feed.Parse(f.Url)
 		if err != nil {
 			return err
 		}
 
 		var latest int64
-		items := xml.Channel.Items
+		items := xml.Items
 
 		if *recent > 0 {
 			items = items[0:*recent]
 		}
 
 		for _, i := range items {
-			if len(i.Enclosure.Url) <= 0 {
+			if len(i.Attachment) <= 0 {
 				continue
 			}
 
-			date, err := parseDate(i.PubDate)
+			date, err := parseDate(i.Date)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func updateCmd() error {
 
 			if f.Latest < date.Unix() && !*noDownload {
 				dir := filepath.Join(downloadDir, f.Title)
-				if err = download(i.Enclosure.Url, dir, i.Title); err != nil {
+				if err = download(i.Attachment, dir, i.Title); err != nil {
 					return err
 				}
 			}
