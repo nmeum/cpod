@@ -29,6 +29,10 @@ line flags can be used to change this behaviour:
 
     Display help and exit.
 
+`-v`
+
+    Display version and exit.
+
 `-r <n>`
 
     Only download <n> most recent episodes.

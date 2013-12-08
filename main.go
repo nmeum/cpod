@@ -3,16 +3,23 @@ package main
 import (
 	"errors"
 	"flag"
-	"github.com/nmeum/cpod/opml"
+	"fmt"
 	"github.com/nmeum/cpod/feed"
+	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/store"
 	"os"
 	"path/filepath"
 )
 
+const (
+	appName    = "cpod"
+	appVersion = "0.0"
+)
+
 var (
 	recent     = flag.Int("r", 0, "download latest n episodes")
 	cleanup    = flag.Bool("c", false, "remove old episodes")
+	version    = flag.Bool("v", false, "print version and exit")
 	noUpdate   = flag.Bool("u", false, "don't update feeds")
 	noDownload = flag.Bool("d", false, "don't download new episodes")
 	opmlImport = flag.String("i", "", "import opml file")
@@ -64,6 +71,11 @@ func getDirs() (s string, d string) {
 }
 
 func processInput() (err error) {
+	if *version {
+		fmt.Println(appName, appVersion)
+		os.Exit(0)
+	}
+
 	if len(*opmlImport) > 0 {
 		if err = importCmd(*opmlImport); err != nil {
 			return
