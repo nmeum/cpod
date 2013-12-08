@@ -1,12 +1,12 @@
 package feed
 
 import (
-	"net/http"
-	"errors"
-	"io/ioutil"
 	"encoding/xml"
+	"errors"
 	"github.com/nmeum/cpod/feed/atom"
 	"github.com/nmeum/cpod/feed/rss"
+	"io/ioutil"
+	"net/http"
 )
 
 type Feed struct {
@@ -16,9 +16,9 @@ type Feed struct {
 }
 
 type Item struct {
-	Title string
-	Link  string
-	Date  string
+	Title      string
+	Link       string
+	Date       string
 	Attachment string
 }
 
@@ -34,9 +34,8 @@ func Parse(url string) (f *Feed, err error) {
 		return
 	}
 
-	var rssFeed  *rss.Feed
+	var rssFeed *rss.Feed
 	var atomFeed *atom.Feed
-
 
 	if err := xml.Unmarshal(body, &rssFeed); err == nil {
 		f = convertRss(rssFeed)

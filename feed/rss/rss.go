@@ -11,9 +11,9 @@ type Channel struct {
 }
 
 type Item struct {
-	PubDate string `xml:"pubDate"`
-	Title   string `xml:"title"`
-	Link    string `xml:"link"`
+	PubDate   string    `xml:"pubDate"`
+	Title     string    `xml:"title"`
+	Link      string    `xml:"link"`
 	Enclosure Enclosure `xml:"enclosure"`
 }
 
