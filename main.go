@@ -72,8 +72,8 @@ func getDirs() (s string, d string) {
 
 func processInput() (err error) {
 	if *version {
-		fmt.Println(appName, appVersion)
-		os.Exit(0)
+		fmt.Fprintf(os.Stderr, "%s %s\n", appName, appVersion)
+		os.Exit(2)
 	}
 
 	if len(*opmlImport) > 0 {

@@ -99,6 +99,6 @@ func latestFile(files []os.FileInfo) (f os.FileInfo) {
 }
 
 func abort(err error) {
-	fmt.Fprintf(os.Stdout, "%s\n", err.Error())
+	fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 	os.Exit(2)
 }
