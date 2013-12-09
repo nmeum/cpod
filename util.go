@@ -17,6 +17,7 @@ func parseDate(date string) (t time.Time, err error) {
 		"2 January 2006 15:04:05 -0700", "2 January 2006 15:04:05 MST",
 		"2 Jan 2006 15:04:05 -0700", "2 Jan 2006 15:04:05 MST",
 		"Mon, 2 Jan 2006 15:04:05 -0700", "Mon, 2 Jan 2006 15:04:05 MST",
+		"2006-01-02T15:04:05", "2006-01-02T15:04:05Z",
 	}
 
 	for _, format := range formats {
