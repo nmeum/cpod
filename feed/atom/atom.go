@@ -1,9 +1,14 @@
 package atom
 
+import (
+	"encoding/xml"
+)
+
 type Feed struct {
-	Title   string  `xml:"title"`
-	Links   []Link  `xml:"link"`
-	Entries []Entry `xml:"entry"`
+	XMLName xml.Name `xml:"feed"`
+	Title   string   `xml:"title"`
+	Links   []Link   `xml:"link"`
+	Entries []Entry  `xml:"entry"`
 }
 
 type Entry struct {

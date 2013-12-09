@@ -1,7 +1,12 @@
 package rss
 
+import (
+	"encoding/xml"
+)
+
 type Feed struct {
-	Channel Channel `xml:"channel"`
+	XMLName xml.Name `xml:"rss"`
+	Channel Channel  `xml:"channel"`
 }
 
 type Channel struct {
