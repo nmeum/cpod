@@ -56,8 +56,8 @@ func Load(path string) (o *Opml, err error) {
 
 func (o *Opml) Add(text string, ftype string, url string) {
 	outline := Outline{
-		Text: text,
-		Type: ftype,
+		Text:   text,
+		Type:   ftype,
 		XmlUrl: url,
 	}
 
