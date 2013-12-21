@@ -7,19 +7,21 @@ import (
 )
 
 type Opml struct {
-	Head struct {
-		Title   string `xml:"title"`
-		Created string `xml:"dateCreated"`
-	} `xml:"head"`
-	Body struct {
-		Outlines []struct {
-			Text   string `xml:"text,attr"`
-			Type   string `xml:"type,attr"`
-			XmlUrl string `xml:"xmlUrl,attr"`
-		} `xml:"outline"`
-	} `xml:"body"`
-	XMLName xml.Name `xml:"opml"`
-	Version string   `xml:"version,attr"`
+	XMLName  xml.Name  `xml:"opml"`
+	Version  string    `xml"version,attr"`
+	Head     Head      `xml:"head"`
+	Outlines []Outline `xml:"body>outline"`
+}
+
+type Head struct {
+	Title   string `xml:"title"`
+	Created string `xml:"dateCreated"`
+}
+
+type Outline struct {
+	Text   string `xml:"text,attr"`
+	Type   string `xml:"type,attr"`
+	XmlUrl string `xml:"xmlUrl,attr"`
 }
 
 func Load(path string) (o *Opml, err error) {

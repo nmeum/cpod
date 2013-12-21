@@ -154,7 +154,7 @@ func importCmd(path string) (err error) {
 		return
 	}
 
-	for _, o := range file.Body.Outlines {
+	for _, o := range file.Outlines {
 		storage.Add(o.Text, o.XmlUrl)
 	}
 
