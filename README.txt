@@ -76,6 +76,10 @@ Remove all episodes except the latest ones:
 
     $ cpod -u -c
 
+Export all existing feeds to a opml file:
+
+    $ cpod -u -e podcasts.opml
+
 Import a new opml file but don't download new episodes:
 
     $ cpod -d -i podcasts.opml

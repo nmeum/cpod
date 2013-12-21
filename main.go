@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/nmeum/cpod/feed"
@@ -162,7 +161,16 @@ func importCmd(path string) (err error) {
 }
 
 func exportCmd(path string) (err error) {
-	return errors.New("Not implemented yet!")
+	export := opml.New("Podcast subscriptions")
+	for _, feed := range storage.Feeds {
+		export.Add(feed.Title, "rss", feed.Url) // FIXME determine feed type
+	}
+
+	if err = export.Save(*opmlExport); err != nil {
+		return
+	}
+
+	return
 }
 
 func cleanupCmd() (err error) {
