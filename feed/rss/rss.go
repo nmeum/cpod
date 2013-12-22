@@ -6,13 +6,9 @@ import (
 
 type Feed struct {
 	XMLName xml.Name `xml:"rss"`
-	Channel Channel  `xml:"channel"`
-}
-
-type Channel struct {
-	Title string `xml:"title"`
-	Link  string `xml:"link"`
-	Items []Item `xml:"item"`
+	Title   string   `xml:"channel>title"`
+	Link    string   `xml:"channel>link"`
+	Items   []Item   `xml:"channel>item"`
 }
 
 type Item struct {

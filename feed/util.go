@@ -8,10 +8,10 @@ import (
 func convertRss(r *rss.Feed) (f *Feed) {
 	f = new(Feed)
 
-	f.Title = r.Channel.Title
-	f.Link = r.Channel.Link
+	f.Title = r.Title
+	f.Link = r.Link
 
-	for _, i := range r.Channel.Items {
+	for _, i := range r.Items {
 		item := Item{
 			Title:      i.Title,
 			Link:       i.Link,
