@@ -141,6 +141,7 @@ func updateCmd() error {
 			}
 		}
 
+		storage.Feeds[n].Type = xml.Type
 		storage.Feeds[n].Latest = latest
 	}
 
@@ -154,7 +155,7 @@ func importCmd(path string) (err error) {
 	}
 
 	for _, o := range file.Outlines {
-		storage.Add(o.Text, o.XmlUrl)
+		storage.Add(o.Text, "", o.XmlUrl)
 	}
 
 	return
@@ -163,7 +164,7 @@ func importCmd(path string) (err error) {
 func exportCmd(path string) (err error) {
 	export := opml.New("Podcast subscriptions")
 	for _, feed := range storage.Feeds {
-		export.Add(feed.Title, "rss", feed.Url) // FIXME determine feed type
+		export.Add(feed.Title, feed.Type, feed.Url) // FIXME determine feed type
 	}
 
 	if err = export.Save(*opmlExport); err != nil {

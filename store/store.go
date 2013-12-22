@@ -14,6 +14,7 @@ type Store struct {
 type Feed struct {
 	Latest int64  `json:"latest"`
 	Title  string `json:"title"`
+	Type   string `json:"type"`
 	Url    string `json:"url"`
 }
 
@@ -38,8 +39,13 @@ func Load(path string) (s *Store, err error) {
 	return
 }
 
-func (s *Store) Add(title string, url string) {
-	feed := Feed{Title: title, Url: url}
+func (s *Store) Add(title string, ftype string, url string) {
+	feed := Feed{
+		Title: title,
+		Type: ftype,
+		Url: url,
+	}
+
 	s.Feeds = append(s.Feeds, feed)
 }
 
