@@ -164,7 +164,7 @@ func importCmd(path string) (err error) {
 func exportCmd(path string) (err error) {
 	export := opml.New("Podcast subscriptions")
 	for _, feed := range storage.Feeds {
-		export.Add(feed.Title, feed.Type, feed.Url) // FIXME determine feed type
+		export.Add(feed.Title, feed.Type, feed.Url)
 	}
 
 	if err = export.Save(*opmlExport); err != nil {
