@@ -6,45 +6,48 @@ import (
 )
 
 func TestLoad(t *testing.T) {
+	testFeed := &Feed{
+		Latest: 42,
+		Title: "Foo",
+		Type: "rss",
+		Url: "http://example.com/rss.xml",
+	}
+
 	store, err := Load("testdata/testLoad.json")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	f := store.Feeds[0]
-	if f.Latest != 42 {
-		t.Fatalf("Expected %q - got %q", 42, f.Latest)
-	}
-
-	if f.Title != "Foo" {
-		t.Fatalf("Expected %q - got %q", "Foo", f.Title)
-	}
-
-	if f.Url != "http://example.com/rss.xml" {
-		t.Fatalf("Expected %q - get %q", "http://example.com/rss.xml", f.Url)
+	if &store.Feeds[0] == testFeed {
+		t.Fatalf("Expected %q - got %q", testFeed, &store.Feeds[0])
 	}
 }
 
 func TestAdd(t *testing.T) {
-	store := new(Store)
-	store.Add("test", "http://example.com/test.xml")
-
-	if store.Feeds[0].Title != "test" {
-		t.Fatalf("Expected %q - got %q", "test", store.Feeds[0].Title)
+	testFeed := Feed{
+		Title: "Foobar",
+		Type: "atom",
+		Url: "http://example.io/feed.xml",
 	}
 
-	if store.Feeds[0].Url != "http://example.com/test.xml" {
-		t.Fatalf("Expected %q - got %q", "http://example.com/test.xml", store.Feeds[0].Url)
+	store := new(Store)
+	store.Add("Foobar", "atom", "http://example.io/feed.xml")
+
+	if store.Feeds[0] != testFeed {
+		t.Fatalf("Expected %q - got %q", testFeed, store.Feeds)
 	}
 }
 
 func TestSave(t *testing.T) {
-	store, err := Load("testdata/testSave.json")
-	if err != nil && !os.IsNotExist(err) {
-		t.Fatal(err)
+	store := Store{path: "testdata/testSave.json"}
+	feed := Feed{
+		Latest: 1337,
+		Title: "Test Feed",
+		Type: "atom",
+		Url: "http://example.com/testFeed.atom",
 	}
 
-	store.Add("test", "http://example.com/test.xml")
+	store.Feeds = append(store.Feeds, feed)
 	if err := store.Save(); err != nil {
 		t.Fatal(err)
 	}
@@ -54,8 +57,8 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if loaded.Feeds[0].Title != "test" {
-		t.Fatalf("Expected %q - got %q", "test", loaded.Feeds[0].Title)
+	if loaded.Feeds[0] != feed {
+		t.Fatalf("Expected %q - got %q", loaded.Feeds[0], feed)
 	}
 
 	os.Remove("testdata/testSave.json")
