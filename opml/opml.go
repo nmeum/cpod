@@ -10,13 +10,9 @@ import (
 type Opml struct {
 	XMLName  xml.Name  `xml:"opml"`
 	Version  string    `xml:"version,attr"`
-	Head     Head      `xml:"head"`
+	Title    string    `xml:"head>title"`
+	Created  string    `xml:"head>dateCreated"`
 	Outlines []Outline `xml:"body>outline"`
-}
-
-type Head struct {
-	Title   string `xml:"title"`
-	Created string `xml:"dateCreated"`
 }
 
 type Outline struct {
@@ -26,9 +22,9 @@ type Outline struct {
 }
 
 func New(title string) (o *Opml) {
-	o = &Opml{Version: "2.0"}
-	o.Head = Head{
-		Title:   title,
+	o = &Opml{
+		Version: "2.0",
+		Title: title,
 		Created: time.Now().Format(time.RFC1123Z),
 	}
 
