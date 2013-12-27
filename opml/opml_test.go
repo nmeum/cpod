@@ -2,23 +2,81 @@ package opml
 
 import (
 	"testing"
+	"os"
 )
 
+func TestNew(t *testing.T) {
+	o := New("Test subscriptions")
+
+	if o.Title != "Test subscriptions" {
+		t.Fatalf("Expected %q - got %q", "Test subscriptions", o.Title)
+	}
+
+	if o.Version != "2.0" {
+		t.Fatalf("Expected %q - got %q", "2.0", o.Version)
+	}
+}
+
 func TestLoad(t *testing.T) {
-	opml, err := Load("testdata/testLoad.opml")
+	outline := Outline{
+		Text: "Chaosradio",
+		Type: "rss",
+		XmlUrl: "http://chaosradio.ccc.de/chaosradio-latest.rss",
+	}
+
+	o, err := Load("testdata/testLoad.opml")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if opml.Head.Title != "Subscriptions" {
-		t.Fatalf("Expected %q - got %q", "Subscriptions", opml.Head.Title)
+	if o.Outlines[0] != outline {
+		t.Fatalf("Expected %q - got %q", outline, o.Outlines[0])
 	}
 
-	if opml.Head.Created != "Wed, 15 May 2013 19:30:58 +0200" {
-		t.Fatalf("Expected %q - got %q", "Wed, 15 May 2013 19:30:58 +0200", opml.Head.Created)
+	if o.Version != "2.0" {
+		t.Fatalf("Expected %q - got %q", "2.0", o.Version)
 	}
 
-	if opml.Body.Outlines[0].Text != "Chaosradio" {
-		t.Fatalf("Expected %q - got %q", "Chaosradio", opml.Body.Outlines[0].Text)
+	if o.Title != "Subscriptions" {
+		t.Fatalf("Expected %q - got %q", "Subscriptions", o.Title)
 	}
+
+	if o.Created != "Wed, 15 May 2013 19:30:58 +0200" {
+		t.Fatalf("Expected %q - got %q", "Wed, 15 May 2013 19:30:58 +0200", o.Created)
+	}
+}
+
+func TestAdd(t *testing.T) {
+	testOutline := Outline{
+		Text: "Testcast",
+		Type: "atom",
+		XmlUrl: "http://testcast.com/atom-feed.xml",
+	}
+
+	o := new(Opml)
+	o.Add("Testcast", "atom", "http://testcast.com/atom-feed.xml")
+
+	if o.Outlines[0] != testOutline {
+		t.Fatalf("Expected %q - got %q", testOutline, o.Outlines[0])
+	}
+}
+
+func TestSave(t *testing.T) {
+	o := New("Podcasts")
+	o.Add("Somecast", "rss", "http://somecast.io/feed.rss")
+
+	if err := o.Save("testdata/testSave.json"); err != nil {
+		t.Fatal(err)
+	}
+
+	loaded, err := Load("testdata/testSave.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if loaded.Title != "Podcasts" {
+		t.Fatal(err)
+	}
+
+	os.Remove("testdata/testSave.json")
 }
