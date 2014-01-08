@@ -21,13 +21,7 @@ type Feed struct {
 func Load(path string) (s *Store, err error) {
 	s = &Store{path: path}
 
-	file, err := os.Open(s.path)
-	if err != nil {
-		return
-	}
-
-	defer file.Close()
-	data, err := ioutil.ReadAll(file)
+	data, err := ioutil.ReadFile(s.path)
 	if err != nil {
 		return
 	}

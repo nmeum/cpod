@@ -32,13 +32,7 @@ func New(title string) (o *Opml) {
 }
 
 func Load(path string) (o *Opml, err error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return
-	}
-
-	defer file.Close()
-	data, err := ioutil.ReadAll(file)
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return
 	}
