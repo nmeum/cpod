@@ -21,7 +21,7 @@ type Outline struct {
 	XmlUrl string `xml:"xmlUrl,attr"`
 }
 
-func New(title string) (o *Opml) {
+func Create(title string) (o *Opml) {
 	o = &Opml{
 		Version: "2.0",
 		Title: title,

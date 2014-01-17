@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-func TestNew(t *testing.T) {
-	o := New("Test subscriptions")
+func TestCreate(t *testing.T) {
+	o := Create("Test subscriptions")
 
 	if o.Title != "Test subscriptions" {
 		t.Fatalf("Expected %q - got %q", "Test subscriptions", o.Title)
@@ -62,7 +62,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	o := New("Podcasts")
+	o := Create("Podcasts")
 	o.Add("Somecast", "rss", "http://somecast.io/feed.rss")
 
 	if err := o.Save("testdata/testSave.json"); err != nil {

@@ -162,7 +162,7 @@ func importCmd(path string) (err error) {
 }
 
 func exportCmd(path string) (err error) {
-	export := opml.New("Podcast subscriptions")
+	export := opml.Create("Podcast subscriptions")
 	for _, feed := range storage.Feeds {
 		export.Add(feed.Title, feed.Type, feed.Url)
 	}
