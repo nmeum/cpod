@@ -23,7 +23,7 @@ type Item struct {
 	Attachment string
 }
 
-func Parse(url string) (f *Feed, err error) {
+func Parse(url string) (f Feed, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return
@@ -35,8 +35,8 @@ func Parse(url string) (f *Feed, err error) {
 		return
 	}
 
-	var rssFeed *rss.Feed
-	var atomFeed *atom.Feed
+	var rssFeed rss.Feed
+	var atomFeed atom.Feed
 
 	if err := xml.Unmarshal(body, &rssFeed); err == nil {
 		f = convertRss(rssFeed)

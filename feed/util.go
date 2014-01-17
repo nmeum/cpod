@@ -5,9 +5,7 @@ import (
 	"github.com/nmeum/cpod/feed/rss"
 )
 
-func convertRss(r *rss.Feed) (f *Feed) {
-	f = new(Feed)
-
+func convertRss(r rss.Feed) (f Feed) {
 	f.Title = r.Title
 	f.Link = r.Link
 
@@ -25,9 +23,7 @@ func convertRss(r *rss.Feed) (f *Feed) {
 	return
 }
 
-func convertAtom(a *atom.Feed) (f *Feed) {
-	f = new(Feed)
-
+func convertAtom(a atom.Feed) (f Feed) {
 	f.Title = a.Title
 	f.Link = findLink(a.Links).Href
 
