@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -75,7 +76,7 @@ func cleanupDir(path string) (err error) {
 
 	latest := latestFile(files)
 	for _, file := range files {
-		if file.Name() == latest.Name() {
+		if file.Name() == latest.Name() || strings.HasPrefix(file.Name(), ".") {
 			continue
 		}
 
