@@ -1,0 +1,110 @@
+=head1 NAME
+
+cpod - Cron friendly podcatcher
+
+=head1 SYNOPSIS
+
+B<cpod> [B<-h>] [B<-v>] [B<-c>] [B<-u>] [B<-d>] [B<-r> I<episodes>] [B<-i> I<opml>] [B<-e> I<opml>]
+
+=head1 DESCRIPTION
+
+cpod is a small cron friendly podcatcher written in Go. It uses a tiny
+json file to store your feeds but it doesn't track downloaded episodes.
+When your are done with a podcast episode you can delete it and cpod
+won't fetch it again.
+
+If you don't pass any command line flags to cpod it will automatically
+update all feeds and download all new episodes. However, the options
+described below might be used to change this behaviour.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-h>
+
+Display help and exit.
+
+=item B<-v>
+
+Display version and exit.
+
+=item B<-c>
+
+Remove all episodes except the latest ones.
+
+=item B<-u>
+
+Don't update feeds and don't download new episodes.
+
+=item B<-d>
+
+Don't download new episodes.
+
+=item B<-r> I<episodes>
+
+Only download latest I<episodes>.
+
+=item B<-i> I<opml>
+
+Import all feeds from I<opml> file.
+
+=item B<-e> I<opml>
+
+Export all feeds to I<opml> file.
+
+=back
+
+=head1 EXAMPLES
+
+Update all feeds and download new episodes:
+
+	cpod
+
+Update all feeds and dowload the latest episode:
+
+	cpod -r 1
+
+Update all feeds and without dowloading episodes:
+
+	cpod -d
+
+Remove all episodes except the latest ones:
+
+	cpod -u -c
+
+Export all existing feeds to an opml file:
+
+	cpod -u -e podcasts.opml
+
+Import feeds from an opml file and update all feeds:
+
+	cpod -d -i podcasts.opml
+
+=head1 FILES
+
+=over 4
+
+=item ~/podcasts
+
+The default download directory.
+
+=item $XDG_DATA_HOME/cpod/feeds.json
+
+The json file containing all feeds.
+
+=back
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item CPOD_DOWNLOAD_DIR
+
+The download directory (default: ~/podcasts).
+
+=back
+
+=head1 SEE ALSO
+
+cron(8)
