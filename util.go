@@ -100,6 +100,16 @@ func latestFile(files []os.FileInfo) (f os.FileInfo) {
 	return
 }
 
+func isPodcast(url string) (b bool) {
+	for _, feed := range storage.Feeds {
+		if feed.Url == url {
+			return true
+		}
+	}
+
+	return
+}
+
 func abort(err error) {
 	fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
 	os.Exit(2)
