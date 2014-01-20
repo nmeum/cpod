@@ -65,7 +65,7 @@ Update all feeds and dowload the latest episode:
 
 	cpod -r 1
 
-Update all feeds and without dowloading episodes:
+Update all feeds but don't download new episodes episodes:
 
 	cpod -d
 
