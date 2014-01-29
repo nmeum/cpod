@@ -36,8 +36,8 @@ func Load(path string) (s *Store, err error) {
 func (s *Store) Add(title string, ftype string, url string) {
 	feed := Feed{
 		Title: title,
-		Type: ftype,
-		Url: url,
+		Type:  ftype,
+		Url:   url,
 	}
 
 	s.Feeds = append(s.Feeds, feed)

@@ -24,7 +24,7 @@ type Outline struct {
 func Create(title string) (o *Opml) {
 	o = &Opml{
 		Version: "2.0",
-		Title: title,
+		Title:   title,
 		Created: time.Now().Format(time.RFC1123Z),
 	}
 

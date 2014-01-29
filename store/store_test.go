@@ -8,9 +8,9 @@ import (
 func TestLoad(t *testing.T) {
 	testFeed := &Feed{
 		Latest: 42,
-		Title: "Foo",
-		Type: "rss",
-		Url: "http://example.com/rss.xml",
+		Title:  "Foo",
+		Type:   "rss",
+		Url:    "http://example.com/rss.xml",
 	}
 
 	store, err := Load("testdata/testLoad.json")
@@ -26,8 +26,8 @@ func TestLoad(t *testing.T) {
 func TestAdd(t *testing.T) {
 	testFeed := Feed{
 		Title: "Foobar",
-		Type: "atom",
-		Url: "http://example.io/feed.xml",
+		Type:  "atom",
+		Url:   "http://example.io/feed.xml",
 	}
 
 	store := new(Store)
@@ -42,9 +42,9 @@ func TestSave(t *testing.T) {
 	store := Store{path: "testdata/testSave.json"}
 	feed := Feed{
 		Latest: 1337,
-		Title: "Test Feed",
-		Type: "atom",
-		Url: "http://example.com/testFeed.atom",
+		Title:  "Test Feed",
+		Type:   "atom",
+		Url:    "http://example.com/testFeed.atom",
 	}
 
 	store.Feeds = append(store.Feeds, feed)

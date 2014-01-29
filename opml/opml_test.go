@@ -1,8 +1,8 @@
 package opml
 
 import (
-	"testing"
 	"os"
+	"testing"
 )
 
 func TestCreate(t *testing.T) {
@@ -19,8 +19,8 @@ func TestCreate(t *testing.T) {
 
 func TestLoad(t *testing.T) {
 	outline := Outline{
-		Text: "Chaosradio",
-		Type: "rss",
+		Text:   "Chaosradio",
+		Type:   "rss",
 		XmlUrl: "http://chaosradio.ccc.de/chaosradio-latest.rss",
 	}
 
@@ -48,8 +48,8 @@ func TestLoad(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	testOutline := Outline{
-		Text: "Testcast",
-		Type: "atom",
+		Text:   "Testcast",
+		Type:   "atom",
 		XmlUrl: "http://testcast.com/atom-feed.xml",
 	}
 
