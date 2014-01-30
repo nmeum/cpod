@@ -21,12 +21,12 @@ func TestFindLink(t *testing.T) {
 func TestFindAttachment(t *testing.T) {
 	links := []atom.Link{
 		{"text/html", "http://example.org/foo", "alternate"},
-		{"text/html", "http://example.org/bar", "enclosure"},
+		{"image/png", "http://example.org/bar", "enclosure"},
 		{"text/html", "http://example.org/baz", ""},
 	}
 
 	link := findAttachment(links)
 	if link != links[1] {
-		t.Fatalf("Expected %q - got %q", link, links[0])
+		t.Fatalf("Expected %q - got %q", link, links[1])
 	}
 }
