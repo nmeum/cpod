@@ -189,7 +189,7 @@ func cleanupCmd() (err error) {
 	}
 
 	for _, file := range files {
-		if !file.IsDir() {
+		if !file.IsDir() || !isPodcast(file.Name()) {
 			continue
 		}
 
