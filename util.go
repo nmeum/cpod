@@ -100,9 +100,9 @@ func latestFile(files []os.FileInfo) (f os.FileInfo) {
 	return
 }
 
-func isPodcast(url string) (b bool) {
+func isPodcast(title string) (b bool) {
 	for _, feed := range storage.Feeds {
-		if feed.Url == url {
+		if feed.Title == title {
 			return true
 		}
 	}
