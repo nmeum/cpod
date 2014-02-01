@@ -50,7 +50,7 @@ func (s *Store) Save() (err error) {
 	}
 
 	defer file.Close()
-	data, err := json.MarshalIndent(s.Feeds, "", "  ")
+	data, err := json.MarshalIndent(s.Feeds, "", "\t")
 	if err != nil {
 		return
 	}
