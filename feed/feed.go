@@ -40,10 +40,8 @@ func Parse(url string) (f Feed, err error) {
 
 	if err := xml.Unmarshal(body, &rssFeed); err == nil {
 		f = convertRss(rssFeed)
-		f.Type = "rss"
 	} else if err := xml.Unmarshal(body, &atomFeed); err == nil {
 		f = convertAtom(atomFeed)
-		f.Type = "atom"
 	} else {
 		err = errors.New("Unknown feed type")
 	}
@@ -53,6 +51,7 @@ func Parse(url string) (f Feed, err error) {
 
 func convertRss(r rss.Feed) (f Feed) {
 	f.Title = r.Title
+	f.Type = "rss"
 	f.Link = r.Link
 
 	for _, i := range r.Items {
@@ -71,6 +70,7 @@ func convertRss(r rss.Feed) (f Feed) {
 
 func convertAtom(a atom.Feed) (f Feed) {
 	f.Title = a.Title
+	f.Type = "atom"
 	f.Link = findLink(a.Links).Href
 
 	for _, e := range a.Entries {
