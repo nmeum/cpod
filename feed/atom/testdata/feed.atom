@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<id>tag:example.org,2013-06-23:feed.atom</id>
+	<title>Some Title</title>
+	<link rel="self" type="text/html" href="http://example.org/feed.atom"/>
+	<updated>2014-01-30T19:00:58Z</updated>
+	<entry>
+		<id>tag:author@example.org,2013-10-12:posts/test</id>
+		<title>Test Post</title>
+		<author>
+			<name>Some author</name>
+			<email>author@example.org</email>
+		</author>
+		<content type="html"><![CDATA[
+			<p>Some Content</p>
+		]]></content>
+		<link rel="alternate" type="text/html" href="http://example.org/posts/test.html"/>
+		<published>2013-10-11T23:56:00Z</published>
+		<updated>2013-10-11T23:56:00Z</updated>
+	</entry>
+</feed>
