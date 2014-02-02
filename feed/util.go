@@ -13,14 +13,17 @@ func findLink(links []atom.Link) (l atom.Link) {
 		}
 
 		if score < 3 && link.Type == "text/html" {
+			score = 3
 			l = link
 		}
 
 		if score < 2 && link.Rel == "self" {
+			score = 2
 			l = link
 		}
 
 		if score < 1 && link.Rel == "" {
+			score = 1
 			l = link
 		}
 

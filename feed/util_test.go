@@ -7,9 +7,8 @@ import (
 
 func TestFindLink(t *testing.T) {
 	links := []atom.Link{
-		{"text/html", "http://example.com/my_link", "alternate"},
-		{"audio/ogg", "http://example.com/my_foo", "alternate"},
-		{"image/png", "http://example.com/image", "self"},
+		{"text/html", "http://example.com/my_link", ""},
+		{"audio/ogg", "http://example.com/my_foo", "enclosure"},
 	}
 
 	link := findLink(links)
