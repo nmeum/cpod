@@ -18,8 +18,8 @@ func TestLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if &store.Feeds[0] == testFeed {
-		t.Fatalf("Expected %q - got %q", testFeed, &store.Feeds[0])
+	if store.Feeds[0] == testFeed {
+		t.Fatalf("Expected %q - got %q", testFeed, store.Feeds[0])
 	}
 }
 
@@ -33,8 +33,8 @@ func TestAdd(t *testing.T) {
 	store := new(Store)
 	store.Add("Foobar", "atom", "http://example.io/feed.xml")
 
-	if store.Feeds[0] != testFeed {
-		t.Fatalf("Expected %q - got %q", testFeed, store.Feeds)
+	if *store.Feeds[0] != testFeed {
+		t.Fatalf("Expected %q - got %q", testFeed, *store.Feeds[0])
 	}
 }
 
@@ -47,7 +47,7 @@ func TestSave(t *testing.T) {
 		Url:    "http://example.com/testFeed.atom",
 	}
 
-	store.Feeds = append(store.Feeds, feed)
+	store.Feeds = append(store.Feeds, &feed)
 	if err := store.Save(); err != nil {
 		t.Fatal(err)
 	}
@@ -57,8 +57,8 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if loaded.Feeds[0] != feed {
-		t.Fatalf("Expected %q - got %q", loaded.Feeds[0], feed)
+	if *loaded.Feeds[0] != feed {
+		t.Fatalf("Expected %q - got %q", feed, *loaded.Feeds[0])
 	}
 
 	os.Remove("testdata/testSave.json")

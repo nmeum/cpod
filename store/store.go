@@ -8,7 +8,7 @@ import (
 
 type Store struct {
 	path  string
-	Feeds []Feed
+	Feeds []*Feed
 }
 
 type Feed struct {
@@ -34,7 +34,7 @@ func Load(path string) (s *Store, err error) {
 }
 
 func (s *Store) Add(title string, ftype string, url string) {
-	feed := Feed{
+	feed := &Feed{
 		Title: title,
 		Type:  ftype,
 		Url:   url,
