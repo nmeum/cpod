@@ -8,6 +8,7 @@ import (
 	"github.com/nmeum/cpod/store"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const (
@@ -103,46 +104,34 @@ func processInput() (err error) {
 }
 
 func updateCmd() error {
-	for n, f := range storage.Feeds {
-		xml, err := feed.Parse(f.Url)
+	for _, f := range storage.Feeds {
+		fetched, err := feed.Parse(f.Url)
 		if err != nil {
 			return err
 		}
 
-		var latest int64
-		items := xml.Items
+		f.Type = fetched.Type
+		items := fetched.Items
 
 		if *recent > 0 {
 			items = items[0:*recent]
 		}
 
-		for _, i := range items {
-			if len(i.Attachment) <= 0 {
-				continue
+		latest := time.Unix(f.Latest, 0)
+		for _, item := range items {
+			if *noDownload {
+				break
 			}
 
-			date, err := parseDate(i.Date)
-			if err != nil {
-				return err
-			}
-
-			if latest == 0 {
-				latest = date.Unix()
-				if *noDownload {
-					break
-				}
-			}
-
-			if f.Latest < date.Unix() && !*noDownload {
-				dir := filepath.Join(downloadDir, f.Title)
-				if err = download(i.Attachment, dir, i.Title); err != nil {
+			if item.Date.After(latest) && len(item.Attachment) > 0 {
+				err := download(item.Attachment, filepath.Join(downloadDir, f.Title), item.Title)
+				if err != nil {
 					return err
 				}
 			}
 		}
 
-		storage.Feeds[n].Type = xml.Type
-		storage.Feeds[n].Latest = latest
+		f.Latest = items[len(items)-1].Date.Unix()
 	}
 
 	return nil

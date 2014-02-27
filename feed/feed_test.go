@@ -4,12 +4,13 @@ import (
 	"github.com/nmeum/cpod/feed/atom"
 	"github.com/nmeum/cpod/feed/rss"
 	"testing"
+	"time"
 )
 
 var testItem = Item{
 	Title:      "Some Title",
 	Link:       "http://example.org/posts/some_post.html",
-	Date:       "Tue, 10 Jun 2003 04:00:00 GMT",
+	Date:       time.Unix(1393528968, 0),
 	Attachment: "http://example.org/posts/some_post.ogg",
 }
 
@@ -46,13 +47,17 @@ func TestConvertRss(t *testing.T) {
 
 	rssFeed.Items = make([]rss.Item, 1)
 	rssFeed.Items[0] = rss.Item{
-		PubDate:   "Tue, 10 Jun 2003 04:00:00 GMT",
+		PubDate:   "Thu, 27 Feb 2014 20:22:48 +0100",
 		Title:     "Some Title",
 		Link:      "http://example.org/posts/some_post.html",
 		Enclosure: rss.Enclosure{"audio/ogg", "http://example.org/posts/some_post.ogg"},
 	}
 
-	feed := convertRss(rssFeed)
+	feed, err := convertRss(rssFeed)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if feed.Title != "Some Title" {
 		t.Fatalf("Expected %q - got %q", "Some Title", feed.Title)
 	}
@@ -80,7 +85,7 @@ func TestConvertAtom(t *testing.T) {
 
 	atomFeed.Entries = make([]atom.Entry, 1)
 	atomFeed.Entries[0] = atom.Entry{
-		Published: "Tue, 10 Jun 2003 04:00:00 GMT",
+		Published: "Thu, 27 Feb 2014 20:22:48 +0100",
 		Title:     "Some Title",
 	}
 
@@ -92,7 +97,11 @@ func TestConvertAtom(t *testing.T) {
 		Rel:  "enclosure",
 	}
 
-	feed := convertAtom(atomFeed)
+	feed, err := convertAtom(atomFeed)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	if feed.Title != "Some Title" {
 		t.Fatalf("Expected %q - got %q", "Some Title", feed.Title)
 	}
@@ -107,5 +116,19 @@ func TestConvertAtom(t *testing.T) {
 
 	if feed.Items[0] != testItem {
 		t.Fatalf("Expected %q - got %q", testItem, feed.Items[0])
+	}
+}
+
+func TestParseDate(t *testing.T) {
+	testFormat := "Thu, 27 Feb 2014 18:46:18 +0100"
+	var timestamp int64 = 1393523178
+
+	date, err := parseDate(testFormat)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if date.Unix() != timestamp {
+		t.Fatalf("Expected %q - got %q", timestamp, date.Unix())
 	}
 }
