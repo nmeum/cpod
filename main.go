@@ -119,19 +119,18 @@ func updateCmd() error {
 
 		latest := time.Unix(f.Latest, 0)
 		for _, item := range items {
-			if *noDownload {
-				break
+			if item.Date.After(time.Unix(f.Latest, 0)) {
+				f.Latest = item.Date.Unix()
 			}
 
-			if item.Date.After(latest) && len(item.Attachment) > 0 {
+			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
 				err := download(item.Attachment, filepath.Join(downloadDir, f.Title), item.Title)
 				if err != nil {
 					return err
 				}
 			}
-		}
 
-		f.Latest = items[len(items)-1].Date.Unix()
+		}
 	}
 
 	return nil
