@@ -66,7 +66,7 @@ func (o *Opml) Save(path string) (err error) {
 		return
 	}
 
-	if _, err = file.Write([]byte(xml.Header)); err != nil {
+	if _, err = file.WriteString(xml.Header); err != nil {
 		return
 	}
 
