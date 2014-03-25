@@ -55,7 +55,31 @@ Export all feeds to I<opml> file.
 
 =back
 
-=head1 EXAMPLES
+=head1 ENVIRONMENT
+
+=over 4
+
+=item CPOD_DOWNLOAD_DIR
+
+The download directory (default: ~/podcasts).
+
+=back
+
+=head1 FILES
+
+=over 4
+
+=item ~/podcasts
+
+The default download directory.
+
+=item $XDG_DATA_HOME/cpod/feeds.json
+
+The json file containing all feeds.
+
+=back
+
+=head1 EXAMPLE
 
 Update all feeds and download new episodes:
 
@@ -80,30 +104,6 @@ Export all existing feeds to an opml file:
 Import feeds from an opml file and update all feeds:
 
 	cpod -d -i podcasts.opml
-
-=head1 FILES
-
-=over 4
-
-=item ~/podcasts
-
-The default download directory.
-
-=item $XDG_DATA_HOME/cpod/feeds.json
-
-The json file containing all feeds.
-
-=back
-
-=head1 ENVIRONMENT VARIABLES
-
-=over 4
-
-=item CPOD_DOWNLOAD_DIR
-
-The download directory (default: ~/podcasts).
-
-=back
 
 =head1 SEE ALSO
 
