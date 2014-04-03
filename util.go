@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func download(url string, target string, name string) (err error) {
+func download(url, target, name string) (err error) {
 	if err = os.MkdirAll(target, 0755); err != nil && !os.IsExist(err) {
 		return
 	}

@@ -55,7 +55,7 @@ func main() {
 	}
 }
 
-func getDirs() (s string, d string) {
+func getDirs() (s, d string) {
 	s = os.Getenv("XDG_DATA_HOME")
 	if len(s) <= 0 {
 		s = filepath.Join(os.Getenv("HOME"), ".local", "share")

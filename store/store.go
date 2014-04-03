@@ -33,7 +33,7 @@ func Load(path string) (s *Store, err error) {
 	return
 }
 
-func (s *Store) Add(title string, ftype string, url string) {
+func (s *Store) Add(title, ftype, url string) {
 	feed := &Feed{
 		Title: title,
 		Type:  ftype,

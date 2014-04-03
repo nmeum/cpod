@@ -44,7 +44,7 @@ func Load(path string) (o *Opml, err error) {
 	return
 }
 
-func (o *Opml) Add(text string, ftype string, url string) {
+func (o *Opml) Add(text, ftype, url string) {
 	outline := Outline{
 		Text:   text,
 		Type:   ftype,
