@@ -33,10 +33,10 @@ var (
 
 func main() {
 	var err error
-	var storeDir string
+	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 
-	storeDir, downloadDir = getDirs()
-	if err := os.Mkdir(storeDir, 0755); err != nil && !os.IsExist(err) {
+	storeDir := filepath.Join(envDefault("XDG_DATA_HOME", ".local/share"), appName)
+	if err = os.Mkdir(storeDir, 0755); err != nil && !os.IsExist(err) {
 		return
 	}
 
@@ -53,21 +53,6 @@ func main() {
 	if err := storage.Save(); err != nil {
 		abort(err)
 	}
-}
-
-func getDirs() (s, d string) {
-	s = os.Getenv("XDG_DATA_HOME")
-	if len(s) <= 0 {
-		s = filepath.Join(os.Getenv("HOME"), ".local", "share")
-	}
-
-	s = filepath.Join(s, appName)
-	d = os.Getenv("CPOD_DOWNLOAD_DIR")
-	if len(d) <= 0 {
-		d = filepath.Join(os.Getenv("HOME"), "podcasts")
-	}
-
-	return
 }
 
 func processInput() (err error) {

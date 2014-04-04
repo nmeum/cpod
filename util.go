@@ -85,6 +85,15 @@ func isPodcast(title string) (b bool) {
 	return
 }
 
+func envDefault(key, fallback string) (d string) {
+	d = os.Getenv(key)
+	if len(d) <= 0 {
+		d = filepath.Join(os.Getenv("HOME"), fallback)
+	}
+
+	return d
+}
+
 func abort(err error) {
 	fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
 	os.Exit(2)
