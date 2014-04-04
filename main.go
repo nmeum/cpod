@@ -61,7 +61,7 @@ func getDirs() (s, d string) {
 		s = filepath.Join(os.Getenv("HOME"), ".local", "share")
 	}
 
-	s = filepath.Join(s, "cpod")
+	s = filepath.Join(s, appName)
 	d = os.Getenv("CPOD_DOWNLOAD_DIR")
 	if len(d) <= 0 {
 		d = filepath.Join(os.Getenv("HOME"), "podcasts")
