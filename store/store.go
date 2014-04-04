@@ -7,11 +7,11 @@ import (
 )
 
 type Store struct {
-	path  string
-	Feeds []*Feed
+	path     string
+	Podcasts []*Podcast // TODO doesn't need to be a pointer
 }
 
-type Feed struct {
+type Podcast struct {
 	Latest int64  `json:"latest"`
 	Title  string `json:"title"`
 	Type   string `json:"type"`
@@ -26,7 +26,7 @@ func Load(path string) (s *Store, err error) {
 		return
 	}
 
-	if err = json.Unmarshal(data, &s.Feeds); err != nil {
+	if err = json.Unmarshal(data, &s.Podcasts); err != nil {
 		return
 	}
 
@@ -34,13 +34,13 @@ func Load(path string) (s *Store, err error) {
 }
 
 func (s *Store) Add(title, ftype, url string) {
-	feed := &Feed{
+	cast := &Podcast{
 		Title: title,
 		Type:  ftype,
 		Url:   url,
 	}
 
-	s.Feeds = append(s.Feeds, feed)
+	s.Podcasts = append(s.Podcasts, cast)
 }
 
 func (s *Store) Save() (err error) {
@@ -50,7 +50,7 @@ func (s *Store) Save() (err error) {
 	}
 
 	defer file.Close()
-	data, err := json.MarshalIndent(s.Feeds, "", "\t")
+	data, err := json.MarshalIndent(s.Podcasts, "", "\t")
 	if err != nil {
 		return
 	}

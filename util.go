@@ -76,8 +76,8 @@ func latestFile(files []os.FileInfo) (f os.FileInfo) {
 }
 
 func isPodcast(title string) (b bool) {
-	for _, feed := range storage.Feeds {
-		if feed.Title == title {
+	for _, cast := range storage.Podcasts {
+		if cast.Title == title {
 			return true
 		}
 	}

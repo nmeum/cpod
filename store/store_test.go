@@ -6,7 +6,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	testFeed := &Feed{
+	testCast := Podcast{
 		Latest: 42,
 		Title:  "Foo",
 		Type:   "rss",
@@ -18,36 +18,35 @@ func TestLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if store.Feeds[0] == testFeed {
-		t.Fatalf("Expected %q - got %q", testFeed, store.Feeds[0])
+	if *store.Podcasts[0] != testCast {
+		t.Fatalf("Expected %q - got %q", testCast, *store.Podcasts[0])
 	}
 }
 
 func TestAdd(t *testing.T) {
-	testFeed := Feed{
+	testCast := Podcast{
 		Title: "Foobar",
 		Type:  "atom",
-		Url:   "http://example.io/feed.xml",
+		Url:   "http://example.io/podcast.xml",
 	}
 
 	store := new(Store)
-	store.Add("Foobar", "atom", "http://example.io/feed.xml")
+	store.Add(testCast.Title, testCast.Type, testCast.Url)
 
-	if *store.Feeds[0] != testFeed {
-		t.Fatalf("Expected %q - got %q", testFeed, *store.Feeds[0])
+	if *store.Podcasts[0] != testCast {
+		t.Fatalf("Expected %q - got %q", testCast, *store.Podcasts[0])
 	}
 }
 
 func TestSave(t *testing.T) {
 	store := Store{path: "testdata/testSave.json"}
-	feed := Feed{
-		Latest: 1337,
-		Title:  "Test Feed",
+	cast := Podcast{
+		Title:  "Test Podcast",
 		Type:   "atom",
-		Url:    "http://example.com/testFeed.atom",
+		Url:    "http://example.com/testPodcast.atom",
 	}
 
-	store.Feeds = append(store.Feeds, &feed)
+	store.Add(cast.Title, cast.Type, cast.Url)
 	if err := store.Save(); err != nil {
 		t.Fatal(err)
 	}
@@ -57,8 +56,8 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if *loaded.Feeds[0] != feed {
-		t.Fatalf("Expected %q - got %q", feed, *loaded.Feeds[0])
+	if *loaded.Podcasts[0] != cast {
+		t.Fatalf("Expected %q - got %q", cast, *loaded.Podcasts[0])
 	}
 
 	os.Remove("testdata/testSave.json")

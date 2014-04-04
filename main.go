@@ -104,27 +104,27 @@ func processInput() (err error) {
 }
 
 func updateCmd() error {
-	for _, f := range storage.Feeds {
-		fetched, err := feed.Parse(f.Url)
+	for _, p := range storage.Podcasts {
+		feed, err := feed.Parse(p.Url)
 		if err != nil {
 			return err
 		}
 
-		f.Type = fetched.Type
-		items := fetched.Items
+		p.Type = feed.Type
+		items := feed.Items
 
 		if *recent > 0 {
 			items = items[0:*recent]
 		}
 
-		latest := time.Unix(f.Latest, 0)
+		latest := time.Unix(p.Latest, 0)
 		for _, item := range items {
-			if item.Date.After(time.Unix(f.Latest, 0)) {
-				f.Latest = item.Date.Unix()
+			if item.Date.After(time.Unix(p.Latest, 0)) {
+				p.Latest = item.Date.Unix()
 			}
 
 			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
-				err := download(item.Attachment, filepath.Join(downloadDir, f.Title), item.Title)
+				err := download(item.Attachment, filepath.Join(downloadDir, p.Title), item.Title)
 				if err != nil {
 					return err
 				}
@@ -153,8 +153,8 @@ func importCmd(path string) (err error) {
 
 func exportCmd(path string) (err error) {
 	export := opml.Create("Podcast subscriptions")
-	for _, feed := range storage.Feeds {
-		export.Add(feed.Title, feed.Type, feed.Url)
+	for _, cast := range storage.Podcasts {
+		export.Add(cast.Title, cast.Type, cast.Url)
 	}
 
 	if err = export.Save(*opmlExport); err != nil {
