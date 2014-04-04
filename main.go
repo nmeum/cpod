@@ -35,7 +35,7 @@ func main() {
 	var err error
 	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 
-	storeDir := filepath.Join(envDefault("XDG_DATA_HOME", ".local/share"), appName)
+	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
 	if err = os.MkdirAll(storeDir, 0755); err != nil && !os.IsExist(err) {
 		return
 	}

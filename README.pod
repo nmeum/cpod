@@ -73,7 +73,7 @@ The download directory (default: ~/podcasts).
 
 The default download directory.
 
-=item $XDG_DATA_HOME/cpod/feeds.json
+=item $XDG_CONFIG_HOME/cpod/feeds.json
 
 The json file containing all feeds.
 
