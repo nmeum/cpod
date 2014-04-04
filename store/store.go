@@ -8,7 +8,7 @@ import (
 
 type Store struct {
 	path     string
-	Podcasts []*Podcast // TODO doesn't need to be a pointer
+	Podcasts []*Podcast
 }
 
 type Podcast struct {
