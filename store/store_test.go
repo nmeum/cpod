@@ -41,9 +41,9 @@ func TestAdd(t *testing.T) {
 func TestSave(t *testing.T) {
 	store := Store{path: "testdata/testSave.json"}
 	cast := Podcast{
-		Title:  "Test Podcast",
-		Type:   "atom",
-		Url:    "http://example.com/testPodcast.atom",
+		Title: "Test Podcast",
+		Type:  "atom",
+		Url:   "http://example.com/testPodcast.atom",
 	}
 
 	store.Add(cast.Title, cast.Type, cast.Url)
