@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -92,9 +91,4 @@ func envDefault(key, fallback string) (d string) {
 	}
 
 	return d
-}
-
-func abort(err error) {
-	fmt.Fprintf(os.Stderr, "ERROR: %s\n", err.Error())
-	os.Exit(2)
 }

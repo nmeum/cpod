@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/nmeum/cpod/feed"
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/store"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -28,37 +28,36 @@ var (
 
 var (
 	storage     *store.Store
-	downloadDir string
+	logger      = log.New(os.Stderr, "", 0)
+	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
 func main() {
 	var err error
-	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 
 	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
 	if err = os.MkdirAll(storeDir, 0755); err != nil && !os.IsExist(err) {
-		return
+		logger.Panic(err)
 	}
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
-		abort(err)
+		logger.Panic(err)
 	}
 
 	flag.Parse()
 	if err := processInput(); err != nil {
-		abort(err)
+		logger.Panic(err)
 	}
 
 	if err := storage.Save(); err != nil {
-		abort(err)
+		logger.Panic(err)
 	}
 }
 
 func processInput() (err error) {
 	if *version {
-		fmt.Fprintf(os.Stderr, "%s %s\n", appName, appVersion)
-		os.Exit(2)
+		logger.Fatalln(appName, appVersion)
 	}
 
 	if len(*opmlImport) > 0 {
