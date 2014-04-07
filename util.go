@@ -90,5 +90,5 @@ func envDefault(key, fallback string) (d string) {
 		d = filepath.Join(os.Getenv("HOME"), fallback)
 	}
 
-	return d
+	return
 }
