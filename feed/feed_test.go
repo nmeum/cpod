@@ -15,7 +15,7 @@ var testItem = Item{
 }
 
 type testpair struct {
-	Url  string
+	URL  string
 	Type string
 }
 
@@ -28,7 +28,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		feed, err := Parse(test.Url)
+		feed, err := Parse(test.URL)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -50,7 +50,7 @@ func TestEnclosure(t *testing.T) {
 		t.Fatalf("Expected %q - got %q", "audio/ogg", enclosure.Type)
 	}
 
-	if enclosure.Url != "http://example.org/posts/test.ogg" {
-		t.Fatalf("Expected %q - got %q", "http://example.org/posts/test.ogg", enclosure.Url)
+	if enclosure.URL != "http://example.org/posts/test.ogg" {
+		t.Fatalf("Expected %q - got %q", "http://example.org/posts/test.ogg", enclosure.URL)
 	}
 }

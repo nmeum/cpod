@@ -44,7 +44,7 @@ func Parse(url string) (f Feed, err error) {
 	} else if err := xml.Unmarshal(body, &atomFeed); err == nil {
 		f, err = convertAtom(atomFeed)
 	} else {
-		err = errors.New("Unknown feed type")
+		err = errors.New("unknown feed type")
 	}
 
 	return
@@ -59,7 +59,7 @@ func convertRss(r rss.Feed) (f Feed, err error) {
 		item := Item{
 			Title:      i.Title,
 			Link:       i.Link,
-			Attachment: i.Enclosure.Url,
+			Attachment: i.Enclosure.URL,
 		}
 
 		item.Date, err = parseDate(i.PubDate)
@@ -111,8 +111,6 @@ func parseDate(date string) (t time.Time, err error) {
 		t, err = time.Parse(format, date)
 		if err == nil {
 			return
-		} else {
-			err = nil
 		}
 	}
 

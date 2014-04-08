@@ -89,7 +89,7 @@ func processInput() (err error) {
 
 func updateCmd() error {
 	for _, p := range storage.Podcasts {
-		feed, err := feed.Parse(p.Url)
+		feed, err := feed.Parse(p.URL)
 		if err != nil {
 			return err
 		}
@@ -128,7 +128,7 @@ func importCmd(path string) (err error) {
 
 	for _, o := range file.Outlines {
 		if !isPodcast(o.Text) {
-			storage.Add(o.Text, o.Type, o.XmlUrl)
+			storage.Add(o.Text, o.Type, o.XMLURL)
 		}
 	}
 
@@ -138,7 +138,7 @@ func importCmd(path string) (err error) {
 func exportCmd(path string) (err error) {
 	export := opml.Create("Podcast subscriptions")
 	for _, cast := range storage.Podcasts {
-		export.Add(cast.Title, cast.Type, cast.Url)
+		export.Add(cast.Title, cast.Type, cast.URL)
 	}
 
 	if err = export.Save(*opmlExport); err != nil {

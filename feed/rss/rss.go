@@ -20,5 +20,5 @@ type Item struct {
 
 type Enclosure struct {
 	Type string `xml:"type,attr"`
-	Url  string `xml:"url,attr"`
+	URL  string `xml:"url,attr"`
 }

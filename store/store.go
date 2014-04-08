@@ -15,7 +15,7 @@ type Podcast struct {
 	Latest int64  `json:"latest"`
 	Title  string `json:"title"`
 	Type   string `json:"type"`
-	Url    string `json:"url"`
+	URL    string `json:"url"`
 }
 
 func Load(path string) (s *Store, err error) {
@@ -37,7 +37,7 @@ func (s *Store) Add(title, ftype, url string) {
 	cast := &Podcast{
 		Title: title,
 		Type:  ftype,
-		Url:   url,
+		URL:   url,
 	}
 
 	s.Podcasts = append(s.Podcasts, cast)

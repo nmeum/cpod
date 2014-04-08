@@ -10,7 +10,7 @@ func TestLoad(t *testing.T) {
 		Latest: 42,
 		Title:  "Foo",
 		Type:   "rss",
-		Url:    "http://example.com/rss.xml",
+		URL:    "http://example.com/rss.xml",
 	}
 
 	store, err := Load("testdata/testLoad.json")
@@ -27,11 +27,11 @@ func TestAdd(t *testing.T) {
 	testCast := Podcast{
 		Title: "Foobar",
 		Type:  "atom",
-		Url:   "http://example.io/podcast.xml",
+		URL:   "http://example.io/podcast.xml",
 	}
 
 	store := new(Store)
-	store.Add(testCast.Title, testCast.Type, testCast.Url)
+	store.Add(testCast.Title, testCast.Type, testCast.URL)
 
 	if *store.Podcasts[0] != testCast {
 		t.Fatalf("Expected %q - got %q", testCast, *store.Podcasts[0])
@@ -43,10 +43,10 @@ func TestSave(t *testing.T) {
 	cast := Podcast{
 		Title: "Test Podcast",
 		Type:  "atom",
-		Url:   "http://example.com/testPodcast.atom",
+		URL:   "http://example.com/testPodcast.atom",
 	}
 
-	store.Add(cast.Title, cast.Type, cast.Url)
+	store.Add(cast.Title, cast.Type, cast.URL)
 	if err := store.Save(); err != nil {
 		t.Fatal(err)
 	}

@@ -18,7 +18,7 @@ type Opml struct {
 type Outline struct {
 	Text   string `xml:"text,attr"`
 	Type   string `xml:"type,attr"`
-	XmlUrl string `xml:"xmlUrl,attr"`
+	XMLURL string `xml:"xmlUrl,attr"`
 }
 
 func Create(title string) (o *Opml) {
@@ -48,7 +48,7 @@ func (o *Opml) Add(text, ftype, url string) {
 	outline := Outline{
 		Text:   text,
 		Type:   ftype,
-		XmlUrl: url,
+		XMLURL: url,
 	}
 
 	o.Outlines = append(o.Outlines, outline)
