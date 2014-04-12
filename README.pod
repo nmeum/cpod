@@ -35,7 +35,7 @@ Don't update feeds and don't download new episodes.
 
 =item B<-d>
 
-Don't download new episodes.
+Don't download new episodes and skip them.
 
 =item B<-r> I<episodes>
 

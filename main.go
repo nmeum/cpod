@@ -17,12 +17,12 @@ const (
 )
 
 var (
-	recent     = flag.Int("r", 0, "download latest n episodes")
+	recent     = flag.Int("r", 0, "only download latest n episodes")
 	version    = flag.Bool("v", false, "print version and exit")
-	noUpdate   = flag.Bool("u", false, "don't update feeds")
-	noDownload = flag.Bool("d", false, "don't download new episodes")
-	opmlImport = flag.String("i", "", "import opml file")
-	opmlExport = flag.String("e", "", "export opml file")
+	noUpdate   = flag.Bool("u", false, "don't update feeds and don't download new episodes")
+	noDownload = flag.Bool("d", false, "don't download new episodes and skip them")
+	opmlImport = flag.String("i", "", "import opml file at path")
+	opmlExport = flag.String("e", "", "export opml file to path")
 )
 
 var (
