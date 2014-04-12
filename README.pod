@@ -75,7 +75,7 @@ The json file containing all feeds.
 
 =back
 
-=head1 EXAMPLE
+=head1 EXAMPLES
 
 Update all feeds and download new episodes:
 
