@@ -32,9 +32,9 @@ func download(url, target, name string) (err error) {
 	return
 }
 
-func isPodcast(title string) (b bool) {
+func isPodcast(url string) (b bool) {
 	for _, cast := range storage.Podcasts {
-		if cast.Title == title {
+		if cast.URL == url {
 			return true
 		}
 	}

@@ -120,7 +120,7 @@ func importCmd(path string) (err error) {
 	}
 
 	for _, o := range file.Outlines {
-		if !isPodcast(o.Text) {
+		if !isPodcast(o.XMLURL) {
 			storage.Add(o.Text, o.Type, o.XMLURL)
 		}
 	}
