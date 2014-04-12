@@ -1,6 +1,6 @@
 =head1 NAME
 
-cpod - Cron friendly podcatcher
+cpod - cron(8) friendly podcatcher
 
 =head1 SYNOPSIS
 
