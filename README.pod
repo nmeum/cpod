@@ -59,15 +59,19 @@ Display version and exit.
 
 The download directory (default: ~/podcasts).
 
+=item XDG_CONFIG_HOME
+
+Base directory with config files (default: ~/.config).
+
 =back
 
 =head1 FILES
 
 =over 4
 
-=item ~/podcasts
+=item $CPOD_DOWNLOAD_DIR
 
-The default download directory.
+Directory with downloaded podcast episodes.
 
 =item $XDG_CONFIG_HOME/cpod/feeds.json
 
