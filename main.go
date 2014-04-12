@@ -32,10 +32,10 @@ var (
 )
 
 func main() {
-	var err error
-
 	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
-	if err = os.MkdirAll(storeDir, 0755); err != nil && !os.IsExist(err) {
+
+	err := os.MkdirAll(storeDir, 0755)
+	if err != nil && !os.IsExist(err) {
 		logger.Panic(err)
 	}
 
