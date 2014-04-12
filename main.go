@@ -45,11 +45,11 @@ func main() {
 	}
 
 	flag.Parse()
-	if err := processInput(); err != nil {
+	if err = processInput(); err != nil {
 		logger.Panic(err)
 	}
 
-	if err := storage.Save(); err != nil {
+	if err = storage.Save(); err != nil {
 		logger.Panic(err)
 	}
 }
