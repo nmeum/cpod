@@ -4,7 +4,7 @@ cpod - Cron friendly podcatcher
 
 =head1 SYNOPSIS
 
-B<cpod> [B<-h>] [B<-v>] [B<-u>] [B<-d>] [B<-r> I<episodes>] [B<-i> I<opml>] [B<-e> I<opml>]
+B<cpod> [B<-d>] [B<-e> I<opml>] [B<-h>] [B<-i> I<opml>] [B<-r> I<episodes>] [B<-u>] [B<-v>]
 
 =head1 DESCRIPTION
 
@@ -21,33 +21,33 @@ described below might be used to change this behaviour.
 
 =over 4
 
-=item B<-h>
-
-Display help and exit.
-
-=item B<-v>
-
-Display version and exit.
-
-=item B<-u>
-
-Don't update feeds and don't download new episodes.
-
 =item B<-d>
 
 Don't download new episodes and skip them.
 
-=item B<-r> I<episodes>
+=item B<-e> I<opml>
 
-Only download latest I<episodes>.
+Export all feeds to I<opml> file.
+
+=item B<-h>
+
+Display help and exit.
 
 =item B<-i> I<opml>
 
 Import all feeds from I<opml> file.
 
-=item B<-e> I<opml>
+=item B<-r> I<episodes>
 
-Export all feeds to I<opml> file.
+Only download latest I<episodes>.
+
+=item B<-u>
+
+Don't update feeds and don't download new episodes.
+
+=item B<-v>
+
+Display version and exit.
 
 =back
 
