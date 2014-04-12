@@ -4,7 +4,7 @@ cpod - Cron friendly podcatcher
 
 =head1 SYNOPSIS
 
-B<cpod> [B<-h>] [B<-v>] [B<-c>] [B<-u>] [B<-d>] [B<-r> I<episodes>] [B<-i> I<opml>] [B<-e> I<opml>]
+B<cpod> [B<-h>] [B<-v>] [B<-u>] [B<-d>] [B<-r> I<episodes>] [B<-i> I<opml>] [B<-e> I<opml>]
 
 =head1 DESCRIPTION
 
@@ -28,10 +28,6 @@ Display help and exit.
 =item B<-v>
 
 Display version and exit.
-
-=item B<-c>
-
-Remove all episodes except the latest ones.
 
 =item B<-u>
 
@@ -92,10 +88,6 @@ Update all feeds and dowload the latest episode:
 Update all feeds but don't download new episodes episodes:
 
 	cpod -d
-
-Remove all episodes except the latest ones:
-
-	cpod -u -c
 
 Export all existing feeds to an opml file:
 

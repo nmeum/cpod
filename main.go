@@ -18,7 +18,6 @@ const (
 
 var (
 	recent     = flag.Int("r", 0, "download latest n episodes")
-	cleanup    = flag.Bool("c", false, "remove old episodes")
 	version    = flag.Bool("v", false, "print version and exit")
 	noUpdate   = flag.Bool("u", false, "don't update feeds")
 	noDownload = flag.Bool("d", false, "don't download new episodes")
@@ -74,12 +73,6 @@ func processInput() (err error) {
 
 	if !*noUpdate {
 		if err = updateCmd(); err != nil {
-			return
-		}
-	}
-
-	if *cleanup {
-		if err = cleanupCmd(); err != nil {
 			return
 		}
 	}
@@ -143,32 +136,6 @@ func exportCmd(path string) (err error) {
 
 	if err = export.Save(*opmlExport); err != nil {
 		return
-	}
-
-	return
-}
-
-func cleanupCmd() (err error) {
-	dir, err := os.Open(downloadDir)
-	if err != nil {
-		return
-	}
-
-	defer dir.Close()
-	files, err := dir.Readdir(-1)
-	if err != nil {
-		return
-	}
-
-	for _, file := range files {
-		if !file.IsDir() || !isPodcast(file.Name()) {
-			continue
-		}
-
-		path := filepath.Join(downloadDir, file.Name())
-		if err = cleanupDir(path); err != nil {
-			return
-		}
 	}
 
 	return

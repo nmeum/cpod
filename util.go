@@ -32,48 +32,6 @@ func download(url, target, name string) (err error) {
 	return
 }
 
-func cleanupDir(path string) (err error) {
-	dir, err := os.Open(path)
-	if err != nil {
-		return
-	}
-
-	defer dir.Close()
-	files, err := dir.Readdir(-1)
-	if err != nil {
-		return
-	}
-
-	if len(files) <= 1 {
-		return
-	}
-
-	latest := latestFile(files)
-	for _, file := range files {
-		if file.Name() == latest.Name() {
-			continue
-		}
-
-		path := filepath.Join(path, file.Name())
-		if err = os.Remove(path); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func latestFile(files []os.FileInfo) (f os.FileInfo) {
-	f = files[0]
-	for _, file := range files {
-		if file.ModTime().After(f.ModTime()) {
-			f = file
-		}
-	}
-
-	return
-}
-
 func isPodcast(title string) (b bool) {
 	for _, cast := range storage.Podcasts {
 		if cast.Title == title {
