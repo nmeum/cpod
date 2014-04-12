@@ -36,21 +36,21 @@ func main() {
 
 	err := os.MkdirAll(storeDir, 0755)
 	if err != nil && !os.IsExist(err) {
-		logger.Panic(err)
+		abort(err)
 	}
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
-		logger.Panic(err)
+		abort(err)
 	}
 
 	flag.Parse()
 	if err = processInput(); err != nil {
-		logger.Panic(err)
+		abort(err)
 	}
 
 	if err = storage.Save(); err != nil {
-		logger.Panic(err)
+		abort(err)
 	}
 }
 
