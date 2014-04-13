@@ -36,6 +36,8 @@ func download(url, target, name string) (err error) {
 func escape(name string) string {
 	mfunc := func(r rune) rune {
 		switch {
+		case r >= '0' && r <= '9':
+			return r
 		case r >= 'A' && r <= 'Z':
 			return r
 		case r >= 'a' && r <= 'z':
