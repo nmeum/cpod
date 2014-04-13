@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func download(url, target, name string) (err error) {
@@ -12,8 +13,8 @@ func download(url, target, name string) (err error) {
 		return
 	}
 
-	path := filepath.Join(target, name+filepath.Ext(url))
-	file, err := os.Create(path)
+	filename := escape(name) + filepath.Ext(url)
+	file, err := os.Create(filepath.Join(target, filename))
 	if err != nil {
 		return
 	}
@@ -30,6 +31,25 @@ func download(url, target, name string) (err error) {
 	}
 
 	return
+}
+
+func escape(name string) string {
+	mfunc := func(r rune) rune {
+		switch {
+		case r >= 'A' && r <= 'Z':
+			return r
+		case r >= 'a' && r <= 'z':
+			return r
+		case r == '.' || r == '_':
+			return r
+		case r == ' ' || r == '\t':
+			return '-'
+		}
+
+		return -1
+	}
+
+	return strings.Map(mfunc, name)
 }
 
 func isPodcast(url string) (b bool) {
