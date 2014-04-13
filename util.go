@@ -49,7 +49,12 @@ func escape(name string) string {
 		return -1
 	}
 
-	return strings.Map(mfunc, name)
+	escaped := strings.Map(mfunc, name)
+	for strings.HasPrefix(escaped, "-") && len(escaped) > 1 {
+		escaped = escaped[1:]
+	}
+
+	return escaped
 }
 
 func isPodcast(url string) (b bool) {
