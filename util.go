@@ -80,5 +80,5 @@ func envDefault(key, fallback string) (d string) {
 }
 
 func abort(err error) {
-	logger.Fatalln(appName, err.Error())
+	logger.Fatalf("%s: %s", appName, err.Error())
 }
