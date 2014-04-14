@@ -54,7 +54,7 @@ func escape(name string) string {
 		escaped = strings.Replace(escaped, "--", "-", -1)
 	}
 
-	if strings.HasPrefix(escaped, "-") && len(escaped) > 1 {
+	if strings.HasPrefix(escaped, "-") && len(escaped) >= 1 {
 		escaped = escaped[1:]
 	}
 
