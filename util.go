@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-func download(url, target, name string) (err error) {
+func download(url, target string) (path string, err error) {
 	if err = os.MkdirAll(target, 0755); err != nil && !os.IsExist(err) {
 		return
 	}
 
-	filename := escape(name) + filepath.Ext(url)
-	file, err := os.Create(filepath.Join(target, filename))
+	path = filepath.Join(target, filepath.Base(url))
+	file, err := os.Create(path)
 	if err != nil {
 		return
 	}

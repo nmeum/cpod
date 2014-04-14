@@ -101,9 +101,17 @@ func updateCmd() error {
 			}
 
 			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
-				err := download(item.Attachment, filepath.Join(downloadDir, p.Title), item.Title)
+				path, err := download(item.Attachment, filepath.Join(downloadDir, p.Title))
 				if err != nil {
 					return err
+				}
+
+				name := escape(item.Title) + filepath.Ext(path)
+				if len(name) > 1 {
+					err = os.Rename(path, filepath.Join(filepath.Dir(path), name))
+					if err != nil {
+						return err
+					}
 				}
 			}
 
