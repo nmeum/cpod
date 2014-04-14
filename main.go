@@ -27,7 +27,7 @@ var (
 
 var (
 	storage     *store.Store
-	logger      = log.New(os.Stderr, "", 0)
+	logger      = log.New(os.Stderr, appName+": ", 0)
 	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
@@ -36,27 +36,27 @@ func main() {
 
 	err := os.MkdirAll(storeDir, 0755)
 	if err != nil && !os.IsExist(err) {
-		abort(err)
+		logger.Fatal(err)
 	}
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
 	if err != nil && !os.IsNotExist(err) {
-		abort(err)
+		logger.Fatal(err)
 	}
 
 	flag.Parse()
 	if err = processInput(); err != nil {
-		abort(err)
+		logger.Fatal(err)
 	}
 
 	if err = storage.Save(); err != nil {
-		abort(err)
+		logger.Fatal(err)
 	}
 }
 
 func processInput() (err error) {
 	if *version {
-		logger.Fatalln(appName, appVersion)
+		logger.Fatal(appVersion)
 	}
 
 	if len(*opmlImport) > 0 {
