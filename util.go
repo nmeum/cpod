@@ -13,7 +13,7 @@ func download(url, target string) (path string, err error) {
 		return
 	}
 
-	path = filepath.Join(target, filepath.Base(url))
+	path = filepath.Join(target, strings.TrimSpace(filepath.Base(url)))
 	file, err := os.Create(path)
 	if err != nil {
 		return
