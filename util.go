@@ -61,22 +61,21 @@ func escape(name string) string {
 	return escaped
 }
 
-func isPodcast(url string) (b bool) {
+func isPodcast(url string) bool {
 	for _, cast := range storage.Podcasts {
 		if cast.URL == url {
 			return true
 		}
 	}
 
-	return
+	return false
 }
 
-func envDefault(key, fallback string) (d string) {
-	d = os.Getenv(key)
-	if len(d) <= 0 {
-		d = filepath.Join(os.Getenv("HOME"), fallback)
+func envDefault(key, fallback string) string {
+	dir := os.Getenv(key)
+	if len(dir) <= 0 {
+		dir = filepath.Join(os.Getenv("HOME"), fallback)
 	}
 
-	return
-
+	return dir
 }
