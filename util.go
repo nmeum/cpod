@@ -42,9 +42,7 @@ func escape(name string) string {
 			return r
 		case r >= 'a' && r <= 'z':
 			return r
-		case r == '.' || r == '_':
-			return r
-		case r == ' ' || r == '\t':
+		case r == ' ' || r == '_':
 			return '-'
 		}
 
@@ -52,7 +50,11 @@ func escape(name string) string {
 	}
 
 	escaped := strings.Map(mfunc, name)
-	for strings.HasPrefix(escaped, "-") && len(escaped) > 1 {
+	for strings.Contains(escaped, "--") {
+		escaped = strings.Replace(escaped, "--", "-", -1)
+	}
+
+	if strings.HasPrefix(escaped, "-") && len(escaped) > 1 {
 		escaped = escaped[1:]
 	}
 
