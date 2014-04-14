@@ -106,9 +106,9 @@ func updateCmd() error {
 					return err
 				}
 
-				name := escape(item.Title) + filepath.Ext(path)
+				name := escape(item.Title)
 				if len(name) > 1 {
-					err = os.Rename(path, filepath.Join(filepath.Dir(path), name))
+					err = os.Rename(path, filepath.Join(filepath.Dir(path), name + filepath.Ext(path)))
 					if err != nil {
 						return err
 					}
