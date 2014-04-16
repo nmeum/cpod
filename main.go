@@ -186,6 +186,8 @@ func escape(name string) string {
 			return r
 		case r >= 'a' && r <= 'z':
 			return r
+		case r == '.' || r == ':':
+			return '-'
 		case r == ' ' || r == '_':
 			return '-'
 		}
