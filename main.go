@@ -68,14 +68,14 @@ func processInput() (err error) {
 		}
 	}
 
-	if len(*opmlExport) > 0 {
-		if err = exportCmd(*opmlExport); err != nil {
+	if !*noUpdate {
+		if err = updateCmd(); err != nil {
 			return
 		}
 	}
 
-	if !*noUpdate {
-		if err = updateCmd(); err != nil {
+	if len(*opmlExport) > 0 {
+		if err = exportCmd(*opmlExport); err != nil {
 			return
 		}
 	}
