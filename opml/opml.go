@@ -16,9 +16,9 @@ type Opml struct {
 }
 
 type Outline struct {
-	Text   string `xml:"text,attr"`
-	Type   string `xml:"type,attr"`
-	XMLURL string `xml:"xmlUrl,attr"`
+	Text string `xml:"text,attr"`
+	Type string `xml:"type,attr"`
+	URL  string `xml:"xmlUrl,attr"`
 }
 
 func Create(title string) (o *Opml) {
@@ -46,9 +46,9 @@ func Load(path string) (o *Opml, err error) {
 
 func (o *Opml) Add(text, ftype, url string) {
 	outline := Outline{
-		Text:   text,
-		Type:   ftype,
-		XMLURL: url,
+		Text: text,
+		Type: ftype,
+		URL:  url,
 	}
 
 	o.Outlines = append(o.Outlines, outline)

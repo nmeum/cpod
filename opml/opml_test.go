@@ -19,9 +19,9 @@ func TestCreate(t *testing.T) {
 
 func TestLoad(t *testing.T) {
 	outline := Outline{
-		Text:   "Chaosradio",
-		Type:   "rss",
-		XMLURL: "http://chaosradio.ccc.de/chaosradio-latest.rss",
+		Text: "Chaosradio",
+		Type: "rss",
+		URL:  "http://chaosradio.ccc.de/chaosradio-latest.rss",
 	}
 
 	o, err := Load("testdata/testLoad.opml")
@@ -48,9 +48,9 @@ func TestLoad(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	testOutline := Outline{
-		Text:   "Testcast",
-		Type:   "atom",
-		XMLURL: "http://testcast.com/atom-feed.xml",
+		Text: "Testcast",
+		Type: "atom",
+		URL:  "http://testcast.com/atom-feed.xml",
 	}
 
 	o := new(Opml)
