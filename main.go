@@ -54,17 +54,9 @@ func main() {
 	}
 
 	lockPath := filepath.Join(cacheDir, "lock")
-	if _, err = os.OpenFile(lockPath, os.O_CREATE + os.O_EXCL, 0666); err != nil {
+	if err = lock(lockPath); err != nil {
 		logger.Fatal(err)
 	}
-
-	ch := make(chan os.Signal, 1)
-	go func() {
-		_ = <-ch
-		os.Remove(lockPath)
-		os.Exit(2)
-	}()
-	signal.Notify(ch, os.Interrupt, os.Kill)
 
 	err = processInput()
 	os.Remove(lockPath)
@@ -189,6 +181,24 @@ func download(url, target string) (path string, err error) {
 	if _, err = io.Copy(file, resp.Body); err != nil {
 		return
 	}
+
+	return
+}
+
+func lock(path string) (err error) {
+	_, err = os.OpenFile(path, os.O_CREATE + os.O_EXCL, 0666);
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	// Setup unlock handler
+	ch := make(chan os.Signal, 1)
+	go func() {
+		_ = <-ch // Block until signal is received
+		os.Remove(path)
+		os.Exit(2)
+	}()
+	signal.Notify(ch, os.Interrupt, os.Kill)
 
 	return
 }
