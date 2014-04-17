@@ -4,43 +4,37 @@ import (
 	"github.com/nmeum/cpod/feed/atom"
 )
 
-func findLink(links []atom.Link) (l atom.Link) {
+func findLink(links []atom.Link) atom.Link {
 	var score int
+	var match atom.Link
 
 	for _, link := range links {
-		if link.Rel == "alternate" && link.Type == "text/html" {
+		switch {
+		case link.Rel == "alternate" && link.Type == "text/html":
 			return link
-		}
-
-		if score < 3 && link.Type == "text/html" {
+		case score < 3 && link.Type == "text/html":
 			score = 3
-			l = link
-		}
-
-		if score < 2 && link.Rel == "self" {
+			match = link
+		case score < 2 && link.Rel == "self":
 			score = 2
-			l = link
-		}
-
-		if score < 1 && link.Rel == "" {
+			match = link
+		case score < 1 && link.Rel == "":
 			score = 1
-			l = link
-		}
-
-		if score <= 0 {
-			l = link
+			match = link
+		case &match == nil:
+			match = link
 		}
 	}
 
-	return
+	return match
 }
 
-func findAttachment(links []atom.Link) (l atom.Link) {
+func findAttachment(links []atom.Link) atom.Link {
 	for _, link := range links {
 		if link.Rel == "enclosure" {
 			return link
 		}
 	}
 
-	return
+	return atom.Link{}
 }
