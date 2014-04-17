@@ -188,7 +188,7 @@ func download(url, target string) (path string, err error) {
 func lock(path string) (err error) {
 	_, err = os.OpenFile(path, os.O_CREATE + os.O_EXCL, 0666);
 	if err != nil {
-		logger.Fatal(err)
+		return
 	}
 
 	// Setup unlock handler
