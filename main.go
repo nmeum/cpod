@@ -54,7 +54,9 @@ func main() {
 	}
 
 	lockPath := filepath.Join(cacheDir, "lock")
-	if err = lock(lockPath); err != nil {
+	if err = lock(lockPath); err != nil && os.IsExist(err) {
+		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
+	} else if err != nil {
 		logger.Fatal(err)
 	}
 
