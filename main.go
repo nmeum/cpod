@@ -51,10 +51,6 @@ func main() {
 	if err = processInput(); err != nil {
 		logger.Fatal(err)
 	}
-
-	if err = storage.Save(); err != nil {
-		logger.Fatal(err)
-	}
 }
 
 func processInput() (err error) {
@@ -121,7 +117,7 @@ func updateCmd() error {
 		}
 	}
 
-	return nil
+	return storage.Save()
 }
 
 func importCmd(path string) (err error) {
@@ -136,7 +132,7 @@ func importCmd(path string) (err error) {
 		}
 	}
 
-	return
+	return storage.Save()
 }
 
 func exportCmd(path string) (err error) {
