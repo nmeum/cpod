@@ -186,7 +186,7 @@ func download(url, target string) (path string, err error) {
 }
 
 func lock(path string) (err error) {
-	_, err = os.OpenFile(path, os.O_CREATE + os.O_EXCL, 0666);
+	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL, 0666)
 	if err != nil {
 		return
 	}
