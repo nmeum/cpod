@@ -59,6 +59,10 @@ Display version and exit.
 
 The download directory (default: ~/podcasts).
 
+=item XDG_CACHE_HOME
+
+Base directory with non-essential data files (default ~/.cache).
+
 =item XDG_CONFIG_HOME
 
 Base directory with config files (default: ~/.config).
@@ -72,6 +76,10 @@ Base directory with config files (default: ~/.config).
 =item $CPOD_DOWNLOAD_DIR
 
 Directory with downloaded podcast episodes.
+
+=item $XDG_CACHE_HOME/cpod/lock
+
+Lock file used to ensure that cpod isn't invoked twice.
 
 =item $XDG_CONFIG_HOME/cpod/feeds.json
 

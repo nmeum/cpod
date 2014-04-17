@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
 	"time"
@@ -35,11 +36,16 @@ var (
 )
 
 func main() {
+	flag.Parse()
+
+	cacheDir := filepath.Join(envDefault("XDG_CACHE_HOME", ".cache"), appName)
 	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
 
-	err := os.MkdirAll(storeDir, 0755)
-	if err != nil && !os.IsExist(err) {
-		logger.Fatal(err)
+	var err error
+	for _, dir := range []string{cacheDir, storeDir} {
+		if err = os.MkdirAll(dir, 0755); err != nil {
+			logger.Fatal(err)
+		}
 	}
 
 	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
@@ -47,8 +53,22 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	flag.Parse()
-	if err = processInput(); err != nil {
+	lockPath := filepath.Join(cacheDir, "lock")
+	if _, err = os.OpenFile(lockPath, os.O_CREATE + os.O_EXCL, 0666); err != nil {
+		logger.Fatal(err)
+	}
+
+	ch := make(chan os.Signal, 1)
+	go func() {
+		_ = <-ch
+		os.Remove(lockPath)
+		os.Exit(2)
+	}()
+	signal.Notify(ch, os.Interrupt, os.Kill)
+
+	err = processInput()
+	os.Remove(lockPath)
+	if err != nil {
 		logger.Fatal(err)
 	}
 }
@@ -149,7 +169,7 @@ func exportCmd(path string) (err error) {
 }
 
 func download(url, target string) (path string, err error) {
-	if err = os.MkdirAll(target, 0755); err != nil && !os.IsExist(err) {
+	if err = os.MkdirAll(target, 0755); err != nil {
 		return
 	}
 
