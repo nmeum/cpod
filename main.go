@@ -196,7 +196,7 @@ func lock(path string) (err error) {
 	// Setup unlock handler
 	ch := make(chan os.Signal, 1)
 	go func() {
-		_ = <-ch // Block until signal is received
+		<-ch // Block until signal is received
 		os.Remove(path)
 		os.Exit(2)
 	}()
