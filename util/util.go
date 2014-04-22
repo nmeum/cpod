@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Download(url, target string) (path string, err error) {
+func Get(url, target string) (path string, err error) {
 	if err = os.MkdirAll(target, 0755); err != nil {
 		return
 	}
@@ -82,7 +82,7 @@ func Escape(name string) string {
 	return escaped
 }
 
-func IsPodcast(casts []*store.Podcast, url string) bool {
+func Subscribed(casts []*store.Podcast, url string) bool {
 	for _, cast := range casts {
 		if cast.URL == url {
 			return true

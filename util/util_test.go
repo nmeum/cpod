@@ -8,13 +8,13 @@ import (
 	"testing"
 )
 
-func TestDownload(t *testing.T) {
+func TestGet(t *testing.T) {
 	tmp := os.Getenv("TMPDIR")
 	if len(tmp) <= 0 {
 		tmp = "/tmp"
 	}
 
-	path, err := Download("http://paste42.de/6915.txt", tmp)
+	path, err := Get("http://paste42.de/6915.txt", tmp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,21 +52,21 @@ func TestEscape(t *testing.T) {
 	}
 }
 
-func TestIsPodcast(t *testing.T) {
+func TestSubscribed(t *testing.T) {
 	casts := []*store.Podcast{
 		{0, "Foocast", "rss", "http://example.com/foocast.rss"},
 		{0, "Barcast", "rss", "http://barcast.org/feed.xml"},
 	}
 
-	if !IsPodcast(casts, "http://example.com/foocast.rss") {
+	if !Subscribed(casts, "http://example.com/foocast.rss") {
 		t.Fail()
 	}
 
-	if !IsPodcast(casts, "http://barcast.org/feed.xml") {
+	if !Subscribed(casts, "http://barcast.org/feed.xml") {
 		t.Fail()
 	}
 
-	if IsPodcast(casts, "None sense podcast") {
+	if Subscribed(casts, "None sense podcast") {
 		t.Fail()
 	}
 }

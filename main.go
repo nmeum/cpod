@@ -111,7 +111,7 @@ func updateCmd() error {
 			}
 
 			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
-				path, err := util.Download(item.Attachment, filepath.Join(downloadDir, p.Title))
+				path, err := util.Get(item.Attachment, filepath.Join(downloadDir, p.Title))
 				if err != nil {
 					return err
 				}
@@ -138,7 +138,7 @@ func importCmd(path string) (err error) {
 	}
 
 	for _, o := range file.Outlines {
-		if !util.IsPodcast(storage.Podcasts, o.URL) {
+		if !util.Subscribed(storage.Podcasts, o.URL) {
 			storage.Add(o.Text, o.Type, o.URL)
 		}
 	}
