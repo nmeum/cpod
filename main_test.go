@@ -58,16 +58,15 @@ func TestIsPodcast(t *testing.T) {
 		{0, "Barcast", "rss", "http://barcast.org/feed.xml"},
 	}
 
-	storage = &store.Store{Podcasts: casts}
-	if !isPodcast("http://example.com/foocast.rss") {
+	if !isPodcast(casts, "http://example.com/foocast.rss") {
 		t.Fail()
 	}
 
-	if !isPodcast("http://barcast.org/feed.xml") {
+	if !isPodcast(casts, "http://barcast.org/feed.xml") {
 		t.Fail()
 	}
 
-	if isPodcast("None sense podcast") {
+	if isPodcast(casts, "None sense podcast") {
 		t.Fail()
 	}
 }

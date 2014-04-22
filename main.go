@@ -141,7 +141,7 @@ func importCmd(path string) (err error) {
 	}
 
 	for _, o := range file.Outlines {
-		if !isPodcast(o.URL) {
+		if !isPodcast(storage.Podcasts, o.URL) {
 			storage.Add(o.Text, o.Type, o.URL)
 		}
 	}
@@ -234,8 +234,8 @@ func escape(name string) string {
 	return escaped
 }
 
-func isPodcast(url string) bool {
-	for _, cast := range storage.Podcasts {
+func isPodcast(casts []*store.Podcast, url string) bool {
+	for _, cast := range casts {
 		if cast.URL == url {
 			return true
 		}
