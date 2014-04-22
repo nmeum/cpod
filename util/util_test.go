@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"github.com/nmeum/cpod/store"
@@ -14,7 +14,7 @@ func TestDownload(t *testing.T) {
 		tmp = "/tmp"
 	}
 
-	path, err := download("http://paste42.de/6915.txt", tmp)
+	path, err := Download("http://paste42.de/6915.txt", tmp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestEscape(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e := escape(test.unescaped)
+		e := Escape(test.unescaped)
 		if e != test.escaped {
 			t.Fatalf("Expected %q - got %q", test.escaped, e)
 		}
@@ -58,15 +58,15 @@ func TestIsPodcast(t *testing.T) {
 		{0, "Barcast", "rss", "http://barcast.org/feed.xml"},
 	}
 
-	if !isPodcast(casts, "http://example.com/foocast.rss") {
+	if !IsPodcast(casts, "http://example.com/foocast.rss") {
 		t.Fail()
 	}
 
-	if !isPodcast(casts, "http://barcast.org/feed.xml") {
+	if !IsPodcast(casts, "http://barcast.org/feed.xml") {
 		t.Fail()
 	}
 
-	if isPodcast(casts, "None sense podcast") {
+	if IsPodcast(casts, "None sense podcast") {
 		t.Fail()
 	}
 }
@@ -76,14 +76,14 @@ func TestEnvDefault1(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dir := envDefault("TESTDIR", "")
+	dir := EnvDefault("TESTDIR", "")
 	if dir != "/foo" {
 		t.Fatalf("Expected %q - got %q", "/foo", dir)
 	}
 }
 
 func TestEnvDefault2(t *testing.T) {
-	dir := envDefault("TESTDIR2", "bar")
+	dir := EnvDefault("TESTDIR2", "bar")
 	if dir != filepath.Join(os.Getenv("HOME"), "bar") {
 		t.Fatalf("Expected %q - got %q", filepath.Join(os.Getenv("HOME"), "bar"), dir)
 	}
