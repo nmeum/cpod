@@ -9,12 +9,7 @@ import (
 )
 
 func TestGet(t *testing.T) {
-	tmp := os.Getenv("TMPDIR")
-	if len(tmp) <= 0 {
-		tmp = "/tmp"
-	}
-
-	path, err := Get("http://paste42.de/6915.txt", tmp)
+	path, err := Get("http://paste42.de/6915.txt", os.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
