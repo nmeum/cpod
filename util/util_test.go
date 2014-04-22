@@ -26,6 +26,34 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestLock1(t *testing.T) {
+	file, err := ioutil.TempFile(os.TempDir(), "testLock")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer file.Close()
+	fi, err := file.Stat()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	lockPath := filepath.Join(os.TempDir(), fi.Name())
+	if err := Lock(lockPath); !os.IsExist(err) {
+		t.Fail()
+	}
+
+}
+
+func TestLock2(t *testing.T) {
+	lockPath := filepath.Join(os.TempDir(), "lockTest")
+	if err := Lock(lockPath); err != nil {
+		t.Fatal(err)
+	}
+
+	os.Remove(lockPath)
+}
+
 func TestEscape(t *testing.T) {
 	type testpair struct {
 		unescaped string
