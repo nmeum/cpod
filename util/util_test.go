@@ -43,6 +43,7 @@ func TestLock1(t *testing.T) {
 		t.Fail()
 	}
 
+	os.Remove(lockPath)
 }
 
 func TestLock2(t *testing.T) {

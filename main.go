@@ -34,7 +34,6 @@ var (
 
 func main() {
 	flag.Parse()
-
 	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 
