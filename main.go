@@ -91,15 +91,16 @@ func processInput() (err error) {
 
 func updateCmd() error {
 	for _, p := range storage.Podcasts {
-		feed, err := feed.Parse(p.URL)
+		f, err := feed.Parse(p.URL)
 		if err != nil {
-			return err
+			logger.Println(err)
+			continue
 		}
 
-		p.Type = feed.Type
-		items := feed.Items
+		p.Type = f.Type
+		items := f.Items
 
-		if *recent > 0 {
+		if *recent > 0 && len(f.Items) >= *recent {
 			items = items[0:*recent]
 		}
 
@@ -112,14 +113,16 @@ func updateCmd() error {
 			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
 				path, err := util.Get(item.Attachment, filepath.Join(downloadDir, p.Title))
 				if err != nil {
-					return err
+					logger.Println(err)
+					continue
 				}
 
 				name := util.Escape(item.Title)
 				if len(name) > 1 {
 					err = os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
 					if err != nil {
-						return err
+						logger.Println(err)
+						continue
 					}
 				}
 			}
