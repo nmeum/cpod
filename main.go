@@ -34,6 +34,10 @@ var (
 
 func main() {
 	flag.Parse()
+	if *version {
+		logger.Fatal(appVersion)
+	}
+
 	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 
@@ -64,10 +68,6 @@ func main() {
 }
 
 func processInput() (err error) {
-	if *version {
-		logger.Fatal(appVersion)
-	}
-
 	if len(*opmlImport) > 0 {
 		if err = importCmd(*opmlImport); err != nil {
 			return
