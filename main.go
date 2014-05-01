@@ -14,7 +14,7 @@ import (
 
 const (
 	appName    = "cpod"
-	appVersion = "1.1"
+	appVersion = "1.5"
 )
 
 var (
