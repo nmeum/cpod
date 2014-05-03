@@ -129,6 +129,6 @@ func TestParseDate(t *testing.T) {
 	}
 
 	if date.Unix() != timestamp {
-		t.Fatalf("Expected %q - got %q", timestamp, date.Unix())
+		t.Fatalf("Expected %d - got %d", timestamp, date.Unix())
 	}
 }
