@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -15,7 +16,7 @@ func Get(url, target string) (path string, err error) {
 		return
 	}
 
-	path = filepath.Join(target, strings.TrimSpace(filepath.Base(url)))
+	path = filepath.Join(target, strings.TrimSpace(path.Base(url)))
 	file, err := os.Create(path)
 	if err != nil {
 		return
