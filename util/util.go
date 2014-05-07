@@ -11,13 +11,13 @@ import (
 	"strings"
 )
 
-func Get(url, target string) (path string, err error) {
+func Get(url, target string) (fp string, err error) {
 	if err = os.MkdirAll(target, 0755); err != nil {
 		return
 	}
 
-	path = filepath.Join(target, strings.TrimSpace(path.Base(url)))
-	file, err := os.Create(path)
+	fp = filepath.Join(target, strings.TrimSpace(path.Base(url)))
+	file, err := os.Create(fp)
 	if err != nil {
 		return
 	}
