@@ -59,6 +59,10 @@ Display version and exit.
 
 The download directory (default: ~/podcasts).
 
+=item HOME
+
+Used as a fallback to determine users home directory.
+
 =item XDG_CACHE_HOME
 
 Base directory with non-essential data files (default ~/.cache).

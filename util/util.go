@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
@@ -96,8 +97,17 @@ func Subscribed(casts []*store.Podcast, url string) bool {
 func EnvDefault(key, fallback string) string {
 	dir := os.Getenv(key)
 	if len(dir) <= 0 {
-		dir = filepath.Join(os.Getenv("HOME"), fallback)
+		dir = filepath.Join(home(), fallback)
 	}
 
 	return dir
+}
+
+func home() string {
+	user, err := user.Current()
+	if err == nil && len(user.HomeDir) > 0 {
+		return user.HomeDir
+	}
+
+	return os.Getenv("HOME")
 }
