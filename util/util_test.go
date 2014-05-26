@@ -96,9 +96,8 @@ func TestSubscribed(t *testing.T) {
 }
 
 func TestHome(t *testing.T) {
-	home := home()
-	if home != os.Getenv("HOME") {
-		t.Fatalf("Expected %q - got %q", os.Getenv("HOME"), home)
+	if _, err := os.Open(home()); os.IsNotExist(err) {
+		t.Fail()
 	}
 }
 
