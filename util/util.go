@@ -1,7 +1,6 @@
 package util
 
 import (
-	"github.com/nmeum/cpod/store"
 	"io"
 	"net/http"
 	"os"
@@ -82,16 +81,6 @@ func Escape(name string) string {
 	escaped = strings.TrimSuffix(escaped, "-")
 
 	return escaped
-}
-
-func Subscribed(casts []*store.Podcast, url string) bool {
-	for _, cast := range casts {
-		if cast.URL == url {
-			return true
-		}
-	}
-
-	return false
 }
 
 func EnvDefault(key, fallback string) string {

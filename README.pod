@@ -85,9 +85,9 @@ Directory with downloaded podcast episodes.
 
 Lock file used to ensure that cpod isn't invoked twice.
 
-=item $XDG_CONFIG_HOME/cpod/feeds.json
+=item $XDG_CONFIG_HOME/cpod/urls
 
-The json file containing all feeds.
+Plain text file containing all subscribed feeds.
 
 =back
 

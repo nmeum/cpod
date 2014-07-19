@@ -2,14 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/nmeum/cpod/feed"
-	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"log"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 const (
@@ -22,12 +19,9 @@ var (
 	version    = flag.Bool("v", false, "print version and exit")
 	noUpdate   = flag.Bool("u", false, "don't update feeds and don't download new episodes")
 	noDownload = flag.Bool("d", false, "don't download new episodes and skip them")
-	opmlImport = flag.String("i", "", "import opml file at path")
-	opmlExport = flag.String("e", "", "export opml file to path")
 )
 
 var (
-	storage     *store.Store
 	logger      = log.New(os.Stderr, appName+": ", 0)
 	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
@@ -41,14 +35,13 @@ func main() {
 	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 
-	var err error
 	for _, dir := range []string{cacheDir, storeDir} {
-		if err = os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
 			logger.Fatal(err)
 		}
 	}
 
-	storage, err = store.Load(filepath.Join(storeDir, "feeds.json"))
+	storage, err := store.Load(filepath.Join(storeDir, "urls"))
 	if err != nil && !os.IsNotExist(err) {
 		logger.Fatal(err)
 	}
@@ -60,103 +53,18 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	err = processInput()
+	err = updateFeeds(storage)
 	os.Remove(lockPath)
 	if err != nil {
 		logger.Fatal(err)
 	}
 }
 
-func processInput() (err error) {
-	if len(*opmlImport) > 0 {
-		if err = importCmd(*opmlImport); err != nil {
-			return
-		}
+func updateFeeds(storage *store.Store) error {
+	channel := storage.Fetch()
+	for f := range channel {
+		logger.Println(f.Title)
 	}
 
-	if !*noUpdate {
-		if err = updateCmd(); err != nil {
-			return
-		}
-	}
-
-	if len(*opmlExport) > 0 {
-		if err = exportCmd(*opmlExport); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func updateCmd() error {
-	for _, p := range storage.Podcasts {
-		f, err := feed.Parse(p.URL)
-		if err != nil {
-			logger.Println(err)
-			continue
-		}
-
-		p.Type = f.Type
-		items := f.Items
-
-		if *recent > 0 && len(f.Items) >= *recent {
-			items = items[0:*recent]
-		}
-
-		latest := time.Unix(p.Latest, 0)
-		for _, item := range items {
-			if item.Date.After(time.Unix(p.Latest, 0)) {
-				p.Latest = item.Date.Unix()
-			}
-
-			if item.Date.After(latest) && len(item.Attachment) > 0 && !*noDownload {
-				path, err := util.Get(item.Attachment, filepath.Join(downloadDir, p.Title))
-				if err != nil {
-					logger.Println(err)
-					continue
-				}
-
-				name := util.Escape(item.Title)
-				if len(name) > 1 {
-					err = os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
-					if err != nil {
-						logger.Println(err)
-						continue
-					}
-				}
-			}
-
-		}
-	}
-
-	return storage.Save()
-}
-
-func importCmd(path string) (err error) {
-	file, err := opml.Load(path)
-	if err != nil {
-		return
-	}
-
-	for _, o := range file.Outlines {
-		if !util.Subscribed(storage.Podcasts, o.URL) {
-			storage.Add(o.Text, o.Type, o.URL)
-		}
-	}
-
-	return storage.Save()
-}
-
-func exportCmd(path string) (err error) {
-	export := opml.Create("Podcast subscriptions")
-	for _, cast := range storage.Podcasts {
-		export.Add(cast.Title, cast.Type, cast.URL)
-	}
-
-	if err = export.Save(*opmlExport); err != nil {
-		return
-	}
-
-	return
+	return nil
 }
