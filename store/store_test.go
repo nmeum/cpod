@@ -1,64 +1,30 @@
 package store
 
 import (
-	"os"
 	"testing"
 )
 
 func TestLoad(t *testing.T) {
-	testCast := Podcast{
-		Latest: 42,
-		Title:  "Foo",
-		Type:   "rss",
-		URL:    "http://example.com/rss.xml",
-	}
-
-	store, err := Load("testdata/testLoad.json")
+	store, err := Load("testdata/testLoad.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if *store.Podcasts[0] != testCast {
-		t.Fatalf("Expected %q - got %q", testCast, *store.Podcasts[0])
+	if store.URLs[0] != "http://feeds.thisamericanlife.org/talpodcast" {
+		t.Fatalf("Expected %q - got %q", "http://feeds.thisamericanlife.org/talpodcast", store.URLs[0])
+	}
+
+	if store.URLs[1] != "http://www.npr.org/rss/podcast.php?id=510294" {
+		t.Fatalf("Expected %q - got %q", "http://www.npr.org/rss/podcast.php?id=510294", store.URLs[1])
 	}
 }
 
-func TestAdd(t *testing.T) {
-	testCast := Podcast{
-		Title: "Foobar",
-		Type:  "atom",
-		URL:   "http://example.io/podcast.xml",
+func TestFetch(t *testing.T) {
+	store := &Store{[]string{"http://feeds.thisamericanlife.org/talpodcast"}}
+	channel := store.Fetch()
+
+	feed := <- channel
+	if feed.Title != "This American Life" {
+		t.Fatalf("Expected %q - got %q", "This American Life", feed.Title)
 	}
-
-	store := new(Store)
-	store.Add(testCast.Title, testCast.Type, testCast.URL)
-
-	if *store.Podcasts[0] != testCast {
-		t.Fatalf("Expected %q - got %q", testCast, *store.Podcasts[0])
-	}
-}
-
-func TestSave(t *testing.T) {
-	store := Store{path: "testdata/testSave.json"}
-	cast := Podcast{
-		Title: "Test Podcast",
-		Type:  "atom",
-		URL:   "http://example.com/testPodcast.atom",
-	}
-
-	store.Add(cast.Title, cast.Type, cast.URL)
-	if err := store.Save(); err != nil {
-		t.Fatal(err)
-	}
-
-	loaded, err := Load("testdata/testSave.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if *loaded.Podcasts[0] != cast {
-		t.Fatalf("Expected %q - got %q", cast, *loaded.Podcasts[0])
-	}
-
-	os.Remove("testdata/testSave.json")
 }

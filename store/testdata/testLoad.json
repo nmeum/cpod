@@ -1,8 +1,0 @@
-[
-  {
-    "latest": 42,
-    "title": "Foo",
-    "type": "rss",
-    "url": "http://example.com/rss.xml"
-  }
-]

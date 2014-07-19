@@ -1,63 +1,46 @@
 package store
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"bufio"
+	"github.com/nmeum/cpod/feed"
 	"os"
 )
 
 type Store struct {
-	path     string
-	Podcasts []*Podcast
-}
-
-type Podcast struct {
-	Latest int64  `json:"latest"`
-	Title  string `json:"title"`
-	Type   string `json:"type"`
-	URL    string `json:"url"`
+	URLs []string
 }
 
 func Load(path string) (s *Store, err error) {
-	s = &Store{path: path}
+	s = new(Store)
 
-	data, err := ioutil.ReadFile(s.path)
-	if err != nil {
-		return
-	}
-
-	if err = json.Unmarshal(data, &s.Podcasts); err != nil {
-		return
-	}
-
-	return
-}
-
-func (s *Store) Add(title, ftype, url string) {
-	cast := &Podcast{
-		Title: title,
-		Type:  ftype,
-		URL:   url,
-	}
-
-	s.Podcasts = append(s.Podcasts, cast)
-}
-
-func (s *Store) Save() (err error) {
-	file, err := os.Create(s.path)
+	file, err := os.Open(path)
 	if err != nil {
 		return
 	}
 
 	defer file.Close()
-	data, err := json.MarshalIndent(s.Podcasts, "", "\t")
-	if err != nil {
-		return
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		s.URLs = append(s.URLs, scanner.Text())
 	}
 
-	if _, err = file.Write(data); err != nil {
-		return
-	}
-
+	err = scanner.Err()
 	return
+}
+
+func (s *Store) Fetch() <-chan feed.Feed {
+	out := make(chan feed.Feed)
+	go func() {
+		for _, url := range s.URLs {
+			f, err := feed.Parse(url)
+			if err == nil {
+				out <- f
+			}
+		}
+
+		close(out)
+	}()
+
+	return out
 }
