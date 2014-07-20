@@ -64,6 +64,9 @@ func updateFeeds(storage *store.Store) error {
 	channel := storage.Fetch()
 	for f := range channel {
 		logger.Println(f.Title)
+		// TODO 1. Create the podcast dir and the .latest file for the podcast
+		// TODO 2. Use the .latest file to find out which episodes are new
+		// TODO 3. Download the new episodes
 	}
 
 	return nil
