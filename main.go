@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const (
@@ -61,9 +63,41 @@ func main() {
 }
 
 func updateFeeds(storage *store.Store) error {
-	channel := storage.Fetch()
-	for f := range channel {
-		logger.Println(f.Title)
+	feeds := storage.Fetch()
+	for f := range feeds {
+		name := util.Escape(f.Title)
+		if len(name) <= 0 {
+			name = f.Title
+		}
+
+		path := filepath.Join(downloadDir, name)
+		if err := os.MkdirAll(path, 0755); err != nil {
+			return err
+		}
+
+		file, err := os.OpenFile(filepath.Join(path, ".latest"), os.O_RDWR+os.O_CREATE, 0666)
+		if err != nil {
+			return err
+		}
+
+		defer file.Close()
+		var timestamp int64
+
+		if _, err = fmt.Fscanf(file, "%d\n", &timestamp); err != nil {
+			timestamp = 0 /// XXX
+		}
+
+		latest := time.Unix(timestamp, 0)
+		for _, i := range f.Items {
+			if i.Date.After(latest) {
+				latest = i.Date
+			}
+		}
+
+		if _, err := fmt.Fprintf(file, "%d\n", latest.Unix()); err != nil {
+			return err
+		}
+
 		// TODO 1. Create the podcast dir and the .latest file for the podcast
 		// TODO 2. Use the .latest file to find out which episodes are new
 		// TODO 3. Download the new episodes
