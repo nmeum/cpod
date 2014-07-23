@@ -79,13 +79,10 @@ func updateFeeds(storage *store.Store) error {
 		if err != nil {
 			return err
 		}
-
 		defer file.Close()
-		var timestamp int64
 
-		if _, err = fmt.Fscanf(file, "%d\n", &timestamp); err != nil {
-			timestamp = 0 /// XXX
-		}
+		var timestamp int64
+		fmt.Fscanf(file, "%d\n", &timestamp) /// XXX
 
 		latest := time.Unix(timestamp, 0)
 		for _, i := range f.Items {
