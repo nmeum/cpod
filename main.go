@@ -67,21 +67,9 @@ func main() {
 
 func update(storage *store.Store) {
 	podcasts := storage.Fetch()
-	episodes := make(chan episode) // TODO close this channel
-
-	var wgp sync.WaitGroup
-	for p := range podcasts {
-		wgp.Add(1)
-		go func(cast feed.Feed) {
-			defer wgp.Done()
-			if err := newEpisodes(episodes, cast); err != nil {
-				logger.Println(err)
-			}
-		}(p)
-	}
+	episodes := newEpisodes(podcasts)
 
 	if *noDownload {
-		wgp.Wait()
 		return
 	}
 
@@ -96,33 +84,39 @@ func update(storage *store.Store) {
 		}(e)
 	}
 
-	wgp.Wait()
 	wge.Wait()
 }
 
-func newEpisodes(e chan episode, p feed.Feed) error {
-	name := util.Escape(p.Title)
-	if len(name) <= 0 {
-		name = p.Title
-	}
+func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
+	out := make(chan episode)
+	go func() {
+		for p := range podcasts {
+			name := util.Escape(p.Title)
+			if len(name) <= 0 {
+				name = p.Title
+			}
 
-	unread, err := unreadMarker(name, p)
-	if err != nil {
-		return err
-	}
+			unread, err := unreadMarker(name, p)
+			if err != nil {
+				continue /// XXX
+			}
 
-	items := p.Items
-	if *recent > 0 && len(items) >= *recent {
-		items = items[0:*recent]
-	}
+			items := p.Items
+			if *recent > 0 && len(items) >= *recent {
+				items = items[0:*recent]
+			}
 
-	for _, i := range items {
-		if len(i.Attachment) > 0 && i.Date.After(unread) {
-			e <- episode{i, name}
+			for _, i := range items {
+				if len(i.Attachment) > 0 && i.Date.After(unread) {
+					out <- episode{i, name}
+				}
+			}
 		}
-	}
 
-	return nil
+		close(out)
+	}()
+
+	return out
 }
 
 func getEpisode(e episode) error {
