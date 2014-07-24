@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/nmeum/cpod/feed"
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -19,7 +21,6 @@ const (
 var (
 	recent     = flag.Int("r", 0, "only download latest n episodes")
 	version    = flag.Bool("v", false, "print version and exit")
-	noUpdate   = flag.Bool("u", false, "don't update feeds and don't download new episodes")
 	noDownload = flag.Bool("d", false, "don't download new episodes and skip them")
 )
 
@@ -27,6 +28,11 @@ var (
 	logger      = log.New(os.Stderr, appName+": ", 0)
 	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
+
+type episode struct {
+	item feed.Item
+	cast string
+}
 
 func main() {
 	flag.Parse()
@@ -55,50 +61,110 @@ func main() {
 		logger.Fatal(err)
 	}
 
-	err = updateFeeds(storage)
+	update(storage)
 	os.Remove(lockPath)
-	if err != nil {
-		logger.Fatal(err)
-	}
 }
 
-func updateFeeds(storage *store.Store) error {
-	feeds := storage.Fetch()
-	for f := range feeds {
-		name := util.Escape(f.Title)
-		if len(name) <= 0 {
-			name = f.Title
-		}
+func update(storage *store.Store) {
+	podcasts := storage.Fetch()
+	episodes := make(chan episode) // TODO close this channel
 
-		path := filepath.Join(downloadDir, name)
-		if err := os.MkdirAll(path, 0755); err != nil {
-			return err
-		}
-
-		file, err := os.OpenFile(filepath.Join(path, ".latest"), os.O_RDWR+os.O_CREATE, 0666)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		var timestamp int64
-		fmt.Fscanf(file, "%d\n", &timestamp) /// XXX
-
-		latest := time.Unix(timestamp, 0)
-		for _, i := range f.Items {
-			if i.Date.After(latest) {
-				latest = i.Date
+	var wgp sync.WaitGroup
+	for p := range podcasts {
+		wgp.Add(1)
+		go func(cast feed.Feed) {
+			defer wgp.Done()
+			if err := newEpisodes(episodes, cast); err != nil {
+				logger.Println(err)
 			}
-		}
+		}(p)
+	}
 
-		if _, err := fmt.Fprintf(file, "%d\n", latest.Unix()); err != nil {
-			return err
-		}
+	if *noDownload {
+		wgp.Wait()
+		return
+	}
 
-		// TODO 1. Create the podcast dir and the .latest file for the podcast
-		// TODO 2. Use the .latest file to find out which episodes are new
-		// TODO 3. Download the new episodes
+	var wge sync.WaitGroup
+	for e := range episodes {
+		wge.Add(1)
+		go func(item episode) {
+			defer wge.Done()
+			if err := getEpisode(item); err != nil {
+				logger.Println(err)
+			}
+		}(e)
+	}
+
+	wgp.Wait()
+	wge.Wait()
+}
+
+func newEpisodes(e chan episode, p feed.Feed) error {
+	name := util.Escape(p.Title)
+	if len(name) <= 0 {
+		name = p.Title
+	}
+
+	unread, err := unreadMarker(name, p)
+	if err != nil {
+		return err
+	}
+
+	items := p.Items
+	if *recent > 0 && len(items) >= *recent {
+		items = items[0:*recent]
+	}
+
+	for _, i := range items {
+		if len(i.Attachment) > 0 && i.Date.After(unread) {
+			e <- episode{i, name}
+		}
 	}
 
 	return nil
+}
+
+func getEpisode(e episode) error {
+	path, err := util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
+	if err != nil {
+		return err
+	}
+
+	name := util.Escape(e.item.Title)
+	if len(name) > 0 {
+		err = os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func unreadMarker(name string, cast feed.Feed) (marker time.Time, err error) {
+	path := filepath.Join(downloadDir, name)
+	if err = os.MkdirAll(path, 0755); err != nil {
+		return
+	}
+
+	file, err := os.OpenFile(filepath.Join(path, ".latest"), os.O_RDWR+os.O_CREATE, 0666)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	var timestamp int64
+	fmt.Fscanf(file, "%d\n", &timestamp) /// XXX
+	marker = time.Unix(timestamp, 0)
+	latest := marker
+
+	for _, i := range cast.Items {
+		if i.Date.After(latest) {
+			latest = i.Date
+		}
+	}
+
+	_, err = fmt.Fprintf(file, "%d\n", latest.Unix())
+	return
 }
