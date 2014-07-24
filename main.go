@@ -68,18 +68,18 @@ func update(storage *store.Store) {
 	podcasts := storage.Fetch()
 	episodes := newEpisodes(podcasts)
 
-	var wge sync.WaitGroup
+	var wg sync.WaitGroup
 	for e := range episodes {
-		wge.Add(1)
+		wg.Add(1)
 		go func(item episode) {
-			defer wge.Done()
+			defer wg.Done()
 			if err := getEpisode(item); err != nil {
 				logger.Println(err)
 			}
 		}(e)
 	}
 
-	wge.Wait()
+	wg.Wait()
 }
 
 func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
