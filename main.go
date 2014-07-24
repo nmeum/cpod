@@ -19,9 +19,8 @@ const (
 )
 
 var (
-	recent     = flag.Int("r", 0, "only download latest n episodes")
-	version    = flag.Bool("v", false, "print version and exit")
-	noDownload = flag.Bool("d", false, "don't download new episodes and skip them")
+	recent  = flag.Int("r", 0, "only download latest n episodes")
+	version = flag.Bool("v", false, "print version and exit")
 )
 
 var (
@@ -68,10 +67,6 @@ func main() {
 func update(storage *store.Store) {
 	podcasts := storage.Fetch()
 	episodes := newEpisodes(podcasts)
-
-	if *noDownload {
-		return
-	}
 
 	var wge sync.WaitGroup
 	for e := range episodes {
