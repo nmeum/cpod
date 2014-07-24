@@ -93,7 +93,8 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 
 			unread, err := unreadMarker(name, p)
 			if err != nil {
-				continue /// XXX
+				logger.Println(err)
+				continue
 			}
 
 			items := p.Items
