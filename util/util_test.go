@@ -1,7 +1,6 @@
 package util
 
 import (
-	"github.com/nmeum/cpod/store"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -73,25 +72,6 @@ func TestEscape(t *testing.T) {
 		if e != test.escaped {
 			t.Fatalf("Expected %q - got %q", test.escaped, e)
 		}
-	}
-}
-
-func TestSubscribed(t *testing.T) {
-	casts := []*store.Podcast{
-		{0, "Foocast", "rss", "http://example.com/foocast.rss"},
-		{0, "Barcast", "rss", "http://barcast.org/feed.xml"},
-	}
-
-	if !Subscribed(casts, "http://example.com/foocast.rss") {
-		t.Fail()
-	}
-
-	if !Subscribed(casts, "http://barcast.org/feed.xml") {
-		t.Fail()
-	}
-
-	if Subscribed(casts, "None sense podcast") {
-		t.Fail()
 	}
 }
 
