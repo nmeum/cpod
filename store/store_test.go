@@ -23,7 +23,7 @@ func TestFetch(t *testing.T) {
 	store := &Store{[]string{"http://feeds.thisamericanlife.org/talpodcast"}}
 	channel := store.Fetch()
 
-	feed := <- channel
+	feed := <-channel
 	if feed.Title != "This American Life" {
 		t.Fatalf("Expected %q - got %q", "This American Life", feed.Title)
 	}
