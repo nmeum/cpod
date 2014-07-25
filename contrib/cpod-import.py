@@ -19,7 +19,13 @@ try:
 except KeyError:
     cpod_root = os.path.join(os.environ["HOME"], ".config")
 
-url_list = open(os.path.join(cpod_root, "cpod", "urls"), "w")
+url_path = os.path.join(cpod_root, "cpod", "urls")
+try:
+    os.makedirs(os.path.dirname(url_path))
+except FileExistsError:
+    pass
+
+url_list = open(url_path, "w")
 for url in urls:
     url_list.write(url + "\n")
 url_list.close
