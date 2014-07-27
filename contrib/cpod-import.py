@@ -28,4 +28,4 @@ except FileExistsError:
 url_list = open(url_path, "w")
 for url in urls:
     url_list.write(url + "\n")
-url_list.close
+url_list.close()
