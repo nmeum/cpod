@@ -19,6 +19,7 @@ const (
 )
 
 var (
+	retry   = flag.Int("t", 3, "number of times download is retried")
 	recent  = flag.Int("r", 0, "only download latest n episodes")
 	version = flag.Bool("v", false, "print version and exit")
 )
@@ -73,8 +74,12 @@ func update(storage *store.Store) {
 		wg.Add(1)
 		go func(item episode) {
 			defer wg.Done()
-			if err := getEpisode(item); err != nil {
-				logger.Println(err)
+			for i := 1; i <= *retry; i++ {
+				if err := getEpisode(item); err != nil {
+					logger.Println(err)
+				} else {
+					break
+				}
 			}
 		}(e)
 	}
@@ -145,7 +150,7 @@ func unreadMarker(name string, cast feed.Feed) (marker time.Time, err error) {
 	defer file.Close()
 
 	var timestamp int64
-	fmt.Fscanf(file, "%d\n", &timestamp) /// XXX
+	fmt.Fscanf(file, "%d\n", &timestamp) // XXX
 	marker = time.Unix(timestamp, 0)
 	latest := marker
 
