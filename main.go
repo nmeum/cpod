@@ -74,12 +74,8 @@ func update(storage *store.Store) {
 		wg.Add(1)
 		go func(item episode) {
 			defer wg.Done()
-			for i := 1; i <= *retry; i++ {
-				if err := getEpisode(item); err != nil {
-					logger.Println(err)
-				} else {
-					break
-				}
+			if err := getEpisode(item); err != nil {
+				logger.Println(err)
 			}
 		}(e)
 	}
@@ -121,7 +117,17 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 }
 
 func getEpisode(e episode) error {
-	path, err := util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
+	var path string
+	var err error
+
+	for i := 1; i <= *retry; i++ {
+		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
+		if err == nil {
+			break
+		}
+	}
+
+	// Last error returned by the code above
 	if err != nil {
 		return err
 	}
