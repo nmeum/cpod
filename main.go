@@ -25,7 +25,7 @@ var (
 )
 
 var (
-	logger      = log.New(os.Stderr, appName+": ", 0)
+	logger      = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
 	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
