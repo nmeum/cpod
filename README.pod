@@ -79,20 +79,6 @@ Plain text file containing all subscribed feeds.
 
 =back
 
-=head1 EXAMPLES
-
-Update all feeds and download all new episodes:
-
-	cpod
-
-Update all feeds and dowload the latest episode:
-
-	cpod -r 1
-
-Update all feeds and retry downloads five times:
-
-	cpod -t 5
-
 =head1 SEE ALSO
 
 go(1), cron(8)
