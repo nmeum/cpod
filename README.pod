@@ -4,7 +4,7 @@ cpod - cron(8) friendly podcatcher
 
 =head1 SYNOPSIS
 
-B<cpod> [B<-d>] [B<-e> I<opml>] [B<-h>] [B<-i> I<opml>] [B<-r> I<episodes>] [B<-u>] [B<-v>]
+B<cpod> [B<-h>] [B<-r> I<number>] [B<-t> I<number>] [B<-v>]
 
 =head1 DESCRIPTION
 
@@ -21,29 +21,17 @@ described below might be used to change this behaviour.
 
 =over 4
 
-=item B<-d>
-
-Don't download new episodes and skip them.
-
-=item B<-e> I<opml>
-
-Export all feeds to I<opml> file.
-
 =item B<-h>
 
 Display help and exit.
 
-=item B<-i> I<opml>
+=item B<-r> I<number>
 
-Import all feeds from I<opml> file.
+Number of most recent episodes to download.
 
-=item B<-r> I<episodes>
+=item B<-t> I<number>
 
-Only download latest I<episodes>.
-
-=item B<-u>
-
-Don't update feeds and don't download new episodes.
+Number of times a failed podcast download is retried.
 
 =item B<-v>
 
@@ -93,7 +81,7 @@ Plain text file containing all subscribed feeds.
 
 =head1 EXAMPLES
 
-Update all feeds and download new episodes:
+Update all feeds and download all new episodes:
 
 	cpod
 
@@ -101,17 +89,9 @@ Update all feeds and dowload the latest episode:
 
 	cpod -r 1
 
-Update all feeds but don't download new episodes episodes:
+Update all feeds and retry downloads five times:
 
-	cpod -d
-
-Export all existing feeds to an opml file:
-
-	cpod -u -e podcasts.opml
-
-Import feeds from an opml file and update all feeds:
-
-	cpod -d -i podcasts.opml
+	cpod -t 5
 
 =head1 SEE ALSO
 
