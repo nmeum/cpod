@@ -36,11 +36,11 @@ Number of most recent episodes to download.
 
 =item B<-t> I<number>
 
-Number of times a failed podcast download is retried.
+Number of times a failed download is retried.
 
 =item B<-v>
 
-Display version and exit.
+Display version number and exit.
 
 =back
 

@@ -19,9 +19,9 @@ const (
 )
 
 var (
-	retry   = flag.Int("t", 3, "number of times download is retried")
-	recent  = flag.Int("r", 0, "only download latest n episodes")
-	version = flag.Bool("v", false, "print version and exit")
+	retry   = flag.Int("t", 3, "number of times a failed download is retried")
+	recent  = flag.Int("r", 0, "number of most recent episodes to download")
+	version = flag.Bool("v", false, "display version number and exit")
 )
 
 var (
