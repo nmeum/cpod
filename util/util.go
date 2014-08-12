@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"unicode"
 )
 
 func Get(url, target string) (fp string, err error) {
@@ -57,15 +58,13 @@ func Lock(path string) (err error) {
 func Escape(name string) string {
 	mfunc := func(r rune) rune {
 		switch {
-		case r >= '0' && r <= '9':
+		case unicode.IsLetter(r):
 			return r
-		case r >= 'A' && r <= 'Z':
+		case unicode.IsNumber(r):
 			return r
-		case r >= 'a' && r <= 'z':
-			return r
-		case r == '.' || r == ':':
+		case unicode.IsSpace(r):
 			return '-'
-		case r == ' ' || r == '_':
+		case unicode.IsPunct(r):
 			return '-'
 		}
 
