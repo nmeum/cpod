@@ -127,7 +127,7 @@ func getEpisode(e episode) error {
 		}
 	}
 
-	// Last error returned by the code above
+	// Last error returned by the loop above
 	if err != nil {
 		return err
 	}
