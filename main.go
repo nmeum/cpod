@@ -89,7 +89,8 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 		for p := range podcasts {
 			name := util.Escape(p.Title)
 			if len(name) <= 0 {
-				name = p.Title
+				logger.Println("Skipping %q, couldn't escape name", p.Title)
+				continue
 			}
 
 			unread, err := unreadMarker(name, p)
