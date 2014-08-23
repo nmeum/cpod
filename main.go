@@ -50,7 +50,7 @@ func main() {
 	}
 
 	storage, err := store.Load(filepath.Join(storeDir, "urls"))
-	if err != nil && !os.IsNotExist(err) {
+	if err != nil {
 		logger.Fatal(err)
 	}
 
