@@ -19,7 +19,7 @@ title = ET.SubElement(head, "title")
 title.text = "Podcast subscriptions"
 
 created = ET.SubElement(head, "dateCreated")
-created.text = str(datetime.datetime.now().time()) # FIXME
+created.text = datetime.datetime.now().strftime('%a, %d %b %Y %X')
 
 try:
     cpod_root = os.environ["XDG_CONFIG_HOME"]
