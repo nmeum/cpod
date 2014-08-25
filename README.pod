@@ -20,7 +20,7 @@ described below might be used to change this behaviour.
 cpod is using a plain text file to store your podcast subscriptions. You need
 to manually create this file before starting cpod for the first time. Open the
 file with your favorite text editor and add your desired URLs (one per line).
-The file path is documented in the B<FILE> section below.
+The file path is documented in the B<FILES> section below.
 
 Previous version of cpod supported opml import and export, however this
 feature was removed later on. Nowadays two scripts are provided for
