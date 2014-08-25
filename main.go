@@ -128,14 +128,12 @@ func getEpisode(e episode) error {
 		}
 	}
 
-	// Last error returned by the loop above
 	if err != nil {
 		return err
 	}
 
 	name := util.Escape(e.item.Title)
 	if len(name) > 0 {
-		// Fallback to provided file name if rename fails
 		os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
 	}
 
