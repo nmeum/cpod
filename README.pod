@@ -17,6 +17,11 @@ If you don't pass any command line flags to cpod it will automatically
 update all feeds and download all new episodes. However, the options
 described below might be used to change this behaviour.
 
+cpod is using a plain text file to store your podcast subscriptions. You need
+to manually create this file before starting cpod for the first time. Open the
+file with your favorite text editor and add your desired URLs (one per line).
+The file path is documented in the B<FILE> section below.
+
 Previous version of cpod supported opml import and export, however this
 feature was removed later on. Nowadays two scripts are provided for
 handling opml files, those scripts can be found in the contrib folder in
