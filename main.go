@@ -93,7 +93,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 				continue
 			}
 
-			unread, err := unreadMarker(name, p)
+			unread, err := readMarker(name)
 			if err != nil {
 				logger.Println(err)
 				continue
@@ -104,10 +104,19 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 				items = items[0:*recent]
 			}
 
+			latest := unread
 			for _, i := range items {
+				if i.Date.After(latest) {
+					latest = i.Date
+				}
+
 				if len(i.Attachment) > 0 && i.Date.After(unread) {
 					out <- episode{i, name}
 				}
+			}
+
+			if err := writeMarker(name, latest); err != nil {
+				logger.Println(err)
 			}
 		}
 
@@ -140,29 +149,38 @@ func getEpisode(e episode) error {
 	return nil
 }
 
-func unreadMarker(name string, cast feed.Feed) (marker time.Time, err error) {
-	path := filepath.Join(downloadDir, name)
-	if err = os.MkdirAll(path, 0755); err != nil {
+func readMarker(name string) (marker time.Time, err error) {
+	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
+	if os.IsNotExist(err) {
+		return time.Unix(0, 0), nil
+	} else if err != nil {
 		return
 	}
 
-	file, err := os.OpenFile(filepath.Join(path, ".latest"), os.O_RDWR+os.O_CREATE, 0666)
-	if err != nil {
-		return
-	}
 	defer file.Close()
-
 	var timestamp int64
-	fmt.Fscanf(file, "%d\n", &timestamp) // XXX
-	marker = time.Unix(timestamp, 0)
-	latest := marker
 
-	for _, i := range cast.Items {
-		if i.Date.After(latest) {
-			latest = i.Date
-		}
+	if _, err = fmt.Fscanf(file, "%d\n", &timestamp); err != nil {
+		return
 	}
 
-	_, err = fmt.Fprintf(file, "%d\n", latest.Unix())
 	return
+}
+
+func writeMarker(name string, latest time.Time) error {
+	path := filepath.Join(downloadDir, name, ".latest")
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
+
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	if _, err := fmt.Fprintf(file, "%d\n", latest.Unix()); err != nil {
+		return err
+	}
+
+	return nil
 }
