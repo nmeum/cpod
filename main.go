@@ -178,6 +178,7 @@ func writeMarker(name string, latest time.Time) error {
 		return err
 	}
 
+	defer file.Close()
 	if _, err := fmt.Fprintf(file, "%d\n", latest.Unix()); err != nil {
 		return err
 	}
