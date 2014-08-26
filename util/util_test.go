@@ -75,12 +75,6 @@ func TestEscape(t *testing.T) {
 	}
 }
 
-func TestHome(t *testing.T) {
-	if _, err := os.Open(home()); os.IsNotExist(err) {
-		t.Fail()
-	}
-}
-
 func TestEnvDefault1(t *testing.T) {
 	if err := os.Setenv("TESTDIR", "/foo"); err != nil {
 		t.Fatal(err)
@@ -94,7 +88,7 @@ func TestEnvDefault1(t *testing.T) {
 
 func TestEnvDefault2(t *testing.T) {
 	dir := EnvDefault("TESTDIR2", "bar")
-	if dir != filepath.Join(home(), "bar") {
+	if dir != filepath.Join(os.Getenv("HOME"), "bar") {
 		t.Fatalf("Expected %q - got %q", filepath.Join(os.Getenv("HOME"), "bar"), dir)
 	}
 }
