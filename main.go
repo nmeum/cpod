@@ -164,6 +164,7 @@ func readMarker(name string) (marker time.Time, err error) {
 		return
 	}
 
+	marker = time.Unix(timestamp, 0)
 	return
 }
 
