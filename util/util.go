@@ -83,18 +83,17 @@ func Escape(name string) string {
 }
 
 func EnvDefault(key, fallback string) string {
+	dir := os.Getenv(key)
+	if len(dir) > 0 {
+		return dir
+	}
+
 	var home string
-	user, err := user.Current()
 	if err == nil && len(user.HomeDir) > 0 {
 		home = user.HomeDir
 	} else {
 		home = os.Getenv("HOME")
 	}
 
-	dir := os.Getenv(key)
-	if len(dir) <= 0 {
-		dir = filepath.Join(home, fallback)
-	}
-
-	return dir
+	return filepath.Join(home, fallback)
 }
