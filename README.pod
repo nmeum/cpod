@@ -88,6 +88,20 @@ Plain text file containing all subscribed feeds.
 
 =back
 
+=head1 EXAMPLES
+
+Update all feeds and download new episodes:
+
+	cpod
+
+Update all feeds and download the most recent episodes:
+
+	cpod -r 1
+
+Subscribe to a new podcast:
+
+	echo "http://feeds.thisamericanlife.org/talpodcast" >> ${XDG_CONFIG_HOME:$HOME/.config}/cpod/urls
+
 =head1 SEE ALSO
 
 go(1), cron(8)
