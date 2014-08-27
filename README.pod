@@ -34,6 +34,10 @@ the source tree.
 
 Display help and exit.
 
+=item B<-p> I<number>
+
+Number of maximal parallel downloads.
+
 =item B<-r> I<number>
 
 Number of most recent episodes to download.
@@ -94,7 +98,7 @@ Update all feeds and download new episodes:
 
 	cpod
 
-Update all feeds and download the most recent episodes:
+Download the most recent episodes of each feed:
 
 	cpod -r 1
 

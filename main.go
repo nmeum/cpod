@@ -19,6 +19,7 @@ const (
 )
 
 var (
+	limit   = flag.Int("p", 5, "number of maximal parallel downloads")
 	retry   = flag.Int("t", 3, "number of times a failed download is retried")
 	recent  = flag.Int("r", 0, "number of most recent episodes to download")
 	version = flag.Bool("v", false, "display version number and exit")
@@ -70,14 +71,24 @@ func update(storage *store.Store) {
 	episodes := newEpisodes(podcasts)
 
 	var wg sync.WaitGroup
+	var counter int
+
 	for e := range episodes {
 		wg.Add(1)
+		counter++
+
 		go func(item episode) {
-			defer wg.Done()
 			if err := getEpisode(item); err != nil {
 				logger.Println(err)
 			}
+
+			wg.Done()
+			counter--
 		}(e)
+
+		for counter >= *limit {
+			time.Sleep(5 * time.Second)
+		}
 	}
 
 	wg.Wait()
