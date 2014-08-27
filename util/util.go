@@ -89,6 +89,7 @@ func EnvDefault(key, fallback string) string {
 	}
 
 	var home string
+	user, err := user.Current()
 	if err == nil && len(user.HomeDir) > 0 {
 		home = user.HomeDir
 	} else {
