@@ -86,7 +86,7 @@ func update(storage *store.Store) {
 			counter--
 		}(e)
 
-		for counter >= *limit {
+		for *limit > 0 && counter >= *limit {
 			time.Sleep(5 * time.Second)
 		}
 	}
