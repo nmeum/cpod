@@ -2,6 +2,7 @@ package store
 
 import (
 	"bufio"
+	"github.com/nmeum/cpod/feed/parser"
 	"github.com/nmeum/cpod/feed"
 	"os"
 )
@@ -33,7 +34,7 @@ func (s *Store) Fetch() <-chan feed.Feed {
 	out := make(chan feed.Feed)
 	go func() {
 		for _, url := range s.URLs {
-			f, err := feed.Parse(url)
+			f, err := parser.Parse(url)
 			if err == nil {
 				out <- f
 			}
