@@ -15,7 +15,7 @@ import (
 
 const (
 	appName    = "cpod"
-	appVersion = "1.6dev"
+	appVersion = "1.8dev"
 )
 
 var (
@@ -86,7 +86,7 @@ func update(storage *store.Store) {
 			counter--
 		}(e)
 
-		for counter >= *limit {
+		for *limit > 0 && counter >= *limit {
 			time.Sleep(5 * time.Second)
 		}
 	}
