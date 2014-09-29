@@ -7,6 +7,7 @@ import (
 	"github.com/nmeum/cpod/feed/rss"
 	"io/ioutil"
 	"net/http"
+	"sort"
 )
 
 type FeedFunc func([]byte) (feed.Feed, error)
@@ -31,6 +32,7 @@ func Parse(url string) (f feed.Feed, err error) {
 	for _, p := range parsers {
 		f, err = p(body)
 		if err == nil {
+			sort.Sort(feed.ByDate(f.Items))
 			return
 		}
 	}
