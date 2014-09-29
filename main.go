@@ -115,7 +115,6 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 				items = items[0:*recent]
 			}
 
-			latest := items[0].Date
 			for _, i := range items {
 				if len(i.Attachment) <= 0 || i.Date.Before(unread) {
 					break
@@ -124,7 +123,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 				out <- episode{i, name}
 			}
 
-			if err := writeMarker(name, latest); err != nil {
+			if err := writeMarker(name, items[0].Date); err != nil {
 				logger.Println(err)
 			}
 		}
