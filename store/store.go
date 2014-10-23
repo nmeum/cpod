@@ -2,8 +2,8 @@ package store
 
 import (
 	"bufio"
-	"github.com/nmeum/cpod/feed/parser"
 	"github.com/nmeum/cpod/feed"
+	"github.com/nmeum/cpod/feed/parser"
 	"os"
 )
 

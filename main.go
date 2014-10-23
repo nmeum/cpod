@@ -160,7 +160,8 @@ func getEpisode(e episode) error {
 func readMarker(name string) (marker time.Time, err error) {
 	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
 	if os.IsNotExist(err) {
-		return time.Unix(0, 0), nil
+		err = nil
+		return
 	} else if err != nil {
 		return
 	}
