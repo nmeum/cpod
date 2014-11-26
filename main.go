@@ -73,26 +73,31 @@ func update(storage *store.Store) {
 	var wg sync.WaitGroup
 	var counter int
 
+	done := make(chan interface{})
 	for e := range episodes {
 		wg.Add(1)
 		counter++
 
 		go func(item episode) {
+			fmt.Println("Downloading", item.item.Title)
 			if err := getEpisode(item); err != nil {
 				logger.Println(err)
 			}
 
+			fmt.Println("Finished", item.item.Title)
+
 			wg.Done()
+			done <- struct{}{}
 			counter--
 		}(e)
 
-		// TODO use a blocking channel instead here
-		for *limit > 0 && counter >= *limit {
-			time.Sleep(5 * time.Second)
+		if *limit > 0 && counter >= *limit {
+			<-done
 		}
 	}
 
 	wg.Wait()
+	close(done)
 }
 
 func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
