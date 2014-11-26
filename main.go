@@ -86,6 +86,7 @@ func update(storage *store.Store) {
 			counter--
 		}(e)
 
+		// TODO use a blocking channel instead here
 		for *limit > 0 && counter >= *limit {
 			time.Sleep(5 * time.Second)
 		}
