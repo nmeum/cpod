@@ -17,6 +17,12 @@ func Get(url, target string) (fp string, err error) {
 		return
 	}
 
+	resp, err := http.Get(url)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
 	fp = filepath.Join(target, strings.TrimSpace(path.Base(url)))
 	file, err := os.Create(fp)
 	if err != nil {
@@ -24,12 +30,6 @@ func Get(url, target string) (fp string, err error) {
 	}
 
 	defer file.Close()
-	resp, err := http.Get(url)
-	if err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
 	if _, err = io.Copy(file, resp.Body); err != nil {
 		return
 	}
