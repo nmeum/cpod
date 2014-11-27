@@ -79,12 +79,9 @@ func update(storage *store.Store) {
 		counter++
 
 		go func(item episode) {
-			fmt.Println("Downloading", item.item.Title)
 			if err := getEpisode(item); err != nil {
 				logger.Println(err)
 			}
-
-			fmt.Println("Finished", item.item.Title)
 
 			wg.Done()
 			done <- struct{}{}
