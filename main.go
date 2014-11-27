@@ -126,6 +126,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 				out <- episode{i, name}
 			}
 
+			// TODO only do this if the download was succesfull
 			if err := writeMarker(name, items[0].Date); err != nil {
 				logger.Println(err)
 			}
