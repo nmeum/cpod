@@ -83,13 +83,13 @@ func update(storage *store.Store) {
 				logger.Println(err)
 			}
 
-			wg.Done()
 			done <- struct{}{}
+			wg.Done()
 			counter--
 		}(e)
 
-		if *limit > 0 && counter >= *limit {
-			<-done
+		for (*limit > 0 && counter >= *limit) {
+			<-done // Block until a download was finished.
 		}
 	}
 
