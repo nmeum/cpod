@@ -88,7 +88,7 @@ func update(storage *store.Store) {
 			counter--
 		}(e)
 
-		for (*limit > 0 && counter >= *limit) {
+		for *limit > 0 && counter >= *limit {
 			<-done // Block until a download was finished.
 		}
 	}
