@@ -99,8 +99,8 @@ func update(storage *store.Store) {
 
 func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	out := make(chan episode)
-	go func() {
-		for p := range podcasts {
+	go func(pcasts <-chan feed.Feed) {
+		for p := range pcasts {
 			name := util.Escape(p.Title)
 			if len(name) <= 0 {
 				logger.Printf("Skipping %q, couldn't escape name\n", p.Title)
@@ -133,7 +133,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 		}
 
 		close(out)
-	}()
+	}(podcasts)
 
 	return out
 }
