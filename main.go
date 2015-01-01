@@ -145,9 +145,10 @@ func getEpisode(e episode) (err error) {
 		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
 			time.Sleep((time.Duration)(i * 3) * time.Second)
-		} else {
-			break
+			continue
 		}
+
+		break
 	}
 
 	// Return if download failed three times in a row
