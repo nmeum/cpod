@@ -7,6 +7,7 @@ import (
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
 	"sync"
@@ -144,11 +145,14 @@ func getEpisode(e episode) error {
 
 	for i := 1; i <= *retry; i++ {
 		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
-		if err == nil {
+		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
+			time.Sleep((i * 3) * time.Seconds)
+		} else {
 			break
 		}
 	}
 
+	// Return if download failed three times in a row
 	if err != nil {
 		return err
 	}
