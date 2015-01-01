@@ -38,7 +38,7 @@ func Get(url, target string) (fp string, err error) {
 }
 
 func Lock(path string) (err error) {
-	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL, 0666)
+	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL, 0644)
 	if err != nil {
 		return
 	}
