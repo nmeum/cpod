@@ -109,7 +109,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 			}
 
 			unread, err := readMarker(name)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				logger.Println(err)
 				continue
 			}
@@ -166,10 +166,7 @@ func getEpisode(e episode) (err error) {
 
 func readMarker(name string) (marker time.Time, err error) {
 	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
-	if os.IsNotExist(err) {
-		err = nil
-		return
-	} else if err != nil {
+	if err != nil {
 		return
 	}
 
