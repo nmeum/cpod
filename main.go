@@ -139,14 +139,12 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	return out
 }
 
-func getEpisode(e episode) error {
+func getEpisode(e episode) (err error) {
 	var path string
-	var err error
-
 	for i := 1; i <= *retry; i++ {
 		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
-			time.Sleep((i * 3) * time.Seconds)
+			time.Sleep((time.Duration)(i * 3) * time.Second)
 		} else {
 			break
 		}
@@ -154,7 +152,7 @@ func getEpisode(e episode) error {
 
 	// Return if download failed three times in a row
 	if err != nil {
-		return err
+		return
 	}
 
 	name := util.Escape(e.item.Title)
@@ -162,7 +160,7 @@ func getEpisode(e episode) error {
 		os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
 	}
 
-	return nil
+	return
 }
 
 func readMarker(name string) (marker time.Time, err error) {
