@@ -13,7 +13,8 @@ import (
 )
 
 func Get(url, target string) (fp string, err error) {
-	if err = os.MkdirAll(target, 0755); err != nil {
+	fp = filepath.Join(target, strings.TrimSpace(path.Base(url)))
+	if err = os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
 		return
 	}
 
@@ -23,7 +24,6 @@ func Get(url, target string) (fp string, err error) {
 	}
 	defer resp.Body.Close()
 
-	fp = filepath.Join(target, strings.TrimSpace(path.Base(url)))
 	file, err := os.Create(fp)
 	if err != nil {
 		return
