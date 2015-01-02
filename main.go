@@ -134,7 +134,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 
 func getEpisode(e episode) error {
 	cast := util.Escape(e.cast.Title)
-	if len(cast) > 0 {
+	if len(cast) <= 0 {
 		return errors.New(fmt.Sprintf("couldn't escape title %q", e.cast.Title))
 	}
 
