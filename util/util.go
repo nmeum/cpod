@@ -23,7 +23,6 @@ func Get(url, path string, retry int) (err error) {
 			break
 		}
 	}
-
 	if err != nil {
 		return
 	}
