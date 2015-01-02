@@ -99,6 +99,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	out := make(chan episode)
 	go func(pcasts <-chan feed.Feed) {
 		for p := range pcasts {
+			// TODO move this to a different function
 			p.Title = util.Escape(p.Title)
 			if len(p.Title) <= 0 {
 				logger.Printf("Skipping %q, couldn't escape name\n", p.Title)
