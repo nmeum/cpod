@@ -2,6 +2,7 @@ package util
 
 import (
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -9,26 +10,35 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode"
+	"time"
 )
 
-func Get(url, path string) error {
-	resp, err := http.Get(url)
+func Get(url, path string, retry int) (err error) {
+	var resp *http.Response
+	for i := 1; i <= retry; i++ {
+		resp, err = http.Get(url)
+		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+			time.Sleep((time.Duration)(i * 3) * time.Second)
+		}
+	}
+
+	// Abort if download failed three times in a row
 	if err != nil {
-		return err
+		return
 	}
 	defer resp.Body.Close()
 
 	file, err := os.Create(path)
 	if err != nil {
-		return err
+		return
 	}
 
 	defer file.Close()
 	if _, err = io.Copy(file, resp.Body); err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
 func Lock(path string) (err error) {

@@ -9,7 +9,7 @@ import (
 
 func TestGet(t *testing.T) {
 	path := filepath.Join(os.TempDir(), "cpod_testfile.txt")
-	if err := Get("http://paste42.de/6915.txt", path); err != nil {
+	if err := Get("http://paste42.de/6915.txt", path, 1); err != nil {
 		t.Fatal(err)
 	}
 
