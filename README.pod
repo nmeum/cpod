@@ -104,7 +104,7 @@ Download the most recent episodes of each feed:
 
 Subscribe to a new podcast:
 
-	echo "URL" >> "${XDG_CONFIG_HOME:$HOME/.config}/cpod/urls"
+	echo "URL" >> "${XDG_CONFIG_HOME:-$HOME/.config}/cpod/urls"
 
 =head1 SEE ALSO
 
