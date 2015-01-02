@@ -1,6 +1,9 @@
 package main
 
 import (
+	"errors"
+	"strings"
+	"path"
 	"flag"
 	"fmt"
 	"github.com/nmeum/cpod/feed"
@@ -99,13 +102,6 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	out := make(chan episode)
 	go func(pcasts <-chan feed.Feed) {
 		for p := range pcasts {
-			// TODO move this to a different function
-			p.Title = util.Escape(p.Title)
-			if len(p.Title) <= 0 {
-				logger.Printf("Skipping %q, couldn't escape name\n", p.Title)
-				continue
-			}
-
 			unread, err := readMarker(p.Title)
 			if err != nil && !os.IsNotExist(err) {
 				logger.Println(err)
@@ -137,10 +133,21 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	return out
 }
 
-func getEpisode(e episode) (err error) {
-	var path string
+func getEpisode(e episode) error {
+	cast := util.Escape(e.cast.Title)
+	if len(cast) > 0 {
+		return errors.New(fmt.Sprintf("couldn't escape title %q", e.cast.Title))
+	}
+
+	url := strings.TrimSpace(e.item.Attachment)
+	fp := filepath.Join(downloadDir, cast, path.Base(url))
+	if err := os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
+		return err
+	}
+
+	var err error
 	for i := 1; i <= *retry; i++ {
-		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast.Title))
+		err = util.Get(url, fp)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
 			time.Sleep((time.Duration)(i * 3) * time.Second)
 			continue
@@ -151,15 +158,15 @@ func getEpisode(e episode) (err error) {
 
 	// Return if download failed three times in a row
 	if err != nil {
-		return
+		return err
 	}
 
 	name := util.Escape(e.item.Title)
 	if len(name) > 0 {
-		os.Rename(path, filepath.Join(filepath.Dir(path), name+filepath.Ext(path)))
+		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}
 
-	return
+	return nil
 }
 
 func readMarker(name string) (marker time.Time, err error) {

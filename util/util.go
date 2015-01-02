@@ -6,35 +6,29 @@ import (
 	"os"
 	"os/signal"
 	"os/user"
-	"path"
 	"path/filepath"
 	"strings"
 	"unicode"
 )
 
-func Get(url, target string) (fp string, err error) {
-	fp = filepath.Join(target, strings.TrimSpace(path.Base(url)))
-	if err = os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
-		return
-	}
-
+func Get(url, path string) error {
 	resp, err := http.Get(url)
 	if err != nil {
-		return
+		return err
 	}
 	defer resp.Body.Close()
 
-	file, err := os.Create(fp)
+	file, err := os.Create(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	defer file.Close()
 	if _, err = io.Copy(file, resp.Body); err != nil {
-		return
+		return err
 	}
 
-	return
+	return nil
 }
 
 func Lock(path string) (err error) {
