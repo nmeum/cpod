@@ -9,8 +9,8 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
-	"unicode"
 	"time"
+	"unicode"
 )
 
 func Get(url, path string, retry int) (err error) {
@@ -18,7 +18,7 @@ func Get(url, path string, retry int) (err error) {
 	for i := 1; i <= retry; i++ {
 		resp, err = http.Get(url)
 		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
-			time.Sleep((time.Duration)(i * 3) * time.Second)
+			time.Sleep((time.Duration)(i*3) * time.Second)
 		} else {
 			break
 		}
