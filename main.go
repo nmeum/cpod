@@ -33,7 +33,7 @@ var (
 
 type episode struct {
 	item feed.Item
-	cast string
+	cast feed.Feed
 }
 
 func main() {
@@ -74,41 +74,38 @@ func update(storage *store.Store) {
 	var wg sync.WaitGroup
 	var counter int
 
-	done := make(chan interface{})
 	for e := range episodes {
 		wg.Add(1)
 		counter++
 
-		go func(item episode) {
+		go func(item episode, count int) {
 			if err := getEpisode(item); err != nil {
 				logger.Println(err)
 			}
 
-			done <- struct{}{}
 			wg.Done()
-			counter--
-		}(e)
+			count--
+		}(e, counter)
 
 		for *limit > 0 && counter >= *limit {
-			<-done // Block until a download was finished.
+			time.Sleep(3 * time.Second)
 		}
 	}
 
 	wg.Wait()
-	close(done)
 }
 
 func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	out := make(chan episode)
 	go func(pcasts <-chan feed.Feed) {
 		for p := range pcasts {
-			name := util.Escape(p.Title)
-			if len(name) <= 0 {
+			p.Title = util.Escape(p.Title)
+			if len(p.Title) <= 0 {
 				logger.Printf("Skipping %q, couldn't escape name\n", p.Title)
 				continue
 			}
 
-			unread, err := readMarker(name)
+			unread, err := readMarker(p.Title)
 			if err != nil && !os.IsNotExist(err) {
 				logger.Println(err)
 				continue
@@ -124,11 +121,11 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 					break
 				}
 
-				out <- episode{i, name}
+				out <- episode{i, p}
 			}
 
 			// TODO only do this if the download was succesfull
-			if err := writeMarker(name, items[0].Date); err != nil {
+			if err := writeMarker(p.Title, items[0].Date); err != nil {
 				logger.Println(err)
 			}
 		}
@@ -142,7 +139,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 func getEpisode(e episode) (err error) {
 	var path string
 	for i := 1; i <= *retry; i++ {
-		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast))
+		path, err = util.Get(e.item.Attachment, filepath.Join(downloadDir, e.cast.Title))
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
 			time.Sleep((time.Duration)(i * 3) * time.Second)
 			continue
