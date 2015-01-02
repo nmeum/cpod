@@ -19,10 +19,11 @@ func Get(url, path string, retry int) (err error) {
 		resp, err = http.Get(url)
 		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
 			time.Sleep((time.Duration)(i * 3) * time.Second)
+		} else {
+			break
 		}
 	}
 
-	// Abort if download failed three times in a row
 	if err != nil {
 		return
 	}
