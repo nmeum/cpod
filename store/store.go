@@ -26,7 +26,10 @@ func Load(path string) (s *Store, err error) {
 		s.URLs = append(s.URLs, scanner.Text())
 	}
 
-	err = scanner.Err()
+	if err = scanner.Err(); err != nil {
+		return
+	}
+
 	return
 }
 
