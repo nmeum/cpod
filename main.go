@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"strings"
 	"path"
 	"flag"
@@ -76,9 +75,19 @@ func update(storage *store.Store) {
 	var wg sync.WaitGroup
 	var counter int
 
+	done := make(chan interface{})
 	for e := range episodes {
 		wg.Add(1)
 		counter++
+
+		if e.cast.Items[0] == e.item {
+			go func(item episode, c chan interface{}) {
+				<- c // Block until all downloads are finished
+				if err := writeMarker(e.cast.Title, e.item.Date); err != nil {
+					logger.Println(err)
+				}
+			}(e, done)
+		}
 
 		go func(item episode, count int) {
 			if err := getEpisode(item); err != nil {
@@ -95,6 +104,8 @@ func update(storage *store.Store) {
 	}
 
 	wg.Wait()
+	done <- struct{}{}
+	close(done)
 }
 
 func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
@@ -119,11 +130,6 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 
 				out <- episode{i, p}
 			}
-
-			// TODO only do this if the download was succesfull
-			if err := writeMarker(p.Title, items[0].Date); err != nil {
-				logger.Println(err)
-			}
 		}
 
 		close(out)
@@ -133,9 +139,9 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 }
 
 func getEpisode(e episode) error {
-	cast := util.Escape(e.cast.Title)
-	if len(cast) <= 0 {
-		return errors.New(fmt.Sprintf("couldn't escape title %q", e.cast.Title))
+	cast, err := util.Escape(e.cast.Title)
+	if err != nil {
+		return err
 	}
 
 	url := strings.TrimSpace(e.item.Attachment)
@@ -148,8 +154,8 @@ func getEpisode(e episode) error {
 		return err
 	}
 
-	name := util.Escape(e.item.Title)
-	if len(name) > 0 {
+	name, err := util.Escape(e.item.Title)
+	if err == nil {
 		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}
 
@@ -157,7 +163,12 @@ func getEpisode(e episode) error {
 }
 
 func readMarker(name string) (marker time.Time, err error) {
-	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
+	escaped, err := util.Escape(name)
+	if err != nil {
+		return
+	}
+
+	file, err := os.Open(filepath.Join(downloadDir, escaped, ".latest"))
 	if err != nil {
 		return
 	}
@@ -174,7 +185,12 @@ func readMarker(name string) (marker time.Time, err error) {
 }
 
 func writeMarker(name string, latest time.Time) error {
-	path := filepath.Join(downloadDir, name, ".latest")
+	escaped, err := util.Escape(name)
+	if err != nil {
+		return err
+	}
+
+	path := filepath.Join(downloadDir, escaped, ".latest")
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return err
 	}

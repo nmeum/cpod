@@ -2,6 +2,7 @@ package util
 
 import (
 	"io"
+	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -28,7 +29,7 @@ func Get(url, path string, retry int) (err error) {
 	}
 	defer resp.Body.Close()
 
-	file, err := os.Create(path)
+	file, err := os.OpenFile(path, os.O_CREATE+os.O_RDWR, 0644)
 	if err != nil {
 		return
 	}
@@ -42,7 +43,7 @@ func Get(url, path string, retry int) (err error) {
 }
 
 func Lock(path string) (err error) {
-	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL, 0644)
+	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL+os.O_RDWR, 0644)
 	if err != nil {
 		return
 	}
@@ -59,7 +60,7 @@ func Lock(path string) (err error) {
 	return
 }
 
-func Escape(name string) string {
+func Escape(name string) (escaped string, err error) {
 	mfunc := func(r rune) rune {
 		switch {
 		case unicode.IsLetter(r):
@@ -75,7 +76,7 @@ func Escape(name string) string {
 		return -1
 	}
 
-	escaped := strings.Map(mfunc, name)
+	escaped = strings.Map(mfunc, name)
 	for strings.Contains(escaped, "--") {
 		escaped = strings.Replace(escaped, "--", "-", -1)
 	}
@@ -83,7 +84,12 @@ func Escape(name string) string {
 	escaped = strings.TrimPrefix(escaped, "-")
 	escaped = strings.TrimSuffix(escaped, "-")
 
-	return escaped
+	if len(escaped) <= 0 {
+		err = errors.New("couldn't escape string")
+		return
+	}
+
+	return
 }
 
 func EnvDefault(key, fallback string) string {
