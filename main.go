@@ -151,9 +151,13 @@ func newItems(cast feed.Feed) (items []feed.Item, err error) {
 }
 
 func getItem(cast feed.Feed, item feed.Item) error {
-	url := strings.TrimSpace(item.Attachment)
+	title, err := escape(cast.Title)
+	if err != nil {
+		return err
+	}
 
-	fp := filepath.Join(downloadDir, cast.Title, path.Base(url))
+	url := strings.TrimSpace(item.Attachment)
+	fp := filepath.Join(downloadDir, title, path.Base(url))
 	if err := os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
 		return err
 	}
