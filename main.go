@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"flag"
 	"fmt"
+	"github.com/nmeum/freddie"
 	"github.com/nmeum/freddie/feed"
 	"log"
 	"os"
@@ -30,15 +33,6 @@ var (
 	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
-type episode struct {
-	item feed.Item
-	cast feed.Feed
-}
-
-func (e episode) latest() bool {
-	return e.item == e.cast.Items[0]
-}
-
 func main() {
 	flag.Parse()
 	if *version {
@@ -54,51 +48,49 @@ func main() {
 		}
 	}
 
-	storage, err := newStore(filepath.Join(storeDir, "urls"))
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	lockPath := filepath.Join(cacheDir, "lock")
-	if err = lock(lockPath); os.IsExist(err) {
+	if err := lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {
 		logger.Fatal(err)
 	}
 
-	update(storage)
+	update(readFeeds(filepath.Join(storeDir, "urls")))
 	os.Remove(lockPath)
 }
 
-func update(storage *Store) {
-	podcasts := storage.Fetch()
-	episodes := newEpisodes(podcasts)
-
+func update(podcasts <-chan feed.Feed) {
 	var wg sync.WaitGroup
 	var counter int
 
-	done := make(chan interface{})
-	for e := range episodes {
+	for cast := range podcasts {
 		wg.Add(1)
 		counter++
 
-		if e.latest() {
-			go func(item episode, c chan interface{}) {
-				<-c // Block until all downloads are finished
-				if err := writeMarker(e.cast.Title, e.item.Date); err != nil {
-					logger.Println(err)
-				}
-			}(e, done)
-		}
-
-		go func(item episode, count int) {
-			if err := getEpisode(item); err != nil {
+		go func(p feed.Feed) {
+			items, err := newItems(p)
+			if err != nil {
 				logger.Println(err)
+				return
+			}
+
+			for _, i := range items {
+				fmt.Printf("Downloading episode %q (%s)\n", i.Title, p.Title)
+				if err := getItem(p, i); err != nil {
+					logger.Println(err)
+					continue
+				}
+
+				fmt.Printf("Finished dowloading %q (%s)\n", i.Title, p.Title)
+				if err := writeMarker(p.Title, i.Date); err != nil {
+					logger.Println(err)
+					continue
+				}
 			}
 
 			wg.Done()
-			count--
-		}(e, counter)
+			counter--
+		}(cast)
 
 		for *limit > 0 && counter >= *limit {
 			time.Sleep(3 * time.Second)
@@ -106,49 +98,72 @@ func update(storage *Store) {
 	}
 
 	wg.Wait()
-	done <- struct{}{}
-	close(done)
 }
 
-func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
-	out := make(chan episode)
-	go func(pcasts <-chan feed.Feed) {
-		for p := range pcasts {
-			p.Title = escape(p.Title)
-			if len(p.Title) <= 0 {
-				logger.Printf("Couldn't escape %q", p.Title)
-				continue
-			}
+func readFeeds(fp string) <-chan feed.Feed {
+	file, err := os.Open(fp)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
-			unread, err := readMarker(p.Title)
-			if err != nil && !os.IsNotExist(err) {
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	var feeds []string
+	for scanner.Scan() {
+		feeds = append(feeds, scanner.Text())
+	}
+
+	out := make(chan feed.Feed)
+	go func(c chan feed.Feed, urls []string) {
+		for _, url := range urls {
+			feed, err := freddie.Parse(url)
+			if err != nil {
 				logger.Println(err)
-				continue
-			}
-
-			items := p.Items
-			if *recent > 0 && len(items) >= *recent {
-				items = items[0:*recent]
-			}
-
-			for _, i := range items {
-				if len(i.Attachment) <= 0 || i.Date.Before(unread) {
-					break
-				}
-
-				out <- episode{i, p}
+			} else {
+				c <- feed
 			}
 		}
 
 		close(out)
-	}(podcasts)
+	}(out, feeds)
 
 	return out
 }
 
-func getEpisode(e episode) error {
-	url := strings.TrimSpace(e.item.Attachment)
-	fp := filepath.Join(downloadDir, e.cast.Title, path.Base(url))
+func newItems(cast feed.Feed) (items []feed.Item, err error) {
+	cast.Title = escape(cast.Title)
+	if len(cast.Title) <= 0 {
+		err = errors.New("couldn't escape podcast title")
+		return
+	}
+
+	unread, err := readMarker(cast.Title)
+	if os.IsNotExist(err) {
+		err = nil
+	} else if err != nil {
+		return
+	}
+
+	if *recent > 0 && len(cast.Items) >= *recent {
+		cast.Items = cast.Items[0:*recent]
+	}
+
+	for _, item := range cast.Items {
+		if len(item.Attachment) <= 0 || item.Date.Before(unread) {
+			break
+		}
+
+		items = append(items, item)
+	}
+
+	return
+}
+
+func getItem(cast feed.Feed, item feed.Item) error {
+	url := strings.TrimSpace(item.Attachment)
+
+	fp := filepath.Join(downloadDir, cast.Title, path.Base(url))
 	if err := os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
 		return err
 	}
@@ -157,7 +172,7 @@ func getEpisode(e episode) error {
 		return err
 	}
 
-	name := escape(e.item.Title)
+	name := escape(item.Title)
 	if len(name) > 0 {
 		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}
