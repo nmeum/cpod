@@ -1,16 +1,16 @@
 package main
 
 import (
-	"strings"
-	"path"
 	"flag"
 	"fmt"
-	"github.com/nmeum/cpod/feed"
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
+	"github.com/nmeum/freddie/feed"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -86,7 +86,7 @@ func update(storage *store.Store) {
 
 		if e.latest() {
 			go func(item episode, c chan interface{}) {
-				<- c // Block until all downloads are finished
+				<-c // Block until all downloads are finished
 				if err := writeMarker(e.cast.Title, e.item.Date); err != nil {
 					logger.Println(err)
 				}
