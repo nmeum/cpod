@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nmeum/cpod/store"
-	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/freddie/feed"
 	"log"
 	"os"
@@ -29,7 +27,7 @@ var (
 
 var (
 	logger      = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
-	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
+	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
 type episode struct {
@@ -47,8 +45,8 @@ func main() {
 		logger.Fatal(appVersion)
 	}
 
-	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
-	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
+	cacheDir := filepath.Join(envDefault("XDG_CACHE_HOME", ".cache"), appName)
+	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
 
 	for _, dir := range []string{cacheDir, storeDir} {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -56,13 +54,13 @@ func main() {
 		}
 	}
 
-	storage, err := store.Load(filepath.Join(storeDir, "urls"))
+	storage, err := newStore(filepath.Join(storeDir, "urls"))
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	lockPath := filepath.Join(cacheDir, "lock")
-	if err = util.Lock(lockPath); os.IsExist(err) {
+	if err = lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {
 		logger.Fatal(err)
@@ -72,7 +70,7 @@ func main() {
 	os.Remove(lockPath)
 }
 
-func update(storage *store.Store) {
+func update(storage *Store) {
 	podcasts := storage.Fetch()
 	episodes := newEpisodes(podcasts)
 
@@ -116,7 +114,7 @@ func newEpisodes(podcasts <-chan feed.Feed) <-chan episode {
 	out := make(chan episode)
 	go func(pcasts <-chan feed.Feed) {
 		for p := range pcasts {
-			p.Title = util.Escape(p.Title)
+			p.Title = escape(p.Title)
 			if len(p.Title) <= 0 {
 				logger.Printf("Couldn't escape %q", p.Title)
 				continue
@@ -155,11 +153,11 @@ func getEpisode(e episode) error {
 		return err
 	}
 
-	if err := util.Get(url, fp, *retry); err != nil {
+	if err := get(url, fp, *retry); err != nil {
 		return err
 	}
 
-	name := util.Escape(e.item.Title)
+	name := escape(e.item.Title)
 	if len(name) > 0 {
 		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}

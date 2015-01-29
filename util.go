@@ -1,4 +1,4 @@
-package util
+package main
 
 import (
 	"io"
@@ -13,7 +13,7 @@ import (
 	"unicode"
 )
 
-func Get(url, path string, retry int) (err error) {
+func get(url, path string, retry int) (err error) {
 	var resp *http.Response
 	for i := 1; i <= retry; i++ {
 		resp, err = http.Get(url)
@@ -41,7 +41,7 @@ func Get(url, path string, retry int) (err error) {
 	return
 }
 
-func Lock(path string) (err error) {
+func lock(path string) (err error) {
 	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL+os.O_RDWR, 0644)
 	if err != nil {
 		return
@@ -59,7 +59,7 @@ func Lock(path string) (err error) {
 	return
 }
 
-func Escape(name string) string {
+func escape(name string) string {
 	mfunc := func(r rune) rune {
 		switch {
 		case unicode.IsLetter(r):
@@ -86,7 +86,7 @@ func Escape(name string) string {
 	return escaped
 }
 
-func EnvDefault(key, fallback string) string {
+func envDefault(key, fallback string) string {
 	dir := os.Getenv(key)
 	if len(dir) > 0 {
 		return dir

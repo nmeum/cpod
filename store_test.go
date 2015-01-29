@@ -1,11 +1,11 @@
-package store
+package main
 
 import (
 	"testing"
 )
 
-func TestLoad(t *testing.T) {
-	store, err := Load("testdata/testLoad.txt")
+func TestNewStore(t *testing.T) {
+	store, err := newStore("testdata/testLoad.txt")
 	if err != nil {
 		t.Fatal(err)
 	}

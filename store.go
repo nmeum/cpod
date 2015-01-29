@@ -1,4 +1,4 @@
-package store
+package main
 
 import (
 	"bufio"
@@ -11,7 +11,7 @@ type Store struct {
 	URLs []string
 }
 
-func Load(path string) (s *Store, err error) {
+func newStore(path string) (s *Store, err error) {
 	s = new(Store)
 
 	file, err := os.Open(path)
