@@ -64,11 +64,15 @@ func TestEscape(t *testing.T) {
 		{"$$foo /", "foo"},
 		{"Foo bar, baz!", "Foo-bar-baz"},
 		{"LNP007: Foobar!", "LNP007-Foobar"},
-		{"$:(=== >$-%)", ""},
+		{"B$:(=== >$-%)/A/R", "B-A-R"},
 	}
 
 	for _, test := range tests {
-		e := escape(test.unescaped)
+		e, err := escape(test.unescaped)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		if e != test.escaped {
 			t.Fatalf("Expected %q - got %q", test.escaped, e)
 		}

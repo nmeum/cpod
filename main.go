@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/nmeum/freddie"
@@ -129,12 +128,6 @@ func readFeeds(fp string) <-chan feed.Feed {
 }
 
 func newItems(cast feed.Feed) (items []feed.Item, err error) {
-	cast.Title = escape(cast.Title)
-	if len(cast.Title) <= 0 {
-		err = errors.New("couldn't escape podcast title")
-		return
-	}
-
 	unread, err := readMarker(cast.Title)
 	if os.IsNotExist(err) {
 		err = nil
@@ -169,8 +162,8 @@ func getItem(cast feed.Feed, item feed.Item) error {
 		return err
 	}
 
-	name := escape(item.Title)
-	if len(name) > 0 {
+	name, err := escape(item.Title)
+	if err == nil {
 		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}
 
@@ -178,6 +171,11 @@ func getItem(cast feed.Feed, item feed.Item) error {
 }
 
 func readMarker(name string) (marker time.Time, err error) {
+	name, err = escape(name)
+	if err != nil {
+		return
+	}
+
 	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
 	if err != nil {
 		return
@@ -195,6 +193,11 @@ func readMarker(name string) (marker time.Time, err error) {
 }
 
 func writeMarker(name string, latest time.Time) error {
+	name, err := escape(name)
+	if err != nil {
+		return err
+	}
+
 	path := filepath.Join(downloadDir, name, ".latest")
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return err

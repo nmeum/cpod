@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io"
 	"net"
 	"net/http"
@@ -59,7 +60,7 @@ func lock(path string) (err error) {
 	return
 }
 
-func escape(name string) string {
+func escape(name string) (escaped string, err error) {
 	mfunc := func(r rune) rune {
 		switch {
 		case unicode.IsLetter(r):
@@ -75,7 +76,7 @@ func escape(name string) string {
 		return -1
 	}
 
-	escaped := strings.Map(mfunc, name)
+	escaped = strings.Map(mfunc, name)
 	for strings.Contains(escaped, "--") {
 		escaped = strings.Replace(escaped, "--", "-", -1)
 	}
@@ -83,7 +84,11 @@ func escape(name string) string {
 	escaped = strings.TrimPrefix(escaped, "-")
 	escaped = strings.TrimSuffix(escaped, "-")
 
-	return escaped
+	if len(escaped) <= 0 {
+		err = errors.New("couldn't escape title")
+	}
+
+	return
 }
 
 func envDefault(key, fallback string) string {
