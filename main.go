@@ -75,16 +75,13 @@ func update(podcasts <-chan feed.Feed) {
 			}
 
 			for _, i := range items {
-				fmt.Printf("Downloading episode %q (%s)\n", i.Title, p.Title)
 				if err := getItem(p, i); err != nil {
 					logger.Println(err)
 					continue
 				}
 
-				fmt.Printf("Finished dowloading %q (%s)\n", i.Title, p.Title)
 				if err := writeMarker(p.Title, i.Date); err != nil {
 					logger.Println(err)
-					continue
 				}
 			}
 
