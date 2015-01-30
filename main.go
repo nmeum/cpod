@@ -140,7 +140,8 @@ func newItems(cast feed.Feed) (items []feed.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		if len(item.Attachment) <= 0 || item.Date.Before(unread) {
+		if len(item.Attachment) <= 0 || item.Date.Before(unread) ||
+			item.Date.Equal(unread) {
 			break
 		}
 
