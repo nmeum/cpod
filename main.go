@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"github.com/nmeum/freddie"
-	"github.com/nmeum/freddie/feed"
+	"github.com/nmeum/cpod/store"
+	"github.com/nmeum/cpod/util"
+	"github.com/nmeum/go-feedparser"
 	"log"
 	"os"
 	"path"
@@ -29,7 +29,7 @@ var (
 
 var (
 	logger      = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
-	downloadDir = envDefault("CPOD_DOWNLOAD_DIR", "podcasts")
+	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
 func main() {
@@ -38,8 +38,8 @@ func main() {
 		logger.Fatal(appVersion)
 	}
 
-	cacheDir := filepath.Join(envDefault("XDG_CACHE_HOME", ".cache"), appName)
-	storeDir := filepath.Join(envDefault("XDG_CONFIG_HOME", ".config"), appName)
+	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
+	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 
 	for _, dir := range []string{cacheDir, storeDir} {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -47,26 +47,31 @@ func main() {
 		}
 	}
 
+	storage, err := store.Load(filepath.Join(storeDir, "urls"))
+	if err != nil {
+		logger.Fatal(err)
+	}
+
 	lockPath := filepath.Join(cacheDir, "lock")
-	if err := lock(lockPath); os.IsExist(err) {
+	if err := util.Lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {
 		logger.Fatal(err)
 	}
 
-	update(readFeeds(filepath.Join(storeDir, "urls")))
+	update(storage)
 	os.Remove(lockPath)
 }
 
-func update(podcasts <-chan feed.Feed) {
+func update(storage *store.Store) {
 	var wg sync.WaitGroup
 	var counter int
 
-	for cast := range podcasts {
+	for cast := range storage.Fetch() {
 		wg.Add(1)
 		counter++
 
-		go func(p feed.Feed) {
+		go func(p feedparser.Feed) {
 			items, err := newItems(p)
 			if err != nil {
 				logger.Println(err)
@@ -96,38 +101,7 @@ func update(podcasts <-chan feed.Feed) {
 	wg.Wait()
 }
 
-func readFeeds(fp string) <-chan feed.Feed {
-	file, err := os.Open(fp)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-
-	var feeds []string
-	for scanner.Scan() {
-		feeds = append(feeds, scanner.Text())
-	}
-
-	out := make(chan feed.Feed)
-	go func(c chan feed.Feed, urls []string) {
-		for _, url := range urls {
-			feed, err := freddie.Parse(url)
-			if err != nil {
-				logger.Println(err)
-			} else {
-				c <- feed
-			}
-		}
-
-		close(out)
-	}(out, feeds)
-
-	return out
-}
-
-func newItems(cast feed.Feed) (items []feed.Item, err error) {
+func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	unread, err := readMarker(cast.Title)
 	if os.IsNotExist(err) {
 		err = nil
@@ -151,8 +125,8 @@ func newItems(cast feed.Feed) (items []feed.Item, err error) {
 	return
 }
 
-func getItem(cast feed.Feed, item feed.Item) error {
-	title, err := escape(cast.Title)
+func getItem(cast feedparser.Feed, item feedparser.Item) error {
+	title, err := util.Escape(cast.Title)
 	if err != nil {
 		return err
 	}
@@ -163,11 +137,11 @@ func getItem(cast feed.Feed, item feed.Item) error {
 		return err
 	}
 
-	if err := get(url, fp, *retry); err != nil {
+	if err := util.Get(url, fp, *retry); err != nil {
 		return err
 	}
 
-	name, err := escape(item.Title)
+	name, err := util.Escape(item.Title)
 	if err == nil {
 		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
 	}
@@ -176,7 +150,7 @@ func getItem(cast feed.Feed, item feed.Item) error {
 }
 
 func readMarker(name string) (marker time.Time, err error) {
-	name, err = escape(name)
+	name, err = util.Escape(name)
 	if err != nil {
 		return
 	}
@@ -198,7 +172,7 @@ func readMarker(name string) (marker time.Time, err error) {
 }
 
 func writeMarker(name string, latest time.Time) error {
-	name, err := escape(name)
+	name, err := util.Escape(name)
 	if err != nil {
 		return err
 	}

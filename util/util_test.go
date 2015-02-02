@@ -1,4 +1,4 @@
-package main
+package util
 
 import (
 	"io/ioutil"
@@ -9,7 +9,7 @@ import (
 
 func TestGet(t *testing.T) {
 	path := filepath.Join(os.TempDir(), "cpod_testfile.txt")
-	if err := get("http://paste42.de/6915.txt", path, 1); err != nil {
+	if err := Get("http://paste42.de/6915.txt", path, 1); err != nil {
 		t.Fatal(err)
 	}
 
@@ -38,7 +38,7 @@ func TestLock1(t *testing.T) {
 	}
 
 	lockPath := filepath.Join(os.TempDir(), fi.Name())
-	if err := lock(lockPath); !os.IsExist(err) {
+	if err := Lock(lockPath); !os.IsExist(err) {
 		t.Fail()
 	}
 
@@ -47,7 +47,7 @@ func TestLock1(t *testing.T) {
 
 func TestLock2(t *testing.T) {
 	lockPath := filepath.Join(os.TempDir(), "lockTest")
-	if err := lock(lockPath); err != nil {
+	if err := Lock(lockPath); err != nil {
 		t.Fatal(err)
 	}
 
@@ -68,7 +68,7 @@ func TestEscape(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		e, err := escape(test.unescaped)
+		e, err := Escape(test.unescaped)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -84,14 +84,14 @@ func TestEnvDefault1(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dir := envDefault("TESTDIR", "")
+	dir := EnvDefault("TESTDIR", "")
 	if dir != "/foo" {
 		t.Fatalf("Expected %q - got %q", "/foo", dir)
 	}
 }
 
 func TestEnvDefault2(t *testing.T) {
-	dir := envDefault("TESTDIR2", "bar")
+	dir := EnvDefault("TESTDIR2", "bar")
 	if dir != filepath.Join(os.Getenv("HOME"), "bar") {
 		t.Fatalf("Expected %q - got %q", filepath.Join(os.Getenv("HOME"), "bar"), dir)
 	}
