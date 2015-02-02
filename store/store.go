@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var parsers = []feedparser.FeedFunc{
+var Parsers = []feedparser.FeedFunc{
 	rss.Parse,
 	atom.Parse,
 }
@@ -65,7 +65,7 @@ func (s *Store) Fetch() <-chan feedparser.Feed {
 			reader := resp.Body
 			defer reader.Close()
 
-			f, err := feedparser.Parse(reader, parsers)
+			f, err := feedparser.Parse(reader, Parsers)
 			if err == nil {
 				out <- f
 			}
