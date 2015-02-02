@@ -21,11 +21,6 @@ to manually create this file before starting cpod for the first time. Open the
 file with your favorite text editor and add your desired URLs (one per line).
 The file path is documented in the B<FILES> section below.
 
-Previous version of cpod supported opml import and export, however this
-feature was removed later on. Nowadays two scripts are provided for
-handling opml files, those scripts can be found in the contrib folder in
-the source tree.
-
 =head1 OPTIONS
 
 =over 4
