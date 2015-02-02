@@ -9,14 +9,19 @@ import (
 	"os"
 )
 
+var parsers = []feedparser.FeedFunc{
+	rss.Parse,
+	atom.Parse,
+}
+
 type Store struct {
-	URLs    []string
-	parsers []feedparser.FeedFunc
+	path string
+	URLs []string
 }
 
 func Load(path string) (s *Store, err error) {
 	s = new(Store)
-	s.parsers = []feedparser.FeedFunc{rss.Parse, atom.Parse}
+	s.path = path
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -34,6 +39,20 @@ func Load(path string) (s *Store, err error) {
 	return
 }
 
+func (s *Store) Add(url string) {
+	s.URLs = append(s.URLs, url)
+}
+
+func (s *Store) Contains(url string) bool {
+	for _, u := range s.URLs {
+		if u == url {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (s *Store) Fetch() <-chan feedparser.Feed {
 	out := make(chan feedparser.Feed)
 	go func() {
@@ -46,7 +65,7 @@ func (s *Store) Fetch() <-chan feedparser.Feed {
 			reader := resp.Body
 			defer reader.Close()
 
-			f, err := feedparser.Parse(reader, s.parsers)
+			f, err := feedparser.Parse(reader, parsers)
 			if err == nil {
 				out <- f
 			}
@@ -56,4 +75,20 @@ func (s *Store) Fetch() <-chan feedparser.Feed {
 	}()
 
 	return out
+}
+
+func (s *Store) Save() error {
+	file, err := os.OpenFile(s.path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	for _, url := range s.URLs {
+		if _, err := file.WriteString(url + "\n"); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
