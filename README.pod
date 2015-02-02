@@ -64,9 +64,9 @@ The download directory (default: ~/podcasts).
 
 Used as a fallback to determine path of users home directory.
 
-=item XDG_CACHE_HOME
+=item USER
 
-Base directory with non-essential data files (default ~/.cache).
+Used as a fallback to determine the users name.
 
 =item XDG_CONFIG_HOME
 
@@ -82,7 +82,7 @@ Base directory with config files (default: ~/.config).
 
 Directory with downloaded podcast episodes.
 
-=item $XDG_CACHE_HOME/cpod/lock
+=item $TMPDIR/cpod-$USER
 
 Lock file used to ensure that cpod isn't invoked twice.
 

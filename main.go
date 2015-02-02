@@ -38,21 +38,14 @@ func main() {
 		logger.Fatal(appVersion)
 	}
 
-	cacheDir := filepath.Join(util.EnvDefault("XDG_CACHE_HOME", ".cache"), appName)
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
-
-	for _, dir := range []string{cacheDir, storeDir} {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			logger.Fatal(err)
-		}
-	}
+	lockPath := filepath.Join(os.TempDir(), fmt.Sprintf("%s-%s", appName, util.Username()))
 
 	storage, err := store.Load(filepath.Join(storeDir, "urls"))
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	lockPath := filepath.Join(cacheDir, "lock")
 	if err := util.Lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {

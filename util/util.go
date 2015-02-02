@@ -107,3 +107,15 @@ func EnvDefault(key, fallback string) string {
 
 	return filepath.Join(home, fallback)
 }
+
+func Username() string {
+	var name string
+	user, err := user.Current()
+	if err == nil && len(user.Username) > 0 {
+		name = user.Username
+	} else {
+		name = os.Getenv("USER")
+	}
+
+	return name
+}
