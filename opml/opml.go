@@ -2,10 +2,14 @@ package opml
 
 import (
 	"encoding/xml"
+	"github.com/nmeum/go-feedparser/util"
 	"io/ioutil"
 	"os"
 	"time"
 )
+
+// OPML version supported by this library.
+const version = "2.0"
 
 type Opml struct {
 	XMLName  xml.Name  `xml:"opml"`
@@ -23,7 +27,7 @@ type Outline struct {
 
 func Create(title string) (o *Opml) {
 	o = &Opml{
-		Version: "2.0",
+		Version: version,
 		Title:   title,
 		Created: time.Now().Format(time.RFC1123Z),
 	}
@@ -37,7 +41,7 @@ func Load(path string) (o *Opml, err error) {
 		return
 	}
 
-	if err = xml.Unmarshal(data, &o); err != nil {
+	if err = util.Unmarshal(data, &o); err != nil {
 		return
 	}
 

@@ -12,8 +12,8 @@ func TestCreate(t *testing.T) {
 		t.Fatalf("Expected %q - got %q", "Test subscriptions", o.Title)
 	}
 
-	if o.Version != "2.0" {
-		t.Fatalf("Expected %q - got %q", "2.0", o.Version)
+	if o.Version != version {
+		t.Fatalf("Expected %q - got %q", version, o.Version)
 	}
 }
 
