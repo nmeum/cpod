@@ -108,4 +108,4 @@ Subscribe to a new podcast:
 
 =head1 SEE ALSO
 
-go(1), cron(8)
+cpod-export(1), cpod-import(1), cron(8), go(1)
