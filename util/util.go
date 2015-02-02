@@ -29,7 +29,7 @@ func Get(url, path string, retry int) (err error) {
 	}
 	defer resp.Body.Close()
 
-	file, err := os.OpenFile(path, os.O_CREATE+os.O_RDWR, 0644)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return
 	}
@@ -43,7 +43,7 @@ func Get(url, path string, retry int) (err error) {
 }
 
 func Lock(path string) (err error) {
-	_, err = os.OpenFile(path, os.O_CREATE+os.O_EXCL+os.O_RDWR, 0644)
+	_, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 	if err != nil {
 		return
 	}
