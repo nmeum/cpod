@@ -9,7 +9,7 @@ B<cpod> I<FILE>
 =head1 DESCRIPTION
 
 cpod-import imports your cpod(1) subscriptions from the specfied OPML
-version 2.0 I<File>. If you want to export an existing OPML file take a
+version 2.0 I<FILE>. If you want to export an existing OPML file take a
 look at cpod-export(1).
 
 =head1 SEE ALSO

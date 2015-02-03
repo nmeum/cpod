@@ -8,7 +8,7 @@ B<cpod> I<FILE>
 
 =head1 DESCRIPTION
 
-cpod-export exports your cpod(1) subscriptions to the specfied I<File>
+cpod-export exports your cpod(1) subscriptions to the specfied I<FILE>
 in the OPML format version 2.0. If you want to import an existing OPML
 file take a look at cpod-import(1).
 
