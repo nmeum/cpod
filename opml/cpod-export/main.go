@@ -13,7 +13,7 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "USAGE: cpod-export [path]\n")
+	fmt.Fprintf(os.Stderr, "USAGE: cpod-export FILE\n")
 	os.Exit(1)
 }
 

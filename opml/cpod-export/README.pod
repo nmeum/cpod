@@ -1,0 +1,17 @@
+=head1 NAME
+
+cpod-export - OPML export for cpod(1)
+
+=head1 SYNOPSIS
+
+B<cpod> I<FILE>
+
+=head1 DESCRIPTION
+
+cpod-export exports your cpod(1) subscriptions to the specfied I<File>
+in the OPML format version 2.0. If you want to import an existing OPML
+file take a look at cpod-import(1).
+
+=head1 SEE ALSO
+
+cpod(1), cpod-export(1), cpod-import(1)

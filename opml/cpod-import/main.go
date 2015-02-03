@@ -10,7 +10,7 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "USAGE: cpod-import [path]\n")
+	fmt.Fprintf(os.Stderr, "USAGE: cpod-import FILE\n")
 	os.Exit(1)
 }
 
