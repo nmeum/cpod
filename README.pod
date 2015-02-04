@@ -21,6 +21,10 @@ to manually create this file before starting cpod for the first time. Open the
 file with your favorite text editor and add your desired URLs (one per line).
 The file path is documented in the B<FILES> section below.
 
+For OPML import and export two seperated binaries are provided. If you
+installed them and want to import/export an OPML file have a look at
+cpod-import(1) and cpod-export(1).
+
 =head1 OPTIONS
 
 =over 4
