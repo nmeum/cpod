@@ -4,7 +4,7 @@ cpod-export - OPML export for cpod(1)
 
 =head1 SYNOPSIS
 
-B<cpod> I<FILE>
+B<cpod-export> I<FILE>
 
 =head1 DESCRIPTION
 

@@ -4,7 +4,7 @@ cpod-import - OPML import for cpod(1)
 
 =head1 SYNOPSIS
 
-B<cpod> I<FILE>
+B<cpod-import> I<FILE>
 
 =head1 DESCRIPTION
 
