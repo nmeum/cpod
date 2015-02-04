@@ -1,8 +1,6 @@
 package store
 
 import (
-	"github.com/nmeum/go-feedparser"
-	"github.com/nmeum/go-feedparser/rss"
 	"testing"
 )
 
@@ -23,8 +21,8 @@ func TestLoad(t *testing.T) {
 
 func TestFetch(t *testing.T) {
 	store := &Store{
+		"",
 		[]string{"http://feeds.thisamericanlife.org/talpodcast"},
-		[]feedparser.FeedFunc{rss.Parse},
 	}
 
 	channel := store.Fetch()
