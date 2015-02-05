@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"html"
 	"io"
 	"net"
 	"net/http"
@@ -76,7 +77,7 @@ func Escape(name string) (escaped string, err error) {
 		return -1
 	}
 
-	escaped = strings.Map(mfunc, name)
+	escaped = strings.Map(mfunc, html.UnescapeString(name))
 	for strings.Contains(escaped, "--") {
 		escaped = strings.Replace(escaped, "--", "-", -1)
 	}
