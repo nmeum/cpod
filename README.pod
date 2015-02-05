@@ -22,6 +22,10 @@ time. Open the file with your favorite text editor and add your desired
 URLs (one per line).  The file path is documented in the B<FILES>
 section below.
 
+Since version 2.0 cpod support continuous downloads which means that you
+can interrupt cpod at any point and the next time you start it will
+automatically resume were it left of the last time.
+
 For OPML import and export two seperated optinal binaries are provided.
 If you installed them and want to import/export an OPML file have a look
 at cpod-import(1) and cpod-export(1).
