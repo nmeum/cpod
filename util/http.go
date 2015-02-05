@@ -41,14 +41,19 @@ func GetFile(uri, target string) error {
 		return err
 	}
 
-	_, err = os.Open(filepath.Join(target, fmt.Sprintf("%s.part", fn)))
+	partPath := fmt.Sprintf("%s.part", fn)
+	_, err = os.Open(filepath.Join(target, partPath))
 	if os.IsNotExist(err) {
-		err = resumeGet(uri, target)
+		if err = newGet(uri, target); err != nil {
+			return err
+		}
 	} else if err == nil {
-		err = newGet(uri, target)
+		if err = resumeGet(uri, target); err != nil {
+			return err
+		}
 	}
 
-	return err
+	return os.Rename(partPath, fn)
 }
 
 func resumeGet(uri, target string) error {
