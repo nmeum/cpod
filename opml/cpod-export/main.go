@@ -6,7 +6,6 @@ import (
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/go-feedparser"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -38,7 +37,7 @@ func main() {
 	for _, url := range storage.URLs {
 		wg.Add(1)
 		go func(u string) {
-			resp, err := http.Get(url)
+			resp, err := util.Get(url)
 			if err != nil {
 				warn(err)
 				return
