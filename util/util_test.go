@@ -7,24 +7,6 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
-	path := filepath.Join(os.TempDir(), "cpod_testfile.txt")
-	if err := Get("http://paste42.de/6915.txt", path, 1); err != nil {
-		t.Fatal(err)
-	}
-
-	defer os.Remove(path)
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	contents := string(data)
-	if contents != "Foobar" {
-		t.Fatalf("Expected %q - got %q", "Foobar", contents)
-	}
-}
-
 func TestLock1(t *testing.T) {
 	file, err := ioutil.TempFile(os.TempDir(), "testLock")
 	if err != nil {

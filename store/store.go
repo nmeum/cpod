@@ -2,10 +2,10 @@ package store
 
 import (
 	"bufio"
+	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/go-feedparser"
 	"github.com/nmeum/go-feedparser/atom"
 	"github.com/nmeum/go-feedparser/rss"
-	"net/http"
 	"os"
 )
 
@@ -57,7 +57,7 @@ func (s *Store) Fetch() <-chan feedparser.Feed {
 	out := make(chan feedparser.Feed)
 	go func() {
 		for _, url := range s.URLs {
-			resp, err := http.Get(url)
+			resp, err := util.Get(url)
 			if err != nil {
 				continue
 			}

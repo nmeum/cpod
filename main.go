@@ -8,7 +8,6 @@ import (
 	"github.com/nmeum/go-feedparser"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -22,7 +21,6 @@ const (
 
 var (
 	limit   = flag.Int("p", 5, "number of maximal parallel downloads")
-	retry   = flag.Int("t", 3, "number of times a failed download is retried")
 	recent  = flag.Int("r", 0, "number of most recent episodes to download")
 	version = flag.Bool("v", false, "display version number and exit")
 )
@@ -125,18 +123,23 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 	}
 
 	url := strings.TrimSpace(item.Attachment)
-	fp := filepath.Join(downloadDir, title, path.Base(url))
-	if err := os.MkdirAll(filepath.Dir(fp), 0755); err != nil {
+	target := filepath.Join(downloadDir, title)
+	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 		return err
 	}
 
-	if err := util.Get(url, fp, *retry); err != nil {
+	if err := util.GetFile(url, target); err != nil {
 		return err
 	}
 
 	name, err := util.Escape(item.Title)
 	if err == nil {
-		os.Rename(fp, filepath.Join(filepath.Dir(fp), name+filepath.Ext(fp)))
+		fn, err := util.Filename(url)
+		if err != nil {
+			return err
+		}
+
+		os.Rename(filepath.Join(target, fn), filepath.Join(target, name+filepath.Ext(fn)))
 	}
 
 	return nil

@@ -3,45 +3,13 @@ package util
 import (
 	"errors"
 	"html"
-	"io"
-	"net"
-	"net/http"
 	"os"
 	"os/signal"
 	"os/user"
 	"path/filepath"
 	"strings"
-	"time"
 	"unicode"
 )
-
-func Get(url, path string, retry int) (err error) {
-	var resp *http.Response
-	for i := 1; i <= retry; i++ {
-		resp, err = http.Get(url)
-		if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
-			time.Sleep((time.Duration)(i*3) * time.Second)
-		} else {
-			break
-		}
-	}
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR, 0644)
-	if err != nil {
-		return
-	}
-
-	defer file.Close()
-	if _, err = io.Copy(file, resp.Body); err != nil {
-		return
-	}
-
-	return
-}
 
 func Lock(path string) (err error) {
 	_, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
