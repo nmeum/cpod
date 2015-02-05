@@ -34,26 +34,28 @@ func Get(uri string) (resp *http.Response, err error) {
 }
 
 func GetFile(uri, target string) error {
-	var err error
+	if err := os.MkdirAll(target, 0755); err != nil {
+		return err
+	}
 
 	fn, err := Filename(uri)
 	if err != nil {
 		return err
 	}
 
-	partPath := fmt.Sprintf("%s.part", fn)
-	_, err = os.Open(filepath.Join(target, partPath))
+	partPath := filepath.Join(target, fmt.Sprintf("%s.part", fn))
+	_, err = os.Open(partPath)
 	if os.IsNotExist(err) {
-		if err = newGet(uri, target); err != nil {
+		if err = newGet(uri, partPath); err != nil {
 			return err
 		}
 	} else if err == nil {
-		if err = resumeGet(uri, target); err != nil {
+		if err = resumeGet(uri, partPath); err != nil {
 			return err
 		}
 	}
 
-	return os.Rename(partPath, fn)
+	return os.Rename(partPath, filepath.Join(target, fn))
 }
 
 func resumeGet(uri, target string) error {
