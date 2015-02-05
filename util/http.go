@@ -44,8 +44,7 @@ func GetFile(uri, target string) error {
 	}
 
 	partPath := filepath.Join(target, fmt.Sprintf("%s.part", fn))
-	_, err = os.Open(partPath)
-	if os.IsNotExist(err) {
+	if _, err = os.Open(partPath); os.IsNotExist(err) {
 		if err = newGet(uri, partPath); err != nil {
 			return err
 		}
