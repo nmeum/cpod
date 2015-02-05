@@ -62,20 +62,26 @@ func update(storage *store.Store) {
 		wg.Add(1)
 		counter++
 
-		go func(p feedparser.Feed) {
-			items, err := newItems(p)
+		go func(p store.Podcast) {
+			feed := p.Feed
+			if p.Error != nil {
+				logger.Println(p.Error)
+				return
+			}
+
+			items, err := newItems(feed)
 			if err != nil {
 				logger.Println(err)
 				return
 			}
 
 			for _, i := range items {
-				if err := getItem(p, i); err != nil {
+				if err := getItem(feed, i); err != nil {
 					logger.Println(err)
 					continue
 				}
 
-				if err := writeMarker(p.Title, i.Date); err != nil {
+				if err := writeMarker(feed.Title, i.Date); err != nil {
 					logger.Println(err)
 				}
 			}

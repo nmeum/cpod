@@ -14,6 +14,12 @@ var Parsers = []feedparser.FeedFunc{
 	atom.Parse,
 }
 
+type Podcast struct {
+	URL   string
+	Feed  feedparser.Feed
+	Error error
+}
+
 type Store struct {
 	path string
 	URLs []string
@@ -53,8 +59,8 @@ func (s *Store) Contains(url string) bool {
 	return false
 }
 
-func (s *Store) Fetch() <-chan feedparser.Feed {
-	out := make(chan feedparser.Feed)
+func (s *Store) Fetch() <-chan Podcast {
+	out := make(chan Podcast)
 	go func() {
 		for _, url := range s.URLs {
 			resp, err := util.Get(url)
@@ -66,9 +72,7 @@ func (s *Store) Fetch() <-chan feedparser.Feed {
 			defer reader.Close()
 
 			f, err := feedparser.Parse(reader, Parsers)
-			if err == nil {
-				out <- f
-			}
+			out <- Podcast{url, f, err}
 		}
 
 		close(out)

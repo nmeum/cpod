@@ -5,7 +5,6 @@ import (
 	"github.com/nmeum/cpod/opml"
 	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
-	"github.com/nmeum/go-feedparser"
 	"os"
 	"path/filepath"
 	"sync"
@@ -34,27 +33,18 @@ func main() {
 	var wg sync.WaitGroup
 	opmlFile := opml.Create("Podcast subscriptions")
 
-	for _, url := range storage.URLs {
+	for cast := range storage.Fetch() {
 		wg.Add(1)
-		go func(u string) {
-			resp, err := util.Get(url)
-			if err != nil {
-				warn(err)
+		go func(p store.Podcast) {
+			feed := p.Feed
+			if p.Error != nil {
+				warn(p.Error)
 				return
 			}
 
-			reader := resp.Body
-			defer resp.Body.Close()
-
-			cast, err := feedparser.Parse(reader, store.Parsers)
-			if err != nil {
-				warn(err)
-				return
-			}
-
-			opmlFile.Add(cast.Title, cast.Type, u)
+			opmlFile.Add(feed.Title, feed.Type, p.URL)
 			wg.Done()
-		}(url)
+		}(cast)
 	}
 
 	wg.Wait()
