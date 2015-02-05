@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// Number of times a download is retried.
+// Number of times a failed get is retried.
 const retry = 3
 
 func Filename(uri string) (fn string, err error) {
@@ -62,6 +62,7 @@ func resumeGet(uri, target string) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	fi, err := file.Stat()
 	if err != nil {
