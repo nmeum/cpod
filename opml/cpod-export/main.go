@@ -36,14 +36,16 @@ func main() {
 	for cast := range storage.Fetch() {
 		wg.Add(1)
 		go func(p store.Podcast) {
-			feed := p.Feed
+			defer wg.Done()
 			if p.Error != nil {
 				warn(p.Error)
 				return
 			}
 
+			feed := p.Feed
 			opmlFile.Add(feed.Title, feed.Type, p.URL)
-			wg.Done()
+
+			return
 		}(cast)
 	}
 
