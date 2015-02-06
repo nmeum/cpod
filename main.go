@@ -63,6 +63,11 @@ func update(storage *store.Store) {
 		counter++
 
 		go func(p store.Podcast) {
+			defer func() {
+				wg.Done()
+				counter--
+			}()
+
 			feed := p.Feed
 			if p.Error != nil {
 				logger.Println(p.Error)
@@ -83,11 +88,11 @@ func update(storage *store.Store) {
 
 				if err := writeMarker(feed.Title, i.Date); err != nil {
 					logger.Println(err)
+					continue
 				}
 			}
 
-			wg.Done()
-			counter--
+			return
 		}(cast)
 
 		for *limit > 0 && counter >= *limit {
