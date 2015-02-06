@@ -145,7 +145,10 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 			return err
 		}
 
-		os.Rename(filepath.Join(target, fn), filepath.Join(target, name+filepath.Ext(fn)))
+		newPath := filepath.Join(target, name+filepath.Ext(fn))
+		if err = os.Rename(filepath.Join(target, fn), newPath); err != nil {
+			return err
+		}
 	}
 
 	return nil
