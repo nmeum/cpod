@@ -16,7 +16,7 @@ func usage() {
 }
 
 func warn(err error) {
-	fmt.Fprintf(os.Stderr, err.Error()+"\n")
+	fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 }
 
 func main() {
