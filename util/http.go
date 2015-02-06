@@ -74,7 +74,7 @@ func resumeGet(uri, target string) error {
 		return err
 	}
 
-	req.Header.Add("Content-Range", fmt.Sprint("bytes=%d-", fi.Size()))
+	req.Header.Add("Range", fmt.Sprint("bytes=%d-", fi.Size()))
 	resp, err := doReq(req)
 	if err != nil {
 		return err
