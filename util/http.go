@@ -53,12 +53,10 @@ func GetFile(uri, target string) error {
 
 	partPath := filepath.Join(target, fmt.Sprintf("%s.part", fn))
 	if _, err = os.Open(partPath); os.IsNotExist(err) {
-		fmt.Println("Starting download of", uri)
 		if err = newGet(uri, partPath); err != nil {
 			return err
 		}
 	} else if err == nil {
-		fmt.Println("Resuming download of", uri)
 		if err = resumeGet(uri, partPath); err != nil {
 			return err
 		}
