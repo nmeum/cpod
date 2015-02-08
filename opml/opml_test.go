@@ -7,7 +7,6 @@ import (
 
 func TestCreate(t *testing.T) {
 	o := Create("Test subscriptions")
-
 	if o.Title != "Test subscriptions" {
 		t.Fatalf("Expected %q - got %q", "Test subscriptions", o.Title)
 	}
@@ -29,11 +28,15 @@ func TestLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	if len(o.Outlines) != 1 {
+		t.Fatalf("Expected %d - got %d", 1, len(o.Outlines))
+	}
+
 	if o.Outlines[0] != outline {
 		t.Fatalf("Expected %q - got %q", outline, o.Outlines[0])
 	}
 
-	if o.Version != "2.0" {
+	if o.Version != version {
 		t.Fatalf("Expected %q - got %q", "2.0", o.Version)
 	}
 
@@ -59,17 +62,23 @@ func TestAdd(t *testing.T) {
 	if o.Outlines[0] != testOutline {
 		t.Fatalf("Expected %q - got %q", testOutline, o.Outlines[0])
 	}
+
+	if len(o.Outlines) != 1 {
+		t.Fatalf("Expected %d - got %d", 1, len(o.Outlines))
+	}
 }
 
 func TestSave(t *testing.T) {
 	o := Create("Podcasts")
 	o.Add("Somecast", "rss", "http://somecast.io/feed.rss")
 
-	if err := o.Save("testdata/testSave.json"); err != nil {
+	testPath := "testdata/testSave.opml"
+	if err := o.Save(testPath); err != nil {
 		t.Fatal(err)
 	}
+	defer os.Remove(testPath)
 
-	loaded, err := Load("testdata/testSave.json")
+	loaded, err := Load(testPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,6 +86,4 @@ func TestSave(t *testing.T) {
 	if loaded.Title != "Podcasts" {
 		t.Fatal(err)
 	}
-
-	os.Remove("testdata/testSave.json")
 }
