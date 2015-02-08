@@ -50,6 +50,12 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	defer func() {
+		if r := recover(); r != nil {
+			os.Remove(lockPath)
+		}
+	}()
+
 	update(storage)
 	os.Remove(lockPath)
 }
