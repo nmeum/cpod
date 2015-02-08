@@ -11,6 +11,8 @@ import (
 	"unicode"
 )
 
+// Lock creates a lockfile at the given path and creates a signal
+// handler which removes the lockfile on interrupt or kill.
 func Lock(path string) (err error) {
 	_, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
 	if err != nil {
@@ -29,6 +31,10 @@ func Lock(path string) (err error) {
 	return
 }
 
+// Escape escapes the given data to make sure it is safe to use it as a
+// filename. It also replaces spaces and other seperation characters
+// with the '-' character. It returns an error if the escaped string is
+// empty.
 func Escape(name string) (escaped string, err error) {
 	mfunc := func(r rune) rune {
 		switch {
@@ -60,6 +66,9 @@ func Escape(name string) (escaped string, err error) {
 	return
 }
 
+// EnvDefault returns the value of the given environment variable
+// key if it is not empty. If it is empty it returns the fallback
+// as an absolute path joined with the users home.
 func EnvDefault(key, fallback string) string {
 	dir := os.Getenv(key)
 	if len(dir) > 0 {
@@ -77,6 +86,9 @@ func EnvDefault(key, fallback string) string {
 	return filepath.Join(home, fallback)
 }
 
+// Username returns the username of the current user. It tries to
+// determine the username using os/user first and if that doesn't
+// work it returns the value of the USER environment variable.
 func Username() string {
 	var name string
 	user, err := user.Current()
