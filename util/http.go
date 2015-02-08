@@ -24,6 +24,10 @@ func Filename(uri string) (fn string, err error) {
 	}
 
 	fn = filepath.Base(u.Path)
+	if fn == string(os.PathSeparator) || fn == "." {
+		fn = "unnamed"
+	}
+
 	return
 }
 

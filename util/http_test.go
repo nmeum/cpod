@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -17,6 +19,8 @@ func TestFilename(t *testing.T) {
 	testpairs := []testpair{
 		{"http://example.com/foo/bar/foo/bar/foo.mp3", "foo.mp3"},
 		{"http://example.com/bar.opus?foo=bar&bar=foo", "bar.opus"},
+		{"http://example.com/", "unnamed"},
+		{"http://example.com", "unnamed"},
 	}
 
 	for _, p := range testpairs {
@@ -47,6 +51,39 @@ func TestGet(t *testing.T) {
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	result := string(data)
+	if result != expected {
+		t.Fatalf("Expected %q - got %q", expected, result)
+	}
+}
+
+func TestGetFile1(t *testing.T) {
+	expected := "Hello World!\n"
+	testFile := filepath.Join("testdata", "hello.txt")
+
+	th := func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, testFile)
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(th))
+	defer ts.Close()
+
+	err := GetFile(ts.URL, os.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := Filename(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fp := filepath.Join(os.TempDir(), name)
+	data, err := ioutil.ReadFile(fp)
 	if err != nil {
 		t.Fatal(err)
 	}
