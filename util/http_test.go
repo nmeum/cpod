@@ -83,6 +83,8 @@ func TestGetFile1(t *testing.T) {
 	}
 
 	fp := filepath.Join(os.TempDir(), name)
+	defer os.Remove(fp)
+
 	data, err := ioutil.ReadFile(fp)
 	if err != nil {
 		t.Fatal(err)
