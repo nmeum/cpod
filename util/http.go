@@ -61,7 +61,7 @@ func GetFile(uri, target string) error {
 		if err = newGet(uri, partPath); err != nil {
 			return err
 		}
-	} else if err == nil {
+	} else {
 		if err = resumeGet(uri, partPath); err != nil {
 			return err
 		}
