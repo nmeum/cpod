@@ -88,10 +88,8 @@ func resumeGet(uri, target string) error {
 		return err
 	}
 
-	byteRange := fmt.Sprintf("%d-", fi.Size())
-	req.Header.Add("Range", fmt.Sprintf("bytes=%s", byteRange))
-
-	resp, err := doReq(rangeClient(byteRange), req)
+	req.Header.Add("Range", fmt.Sprintf("bytes=%d-", fi.Size()))
+	resp, err := doReq(headerClient(req.Header), req)
 	if err != nil {
 		return err
 	}
@@ -144,15 +142,15 @@ func doReq(client *http.Client, req *http.Request) (resp *http.Response, err err
 	return
 }
 
-// rangeClient returns a client with a custom CheckRedirect function
-// which adds a range Header with the given range as value to each request.
-func rangeClient(byteRange string) *http.Client {
+// headerClient returns a client witch a custom CheckRedirect function
+// which ensures that the given headers will be readded after a redirect.
+func headerClient(headers http.Header) *http.Client {
 	redirectFunc := func(req *http.Request, via []*http.Request) error {
 		if len(via) >= 10 {
 			return errors.New("too many redirects")
 		}
 
-		req.Header.Add("Range", fmt.Sprintf("bytes=%s", byteRange))
+		req.Header = headers
 		return nil
 	}
 
