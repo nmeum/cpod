@@ -58,7 +58,9 @@ func main() {
 	}()
 
 	update(storage)
-	os.Remove(lockPath)
+	if err := os.Remove(lockPath); err != nil {
+		logger.Fatal(err)
+	}
 }
 
 func update(storage *store.Store) {
