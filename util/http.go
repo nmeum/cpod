@@ -96,10 +96,6 @@ func resumeGet(uri, target string) error {
 	reader := resp.Body
 	defer reader.Close()
 
-	if resp.Status != "206" {
-		fmt.Println("Doesn't support Partial Content", resp.Status)
-	}
-
 	if _, err = io.Copy(file, reader); err != nil {
 		return err
 	}
