@@ -12,9 +12,16 @@ import (
 	"time"
 )
 
-// retry describes the amount of times a failed http get request is
-// retried if the error is temporary or a timeout error.
-const retry = 3
+const (
+	// Number of times failed HTTP request is retried.
+	retry = 3
+
+	// Number of maximal allowed redirects.
+	maxRedirects = 10
+
+	// HTTP User-Agent.
+	useragent = "cpod"
+)
 
 // Filename returns the fiilename of an URL. It removes the query
 // parameters etc.
@@ -40,7 +47,7 @@ func Get(uri string) (resp *http.Response, err error) {
 		return
 	}
 
-	return doReq(http.DefaultClient, req)
+	return doReq(req)
 }
 
 // GetFile downloads the file located at the given uri and saves it in
@@ -89,7 +96,7 @@ func resumeGet(uri, target string) error {
 	}
 
 	req.Header.Add("Range", fmt.Sprintf("bytes=%d-", fi.Size()))
-	resp, err := doReq(headerClient(req.Header), req)
+	resp, err := doReq(req)
 	if err != nil {
 		return err
 	}
@@ -128,8 +135,12 @@ func newGet(uri, target string) error {
 }
 
 // doReq does the same as net.client.Do but it retries sending the
-// request if it failed.
-func doReq(client *http.Client, req *http.Request) (resp *http.Response, err error) {
+// request if it failed. Furthermore, it also ensure that headers
+// remain the same after a redirect and it adds a User-Agent header.
+func doReq(req *http.Request) (resp *http.Response, err error) {
+	req.Header.Add("User-Agent", useragent)
+	client := headerClient(req.Header)
+
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
@@ -146,7 +157,7 @@ func doReq(client *http.Client, req *http.Request) (resp *http.Response, err err
 // which ensures that the given headers will be readded after a redirect.
 func headerClient(headers http.Header) *http.Client {
 	redirectFunc := func(req *http.Request, via []*http.Request) error {
-		if len(via) >= 10 {
+		if len(via) >= maxRedirects {
 			return errors.New("too many redirects")
 		}
 
