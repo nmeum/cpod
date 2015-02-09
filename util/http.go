@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -39,7 +40,7 @@ func Get(uri string) (resp *http.Response, err error) {
 		return
 	}
 
-	return doReq(req)
+	return doReq(http.DefaultClient, req)
 }
 
 // GetFile downloads the file located at the given uri and saves it in
@@ -87,8 +88,10 @@ func resumeGet(uri, target string) error {
 		return err
 	}
 
-	req.Header.Add("Range", fmt.Sprintf("bytes=%d-", fi.Size()))
-	resp, err := doReq(req)
+	byteRange := fmt.Sprintf("%d-", fi.Size())
+	req.Header.Add("Range", fmt.Sprintf("bytes=%s", byteRange))
+
+	resp, err := doReq(rangeClient(byteRange), req)
 	if err != nil {
 		return err
 	}
@@ -128,8 +131,7 @@ func newGet(uri, target string) error {
 
 // doReq does the same as net.client.Do but it retries sending the
 // request if it failed.
-func doReq(req *http.Request) (resp *http.Response, err error) {
-	client := http.DefaultClient
+func doReq(client *http.Client, req *http.Request) (resp *http.Response, err error) {
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
@@ -140,4 +142,19 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	}
 
 	return
+}
+
+// rangeClient returns a client with a custom CheckRedirect function
+// which adds a range Header with the given range as value to each request.
+func rangeClient(byteRange string) *http.Client {
+	redirectFunc := func(req *http.Request, via []*http.Request) error {
+		if len(via) >= 10 {
+			return errors.New("too many redirects")
+		}
+
+		req.Header.Add("Range", fmt.Sprintf("bytes=%s", byteRange))
+		return nil
+	}
+
+	return &http.Client{CheckRedirect: redirectFunc}
 }
