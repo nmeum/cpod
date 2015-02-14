@@ -40,7 +40,7 @@ at cpod-import(1) and cpod-export(1).
 
 =item B<-h>
 
-Display help and exit.
+Display help/defaults and exit.
 
 =item B<-p> I<number>
 
