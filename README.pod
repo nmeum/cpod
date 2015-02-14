@@ -24,10 +24,6 @@ time. Open the file with your favorite text editor and add your desired
 URLs (one per line).  The file path is documented in the B<FILES>
 section below.
 
-It expects that your file system is able to handle unicode characters,
-if it isn't you might run into problems if a feed or episode title
-contains a unicode character.
-
 For OPML import and export two seperated optinal binaries are provided.
 If you installed them and want to import/export an OPML file have a look
 at cpod-import(1) and cpod-export(1).
