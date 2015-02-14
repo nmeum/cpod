@@ -4,14 +4,14 @@ cpod-import - OPML import for cpod(1)
 
 =head1 SYNOPSIS
 
-B<cpod-import> I<FILE>
+B<cpod-import> I<FILE>B<...>
 
 =head1 DESCRIPTION
 
-cpod-import imports your subscriptions from the specfied OPML I<FILE>.
-After parsing the file it writes each outline to the cpod(1) urlfile.
-After importing your feeds you need to manually invoke cpod(1) to fetch
-them. If you want to export an existing OPML file take a look at
+cpod-import imports your subscriptions from the specfied OPML files.
+After parsing the files it writes each outline to the cpod(1) urlfile.
+Afterwards you need to manually invoke cpod(1) to fetch and update your
+feeds. If you want to export an existing OPML file take a look at
 cpod-export(1).
 
 =head1 SEE ALSO

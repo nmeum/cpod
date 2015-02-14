@@ -10,20 +10,30 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "USAGE: cpod-import FILE\n")
+	fmt.Fprintf(os.Stderr, "USAGE: cpod-import FILE...\n")
 	os.Exit(1)
+}
+
+func load(files []string) (out []opml.Outline, err error) {
+	for _, file := range files {
+		var op *opml.Opml
+
+		op, err = opml.Load(file)
+		if err != nil {
+			return
+		}
+
+		for _, o := range op.Outlines {
+			out = append(out, o)
+		}
+	}
+
+	return
 }
 
 func main() {
 	if len(os.Args) <= 0 {
 		usage()
-	}
-
-	opmlFile, err := opml.Load(os.Args[1])
-	if os.IsNotExist(err) {
-		usage()
-	} else if err != nil {
-		panic(err)
 	}
 
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), "cpod")
@@ -36,7 +46,12 @@ func main() {
 		panic(err)
 	}
 
-	for _, outline := range opmlFile.Outlines {
+	outlines, err := load(os.Args)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, outline := range outlines {
 		url := outline.URL
 		if !store.Contains(url) {
 			store.Add(url)
