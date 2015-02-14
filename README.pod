@@ -22,8 +22,8 @@ unless those unfinished downloads are no part of your episode scope.
 cpod is using a plain text file to store your podcast subscriptions. You
 need to manually create this file before starting cpod for the first
 time. Open the file with your favorite text editor and add your desired
-URLs (one per line).  The file path is documented in the B<FILES>
-section below.
+URLs (one per line). The file path is documented in the B<FILES> section
+below.
 
 For OPML import and export two separated optional binaries are provided.
 If you installed them take a look at cpod-import(1) and cpod-export(1)
