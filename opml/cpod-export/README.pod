@@ -8,9 +8,9 @@ B<cpod-export> I<FILE>
 
 =head1 DESCRIPTION
 
-cpod-export exports your cpod(1) subscriptions to the specfied I<FILE>
+cpod-export exports your cpod(1) subscriptions to the specified I<FILE>
 in the OPML format. It uses goroutines to fetch all feeds concurrently
-and is thus relativly fast. If you want to import an existing OPML file
+and is thus relatively fast. If you want to import an existing OPML file
 take a look at cpod-import(1).
 
 =head1 SEE ALSO
