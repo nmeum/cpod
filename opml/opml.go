@@ -14,7 +14,7 @@ import (
 const version = "2.0"
 
 // Opml represent an OPML document.
-type Opml struct {
+type OPML struct {
 	// XML name.
 	XMLName xml.Name `xml:"opml"`
 
@@ -46,8 +46,8 @@ type Outline struct {
 // Create returns a new OPML document with the given title. However,
 // this is just syntax sugar. A file is only written after a call Save,
 // it's the callers responsibility to do so if desired.
-func Create(title string) (o *Opml) {
-	o = &Opml{
+func Create(title string) (o *OPML) {
+	o = &OPML{
 		Version: version,
 		Title:   title,
 		Created: time.Now().Format(time.RFC1123Z),
@@ -57,7 +57,7 @@ func Create(title string) (o *Opml) {
 }
 
 // Load reads an existing OPML document located at the given path.
-func Load(path string) (o *Opml, err error) {
+func Load(path string) (o *OPML, err error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return
@@ -72,7 +72,7 @@ func Load(path string) (o *Opml, err error) {
 
 // Add appends a new outline to the OPML document, even if the outline
 // is already a part of the document.
-func (o *Opml) Add(text, ftype, url string) {
+func (o *OPML) Add(text, ftype, url string) {
 	outline := Outline{
 		Text: text,
 		Type: ftype,
@@ -84,7 +84,7 @@ func (o *Opml) Add(text, ftype, url string) {
 
 // Save writes an indented version of the OPML document to the given
 // file path.
-func (o *Opml) Save(path string) (err error) {
+func (o *OPML) Save(path string) (err error) {
 	file, err := os.Create(path)
 	if err != nil {
 		return

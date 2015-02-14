@@ -16,7 +16,7 @@ func usage() {
 
 func load(files []string) (out []opml.Outline, err error) {
 	for _, file := range files {
-		var op *opml.Opml
+		var op *opml.OPML
 
 		op, err = opml.Load(file)
 		if err != nil {

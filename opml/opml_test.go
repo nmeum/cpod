@@ -56,7 +56,7 @@ func TestAdd(t *testing.T) {
 		URL:  "http://testcast.com/atom-feed.xml",
 	}
 
-	o := new(Opml)
+	o := new(OPML)
 	o.Add("Testcast", "atom", "http://testcast.com/atom-feed.xml")
 
 	if o.Outlines[0] != testOutline {
