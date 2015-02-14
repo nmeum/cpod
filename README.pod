@@ -24,9 +24,9 @@ time. Open the file with your favorite text editor and add your desired
 URLs (one per line).  The file path is documented in the B<FILES>
 section below.
 
-For OPML import and export two seperated optinal binaries are provided.
-If you installed them and want to import/export an OPML file have a look
-at cpod-import(1) and cpod-export(1).
+For OPML import and export two separated optional binaries are provided.
+If you installed them take a look at cpod-import(1) and cpod-export(1)
+in case your are seeking more information.
 
 =head1 OPTIONS
 
