@@ -13,8 +13,10 @@ track which episodes you already downloaded, when your are done with an
 episode you can delete it and cpod won't fetch it again.
 
 If you don't pass any command line flags to cpod it will automatically
-update all feeds and download all (new) episodes. However, the options
-described below might be used to change this behaviour.
+update all feeds and download all (new) episodes. Since cpod supports
+continuous downloads you can also interrupted it at any point and the
+next time you invoke it will automatically resume unfinished downloads,
+unless those unfinished downloads are no part of your episode scope.
 
 cpod is using a plain text file to store your podcast subscriptions. You
 need to manually create this file before starting cpod for the first
@@ -25,10 +27,6 @@ section below.
 It expects that your file system is able to handle unicode characters,
 if it isn't you might run into problems if a feed or episode title
 contains a unicode character.
-
-Since version 2.0 cpod support continuous downloads which means that you
-can interrupt cpod at any point and the next time you start it will
-automatically resume were it left of the last time.
 
 For OPML import and export two seperated optinal binaries are provided.
 If you installed them and want to import/export an OPML file have a look
