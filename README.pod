@@ -69,7 +69,7 @@ Used as a fallback to determine the users name.
 
 =item XDG_CONFIG_HOME
 
-Base directory with config files (default: ~/.config).
+Base directory with configuration files (default: ~/.config).
 
 =back
 
