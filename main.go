@@ -135,7 +135,6 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		return err
 	}
 
-	url := strings.TrimSpace(item.Attachment)
 	target := filepath.Join(downloadDir, title)
 	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 		return err
