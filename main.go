@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 )
@@ -140,19 +139,15 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		return err
 	}
 
-	if err := util.GetFile(url, target); err != nil {
+	fp, err := util.GetFile(item.Attachment, target)
+	if err != nil {
 		return err
 	}
 
 	name, err := util.Escape(item.Title)
 	if err == nil {
-		fn, err := util.Filename(url)
-		if err != nil {
-			return err
-		}
-
-		newPath := filepath.Join(target, name+filepath.Ext(fn))
-		if err = os.Rename(filepath.Join(target, fn), newPath); err != nil {
+		newfp := filepath.Join(target, name+filepath.Ext(fp))
+		if err = os.Rename(fp, newfp); err != nil {
 			return err
 		}
 	}

@@ -24,7 +24,7 @@ func TestFilename(t *testing.T) {
 	}
 
 	for _, p := range testpairs {
-		f, err := Filename(p.inputData)
+		f, err := filename(p.inputData)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,17 +72,10 @@ func TestGetFile1(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(th))
 	defer ts.Close()
 
-	err := GetFile(ts.URL, os.TempDir())
+	fp, err := GetFile(ts.URL, os.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	name, err := Filename(ts.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	fp := filepath.Join(os.TempDir(), name)
 	defer os.Remove(fp)
 
 	data, err := ioutil.ReadFile(fp)

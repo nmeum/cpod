@@ -23,22 +23,6 @@ const (
 	useragent = "cpod"
 )
 
-// Filename returns the fiilename of an URL. It removes the query
-// parameters etc.
-func Filename(uri string) (fn string, err error) {
-	u, err := url.Parse(uri)
-	if err != nil {
-		return
-	}
-
-	fn = filepath.Base(u.Path)
-	if fn == "/" fn == "." {
-		fn = "unnamed"
-	}
-
-	return
-}
-
 // Get works like http.get but also retries the get a few times if it
 // failed.
 func Get(uri string) (resp *http.Response, err error) {
@@ -53,28 +37,33 @@ func Get(uri string) (resp *http.Response, err error) {
 // GetFile downloads the file located at the given uri and saves it in
 // the directory specified as target. It also supports continuous
 // downloads.
-func GetFile(uri, target string) error {
-	if err := os.MkdirAll(target, 0755); err != nil {
-		return err
+func GetFile(uri, target string) (fp string, err error) {
+	if err = os.MkdirAll(target, 0755); err != nil {
+		return
 	}
 
-	fn, err := Filename(uri)
+	fn, err := filename(uri)
 	if err != nil {
-		return err
+		return
 	}
 
 	partPath := filepath.Join(target, fmt.Sprintf("%s.part", fn))
 	if _, err = os.Open(partPath); os.IsNotExist(err) {
 		if err = newGet(uri, partPath); err != nil {
-			return err
+			return
 		}
 	} else {
 		if err = resumeGet(uri, partPath); err != nil {
-			return err
+			return
 		}
 	}
 
-	return os.Rename(partPath, filepath.Join(target, fn))
+	fp = filepath.Join(target, fn)
+	if err = os.Rename(partPath, fp); err != nil {
+		return
+	}
+
+	return
 }
 
 // ResumeGet resumes a download which was already started.
@@ -132,6 +121,22 @@ func newGet(uri, target string) error {
 	}
 
 	return err
+}
+
+// filename returns the fiilename of an URL. It removes the query
+// parameters etc.
+func filename(uri string) (fn string, err error) {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return
+	}
+
+	fn = filepath.Base(u.Path)
+	if fn == "/" || fn == "." {
+		fn = "unnamed"
+	}
+
+	return
 }
 
 // doReq does the same as net.client.Do but it retries sending the
