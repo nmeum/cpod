@@ -8,9 +8,10 @@ B<cpod> [B<-h>] [B<-p> I<number>] [B<-t> I<number>] [B<-v>]
 
 =head1 DESCRIPTION
 
-cpod is a small cron(8) friendly podcatcher written in go(1) which only
-track which episodes you already downloaded, when your are done with an
-episode you can delete it and cpod won't fetch it again.
+cpod is a small cron(8) friendly podcatcher which is only responsible
+for downloading podcast episodes. It doesn't play them, it doesn't
+enqueue them and it doesn't track the episodes you already listend to. It
+simply fetches them no more, no less.
 
 If you don't pass any command line flags to cpod it will automatically
 update all feeds and download all (new) episodes. Since cpod supports
@@ -106,4 +107,4 @@ Subscribe to a new podcast:
 
 =head1 SEE ALSO
 
-cpod-export(1), cpod-import(1), cron(8), go(1)
+cpod-export(1), cpod-import(1), cron(8)
