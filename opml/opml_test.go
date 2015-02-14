@@ -2,6 +2,7 @@ package opml
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -72,7 +73,7 @@ func TestSave(t *testing.T) {
 	o := Create("Podcasts")
 	o.Add("Somecast", "rss", "http://somecast.io/feed.rss")
 
-	testPath := "testdata/testSave.opml"
+	testPath := filepath.Join(os.TempDir(), "testSave.opml")
 	if err := o.Save(testPath); err != nil {
 		t.Fatal(err)
 	}
