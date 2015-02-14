@@ -10,6 +10,9 @@ import (
 	"sync"
 )
 
+// OPML document title
+const title = "Podcast subscriptions"
+
 func usage() {
 	fmt.Fprintf(os.Stderr, "USAGE: cpod-export FILE\n")
 	os.Exit(1)
@@ -31,7 +34,7 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	opmlFile := opml.Create("Podcast subscriptions")
+	opmlFile := opml.Create(title)
 
 	for cast := range storage.Fetch() {
 		wg.Add(1)
