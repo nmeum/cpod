@@ -38,14 +38,14 @@ func main() {
 	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 	lockPath := filepath.Join(os.TempDir(), fmt.Sprintf("%s-%s", appName, util.Username()))
 
-	storage, err := store.Load(filepath.Join(storeDir, "urls"))
-	if err != nil {
-		logger.Fatal(err)
-	}
-
 	if err := util.Lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {
+		logger.Fatal(err)
+	}
+
+	storage, err := store.Load(filepath.Join(storeDir, "urls"))
+	if err != nil {
 		logger.Fatal(err)
 	}
 
@@ -117,6 +117,7 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
+		// TODO also check Attachment type
 		if len(item.Attachment) <= 0 || item.Date.Before(unread) ||
 			item.Date.Equal(unread) {
 			break
