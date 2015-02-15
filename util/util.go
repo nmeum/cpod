@@ -77,7 +77,7 @@ func EnvDefault(key, fallback string) string {
 
 	var home string
 	user, err := user.Current()
-	if err == nil && len(user.HomeDir) > 0 {
+	if err == nil {
 		home = user.HomeDir
 	} else {
 		home = os.Getenv("HOME")
@@ -92,7 +92,7 @@ func EnvDefault(key, fallback string) string {
 func Username() string {
 	var name string
 	user, err := user.Current()
-	if err == nil && len(user.Username) > 0 {
+	if err == nil {
 		name = user.Username
 	} else {
 		name = os.Getenv("USER")
