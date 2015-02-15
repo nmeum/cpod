@@ -19,6 +19,7 @@ func TestFilename(t *testing.T) {
 	testpairs := []testpair{
 		{"http://example.com/foo/bar/foo/bar/foo.mp3", "foo.mp3"},
 		{"http://example.com/bar.opus?foo=bar&bar=foo", "bar.opus"},
+		{"http://example.org/foobar ", "foobar"},
 		{"http://example.com/", "unnamed"},
 		{"http://example.com", "unnamed"},
 		{"", "unnamed"},

@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -131,7 +132,7 @@ func filename(uri string) (fn string, err error) {
 		return
 	}
 
-	fn = filepath.Base(u.Path)
+	fn = strings.TrimSpace(filepath.Base(u.Path))
 	if len(fn) <= 0 || fn == "/" || fn == "." {
 		fn = "unnamed"
 	}
