@@ -21,6 +21,7 @@ func TestFilename(t *testing.T) {
 		{"http://example.com/bar.opus?foo=bar&bar=foo", "bar.opus"},
 		{"http://example.com/", "unnamed"},
 		{"http://example.com", "unnamed"},
+		{"", "unnamed"},
 	}
 
 	for _, p := range testpairs {

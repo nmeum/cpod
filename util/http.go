@@ -132,7 +132,7 @@ func filename(uri string) (fn string, err error) {
 	}
 
 	fn = filepath.Base(u.Path)
-	if fn == "/" || fn == "." {
+	if len(fn) <= 0 || fn == "/" || fn == "." {
 		fn = "unnamed"
 	}
 
