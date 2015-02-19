@@ -24,16 +24,20 @@ func TestLock1(t *testing.T) {
 		t.Fail()
 	}
 
-	os.Remove(lockPath)
+	if err := os.Remove(lockPath); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestLock2(t *testing.T) {
 	lockPath := filepath.Join(os.TempDir(), "lockTest")
-	if err := Lock(lockPath); err != nil {
+	if err := Lock(lockPath); os.IsExist(err) {
 		t.Fatal(err)
 	}
 
-	os.Remove(lockPath)
+	if err := os.Remove(lockPath); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestEscape(t *testing.T) {
