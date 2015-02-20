@@ -46,14 +46,12 @@ type Outline struct {
 // Create returns a new OPML document with the given title. However,
 // this is just syntax sugar. A file is only written after a call Save,
 // it's the callers responsibility to do so if desired.
-func Create(title string) (o *OPML) {
-	o = &OPML{
+func Create(title string) *OPML {
+	return &OPML{
 		Version: version,
 		Title:   title,
 		Created: time.Now().Format(time.RFC1123Z),
 	}
-
-	return
 }
 
 // Load reads an existing OPML document located at the given path.
