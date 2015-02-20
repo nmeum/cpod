@@ -51,6 +51,7 @@ func TestEscape(t *testing.T) {
 		{"Foo bar, baz!", "Foo-bar-baz"},
 		{"LNP007: Foobar!", "LNP007-Foobar"},
 		{"B$:(=== >$-%)/A/R", "B-A-R"},
+		{"foobar  ", "foobar"},
 	}
 
 	for _, test := range tests {
