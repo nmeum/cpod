@@ -25,8 +25,9 @@ const (
 	useragent = "cpod"
 )
 
-// Get works like http.get but also retries the get a few times if it
-// failed.
+// Get performs a HTTP GET request, just like http.get, however, it has
+// a few handy extra features: I adds a User-Agent header and it retries
+// a failed get request if the error was a temporary one.
 func Get(uri string) (resp *http.Response, err error) {
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -36,9 +37,9 @@ func Get(uri string) (resp *http.Response, err error) {
 	return doReq(req)
 }
 
-// GetFile downloads the file located at the given uri and saves it in
-// the directory specified as target. It also supports continuous
-// downloads.
+// GetFile downloads the file from the given uri and stores it in the
+// specified target directory. If a download was interrupted previously
+// GetFile is able to resume it.
 func GetFile(uri, target string) (fp string, err error) {
 	if err = os.MkdirAll(target, 0755); err != nil {
 		return
@@ -68,7 +69,8 @@ func GetFile(uri, target string) (fp string, err error) {
 	return
 }
 
-// ResumeGet resumes a download which was already started.
+// ResumeGet resumes an canceled download started by the newGet
+// function.
 func resumeGet(uri, target string) error {
 	file, err := os.OpenFile(target, os.O_RDWR|os.O_APPEND, 0644)
 	if err != nil {
@@ -102,7 +104,8 @@ func resumeGet(uri, target string) error {
 	return nil
 }
 
-// newGet starts a new file download.
+// newGet starts a new file download, if the download wasn't completed
+// it can be resumed later on using the resumeGet function.
 func newGet(uri, target string) error {
 	resp, err := Get(uri)
 	if err != nil {
@@ -125,8 +128,10 @@ func newGet(uri, target string) error {
 	return err
 }
 
-// filename returns the fiilename of an URL. It removes the query
-// parameters etc.
+// filename returns the fiilename of an URL. Basically it just uses
+// path.Base to determine the filename but it also removes queries.
+// Furthermore it also guarantees that the filename is not empty by
+// setting it to "unnamed" if it couldn't determine a proper filename.
 func filename(uri string) (fn string, err error) {
 	u, err := url.Parse(uri)
 	if err != nil {
