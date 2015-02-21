@@ -95,25 +95,25 @@ func (o *OPML) Add(text, ftype, url string) {
 
 // Save writes an indented version of the OPML document to the given
 // file path.
-func (o *OPML) Save(path string) (err error) {
+func (o *OPML) Save(path string) error {
 	file, err := os.Create(path)
 	if err != nil {
-		return
+		return err
 	}
 
 	defer file.Close()
 	data, err := xml.MarshalIndent(o, "", "\t")
 	if err != nil {
-		return
+		return err
 	}
 
 	if _, err = file.WriteString(xml.Header); err != nil {
-		return
+		return err
 	}
 
 	if _, err = file.Write(data); err != nil {
-		return
+		return err
 	}
 
-	return
+	return err
 }
