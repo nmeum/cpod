@@ -130,7 +130,6 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		// TODO also check Attachment type
 		if len(item.Attachment) <= 0 || item.Date.Before(unread) ||
 			item.Date.Equal(unread) {
 			break
