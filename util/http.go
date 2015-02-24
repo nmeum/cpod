@@ -169,7 +169,7 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
-			time.Sleep((time.Duration)(i*3) * time.Second)
+			time.Sleep(time.Duration(i*3) * time.Second)
 		} else {
 			break
 		}
