@@ -105,8 +105,6 @@ func update(storage *store.Store) {
 					continue
 				}
 			}
-
-			return
 		}(cast)
 
 		for *limit > 0 && counter >= *limit {

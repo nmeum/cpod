@@ -60,8 +60,6 @@ func main() {
 
 			feed := p.Feed
 			opmlFile.Add(feed.Title, feed.Type, p.URL)
-
-			return
 		}(cast)
 	}
 
