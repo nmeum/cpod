@@ -16,4 +16,4 @@ cpod-export(1).
 
 =head1 SEE ALSO
 
-cpod(1), cpod-export(1), cpod-import(1)
+cpod(1), cpod-export(1)
