@@ -8,7 +8,7 @@ B<cpod-import> I<FILE>B<...>
 
 =head1 DESCRIPTION
 
-cpod-import imports your subscriptions from the specfied OPML files.
+cpod-import imports your subscriptions from the specified OPML files.
 After parsing the files it writes each outline to the cpod(1) urlfile.
 Afterwards you need to manually invoke cpod(1) to fetch and update your
 feeds. If you want to export an existing OPML file take a look at
