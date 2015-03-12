@@ -128,12 +128,13 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		if len(item.Attachment) <= 0 || item.Date.Before(unread) ||
-			item.Date.Equal(unread) {
+		if item.Date.Before(unread) || item.Date.Equal(unread) {
 			break
 		}
 
-		items = append(items, item)
+		if len(item.Attachment) > 0 {
+			items = append(items, item)
+		}
 	}
 
 	return
