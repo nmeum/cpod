@@ -19,7 +19,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -86,10 +85,8 @@ func TestGet(t *testing.T) {
 
 func TestGetFile1(t *testing.T) {
 	expected := "Hello World!\n"
-	testFile := filepath.Join("testdata", "hello.txt")
-
 	th := func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, testFile)
+		fmt.Fprintf(w, expected)
 	}
 
 	ts := httptest.NewServer(http.HandlerFunc(th))
