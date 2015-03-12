@@ -56,7 +56,7 @@ func TestGet(t *testing.T) {
 
 	th := func(w http.ResponseWriter, r *http.Request) {
 		counter++
-		if counter == 3 {
+		if counter == 3 || testing.Short() {
 			fmt.Fprintf(w, expected)
 			return
 		}
