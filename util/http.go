@@ -168,7 +168,8 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
-		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
+		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() ||
+			nerr.Timeout()) || isTemporary(resp.StatusCode) {
 			time.Sleep(time.Duration(i*3) * time.Second)
 		} else {
 			break
@@ -176,6 +177,20 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	}
 
 	return
+}
+
+// isTemporary returns true if the given status code resolves to a HTTP
+// status which can be considered temporary. Otherwise it returns false.
+func isTemporary(statusCode int) bool {
+	switch statusCode {
+	case http.StatusInternalServerError,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable,
+		http.StatusGatewayTimeout:
+		return true
+	default:
+		return false
+	}
 }
 
 // headerClient returns a client witch a custom CheckRedirect function
