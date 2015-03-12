@@ -4,7 +4,7 @@ cpod - cron(8) friendly podcatcher
 
 =head1 SYNOPSIS
 
-B<cpod> [B<-h>] [B<-p> I<number>] [B<-t> I<number>] [B<-v>]
+B<cpod> [B<-h>] [B<-p> I<number>] [B<-r> I<number>] [B<-v>]
 
 =head1 DESCRIPTION
 
