@@ -55,19 +55,11 @@ Display version number and exit.
 
 =over 4
 
-=item CPOD_DOWNLOAD_DIR
+=item B<CPOD_DOWNLOAD_DIR>
 
 The download directory (default: ~/podcasts).
 
-=item HOME
-
-Used as a fallback to determine path of users home directory.
-
-=item USER
-
-Used as a fallback to determine the users name.
-
-=item XDG_CONFIG_HOME
+=item B<XDG_CONFIG_HOME>
 
 Base directory with configuration files (default: ~/.config).
 
@@ -77,15 +69,11 @@ Base directory with configuration files (default: ~/.config).
 
 =over 4
 
-=item $CPOD_DOWNLOAD_DIR
+=item I<~/podcasts>
 
-Directory with downloaded podcast episodes.
+Default podcast download directory.
 
-=item $TMPDIR/cpod-$USER
-
-Lock file used to ensure that cpod isn't invoked twice.
-
-=item $XDG_CONFIG_HOME/cpod/urls
+=item I<~/.config/cpod/urls>
 
 Plain text file containing all subscribed feeds.
 
