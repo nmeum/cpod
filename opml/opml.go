@@ -25,7 +25,7 @@ import (
 // OPML version supported by this library.
 const version = "2.0"
 
-// Opml represent an OPML document.
+// OPML represent an OPML document.
 type OPML struct {
 	// XML name.
 	XMLName xml.Name `xml:"opml"`
@@ -76,6 +76,7 @@ func Load(path string) (o *OPML, err error) {
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = charset.NewReaderLabel
+
 	if err = decoder.Decode(&o); err != nil {
 		return
 	}
