@@ -168,12 +168,17 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
-		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() ||
-			nerr.Timeout()) || isTemporary(resp.StatusCode) {
+		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
+			// Temporary layer 4 error.
+			time.Sleep(time.Duration(i*5) * time.Second)
+			continue
+		} else if resp != nil && isTemporary(resp.StatusCode) {
+			// Temporary layer 7 error.
 			time.Sleep(time.Duration(i*3) * time.Second)
-		} else {
-			break
+			continue
 		}
+
+		break
 	}
 
 	return
