@@ -17,16 +17,8 @@ import (
 	"bufio"
 	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/go-feedparser"
-	"github.com/nmeum/go-feedparser/atom"
-	"github.com/nmeum/go-feedparser/rss"
 	"os"
 )
-
-// Parsers contains the feed types supported by the store.
-var Parsers = []feedparser.FeedFunc{
-	rss.Parse,
-	atom.Parse,
-}
 
 // Podcast represents a Podcast loaded from the store.
 type Podcast struct {
@@ -104,7 +96,7 @@ func (s *Store) Fetch() <-chan Podcast {
 			reader := resp.Body
 			defer reader.Close()
 
-			f, err := feedparser.Parse(reader, Parsers)
+			f, err := feedparser.Parse(reader)
 			out <- Podcast{url, f, err}
 		}
 

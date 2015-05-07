@@ -17,8 +17,7 @@ package opml
 
 import (
 	"encoding/xml"
-	"github.com/nmeum/go-feedparser/util"
-	"io/ioutil"
+	"golang.org/x/net/html/charset"
 	"os"
 	"time"
 )
@@ -69,12 +68,16 @@ func Create(title string) *OPML {
 
 // Load reads an existing OPML document located at the given path.
 func Load(path string) (o *OPML, err error) {
-	data, err := ioutil.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
 		return
 	}
+	defer file.Close()
 
-	if err = util.Unmarshal(data, &o); err != nil {
+	decoder := xml.NewDecoder(file)
+	decoder.CharsetReader = charset.NewReaderLabel
+
+	if err = decoder.Decode(&o); err != nil {
 		return
 	}
 

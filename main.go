@@ -100,7 +100,7 @@ func update(storage *store.Store) {
 					continue
 				}
 
-				if err := writeMarker(feed.Title, i.Date); err != nil {
+				if err := writeMarker(feed.Title, i.PubDate); err != nil {
 					logger.Println(err)
 					continue
 				}
@@ -128,7 +128,7 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		if item.Date.Before(unread) || item.Date.Equal(unread) {
+		if item.PubDate.Before(unread) || item.PubDate.Equal(unread) {
 			break
 		}
 
