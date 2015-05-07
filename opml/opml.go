@@ -76,7 +76,6 @@ func Load(path string) (o *OPML, err error) {
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = charset.NewReaderLabel
-
 	if err = decoder.Decode(&o); err != nil {
 		return
 	}
