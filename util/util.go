@@ -27,7 +27,7 @@ import (
 // Lock creates a lockfile at the given path and creates a signal
 // handler which removes the lockfile on interrupt or kill.
 func Lock(path string) (err error) {
-	_, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0644)
+	_, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0444)
 	if err != nil {
 		return
 	}
