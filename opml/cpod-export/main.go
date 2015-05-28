@@ -31,10 +31,6 @@ func usage() {
 	os.Exit(1)
 }
 
-func warn(err error) {
-	fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-}
-
 func main() {
 	if len(os.Args) <= 0 {
 		usage()
@@ -54,7 +50,7 @@ func main() {
 		go func(p store.Podcast) {
 			defer wg.Done()
 			if p.Error != nil {
-				warn(p.Error)
+				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 				return
 			}
 
