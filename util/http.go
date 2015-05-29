@@ -66,7 +66,8 @@ func GetFile(uri, target string) (fp string, err error) {
 		return
 	}
 
-	partPath := filepath.Join(target, fmt.Sprintf("%s.part", fn))
+	fp = filepath.Join(target, fn)
+	partPath := fmt.Sprintf("%s.part", fp)
 	if _, err = os.Open(partPath); os.IsNotExist(err) {
 		if err = newGet(uri, partPath); err != nil {
 			return
@@ -77,7 +78,6 @@ func GetFile(uri, target string) (fp string, err error) {
 		}
 	}
 
-	fp = filepath.Join(target, fn)
 	if err = os.Rename(partPath, fp); err != nil {
 		return
 	}
