@@ -107,10 +107,12 @@ func resumeGet(uri, target string) error {
 		return err
 	}
 
-	reader := resp.Body
-	defer reader.Close()
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusPartialContent {
+		return newGet(uri, target)
+	}
 
-	if _, err = io.Copy(file, reader); err != nil {
+	if _, err = io.Copy(file, resp.Body); err != nil {
 		return err
 	}
 
