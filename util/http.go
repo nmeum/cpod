@@ -85,13 +85,7 @@ func GetFile(uri, target string) (fp string, err error) {
 // resumeGet resumes an canceled download started by the newGet
 // function.
 func resumeGet(uri, target string) error {
-	file, err := os.OpenFile(target, os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	fi, err := file.Stat()
+	fi, err := os.Stat(target)
 	if err != nil {
 		return err
 	}
@@ -102,6 +96,8 @@ func resumeGet(uri, target string) error {
 	}
 
 	req.Header.Add("Range", fmt.Sprintf("bytes=%d-", fi.Size()))
+	req.Header.Add("If-Range", fi.ModTime().Format(time.RFC1123))
+
 	resp, err := doReq(req)
 	if err != nil {
 		return err
@@ -112,6 +108,12 @@ func resumeGet(uri, target string) error {
 		return newGet(uri, target)
 	}
 
+	file, err := os.OpenFile(target, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
 	if _, err = io.Copy(file, resp.Body); err != nil {
 		return err
 	}
