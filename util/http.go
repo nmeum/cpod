@@ -163,9 +163,9 @@ func filename(uri string) (fn string, err error) {
 	return
 }
 
-// doReq does the same as net.client.Do but it retries sending the
-// request if it failed. Furthermore, it also ensure that headers
-// remain the same after a redirect and it adds a User-Agent header.
+// doReq does the same as net.client.Do but it retries sending the request if a
+// temporary error on layer 4 is encountered. Furthermore, it also ensure that
+// headers remain the same after a redirect and it adds a User-Agent header.
 func doReq(req *http.Request) (resp *http.Response, err error) {
 	req.Header.Add("User-Agent", useragent)
 	client := headerClient(req.Header)
@@ -173,11 +173,6 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	for i := 1; i <= retry; i++ {
 		resp, err = client.Do(req)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
-			// Temporary layer 4 error.
-			time.Sleep(time.Duration(i*5) * time.Second)
-			continue
-		} else if resp != nil && isTemporary(resp.StatusCode) {
-			// Temporary layer 7 error.
 			time.Sleep(time.Duration(i*3) * time.Second)
 			continue
 		}
@@ -186,20 +181,6 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	}
 
 	return
-}
-
-// isTemporary returns true if the given status code resolves to a HTTP
-// status which can be considered temporary. Otherwise it returns false.
-func isTemporary(statusCode int) bool {
-	switch statusCode {
-	case http.StatusInternalServerError,
-		http.StatusBadGateway,
-		http.StatusServiceUnavailable,
-		http.StatusGatewayTimeout:
-		return true
-	default:
-		return false
-	}
 }
 
 // headerClient returns a client witch a custom CheckRedirect function

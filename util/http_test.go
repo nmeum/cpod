@@ -51,16 +51,8 @@ func TestFilename(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	expected := "Success\n"
-	var counter int
-
 	th := func(w http.ResponseWriter, r *http.Request) {
-		counter++
-		if counter == 3 || testing.Short() {
-			fmt.Fprintf(w, expected)
-			return
-		}
-
-		http.Error(w, "Try again!", http.StatusGatewayTimeout)
+		fmt.Fprintf(w, expected)
 	}
 
 	ts := httptest.NewServer(http.HandlerFunc(th))
