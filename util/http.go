@@ -85,7 +85,7 @@ func GetFile(uri, target string) (fp string, err error) {
 // resumeGet resumes an canceled download started by the newGet
 // function.
 func resumeGet(uri, target string) error {
-	file, err := os.OpenFile(target, os.O_RDWR|os.O_APPEND, 0644)
+	file, err := os.OpenFile(target, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return err
 	}
