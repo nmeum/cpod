@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	// Number of times failed HTTP request is retried.
+	// Number of times a failed HTTP request is retried.
 	retry = 3
 
 	// Number of maximal allowed redirects.
