@@ -177,10 +177,10 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 		resp, err = client.Do(req)
 		if nerr, ok := err.(net.Error); ok && (nerr.Temporary() || nerr.Timeout()) {
 			time.Sleep(time.Duration(i*3) * time.Second)
-			continue
+			resp.Body.Close()
+		} else {
+			break
 		}
-
-		break
 	}
 
 	return
