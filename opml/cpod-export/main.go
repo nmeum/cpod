@@ -50,7 +50,7 @@ func main() {
 		go func(p store.Podcast) {
 			defer wg.Done()
 			if p.Error != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+				fmt.Fprintf(os.Stderr, "%s\n", p.Error)
 				return
 			}
 
