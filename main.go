@@ -94,7 +94,7 @@ func update(storage *store.Store) {
 				return
 			}
 
-			latestWritten := false
+			var latestWritten bool
 			for _, i := range items {
 				if err := getItem(feed, i); err != nil {
 					logger.Println(err)
