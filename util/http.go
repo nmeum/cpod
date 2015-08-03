@@ -34,9 +34,6 @@ const (
 	// Number of maximal allowed redirects.
 	maxRedirects = 10
 
-	// Time limit for HTTP requests.
-	timeout = 30 * time.Second
-
 	// HTTP User-Agent.
 	useragent = "cpod"
 )
@@ -186,9 +183,8 @@ func doReq(req *http.Request) (resp *http.Response, err error) {
 	return
 }
 
-// headerClient returns a client witch a custom CheckRedirect function which
-// ensures that the given headers will be readded after a redirect. Furthermore
-// it also set a time limit for requests.
+// headerClient returns a client witch a custom CheckRedirect function
+// which ensures that the given headers will be readded after a redirect.
 func headerClient(headers http.Header) *http.Client {
 	redirectFunc := func(req *http.Request, via []*http.Request) error {
 		if len(via) >= maxRedirects {
@@ -199,5 +195,5 @@ func headerClient(headers http.Header) *http.Client {
 		return nil
 	}
 
-	return &http.Client{CheckRedirect: redirectFunc, Timeout: timeout}
+	return &http.Client{CheckRedirect: redirectFunc}
 }
