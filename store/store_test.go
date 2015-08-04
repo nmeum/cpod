@@ -62,7 +62,7 @@ func TestContains(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	url := "http://feeds.thisamericanlife.org/talpodcast"
+	url := "http://feed.thisamericanlife.org/talpodcast"
 	store := &Store{"", []string{url}}
 
 	channel := store.Fetch()
