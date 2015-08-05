@@ -129,7 +129,7 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		if item.PubDate.Before(unread) || item.PubDate.Equal(unread) {
+		if !item.PubDate.After(unread) {
 			break
 		}
 
