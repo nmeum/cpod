@@ -27,7 +27,7 @@ func TestLoad(t *testing.T) {
 	}
 
 	urls := []string{
-		"http://feeds.thisamericanlife.org/talpodcast",
+		"http://feed.thisamericanlife.org/talpodcast",
 		"http://www.npr.org/rss/podcast.php?id=510294",
 	}
 
