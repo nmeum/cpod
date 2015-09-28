@@ -94,16 +94,14 @@ func update(storage *store.Store) {
 				return
 			}
 
-			var latestWritten bool
 			for _, i := range items {
 				if err := getItem(feed, i); err != nil {
 					logger.Println(err)
+					break
 				}
 
-				if !latestWritten {
-					if err := writeMarker(feed.Title, i.PubDate); err == nil {
-						latestWritten = true
-					}
+				if err := writeMarker(feed.Title, i.PubDate); err != nil {
+					logger.Fatal(err)
 				}
 			}
 		}(cast)
