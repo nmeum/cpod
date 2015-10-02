@@ -96,14 +96,16 @@ func update(storage *store.Store) {
 				return
 			}
 
-			for _, i := range items {
-				if err := getItem(feed, i); err != nil {
+			for i := len(items) - 1; i >= 0; i-- {
+				item := items[i]
+				if err := getItem(feed, item); err != nil {
 					logger.Println(err)
 					break
 				}
 
-				if err := writeMarker(feed.Title, i.PubDate); err != nil {
-					logger.Fatal(err)
+				if err := writeMarker(feed.Title, item.PubDate); err != nil {
+					logger.Println(err)
+					break
 				}
 			}
 		}(cast)
