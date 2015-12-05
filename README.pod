@@ -59,10 +59,6 @@ Display version number and exit.
 
 The download directory (default: ~/podcasts).
 
-=item B<XDG_CONFIG_HOME>
-
-Base directory with configuration files (default: ~/.config).
-
 =back
 
 =head1 FILES
@@ -73,7 +69,7 @@ Base directory with configuration files (default: ~/.config).
 
 Default podcast download directory.
 
-=item I<~/.config/cpod/urls>
+=item I<~/podcasts/urls.txt>
 
 Plain text file containing all subscribed feeds.
 
@@ -91,7 +87,7 @@ Download the most recent episodes of each feed:
 
 Subscribe to a new podcast:
 
-	echo "URL" >> "${XDG_CONFIG_HOME:-$HOME/.config}/cpod/urls"
+	echo "URL" >> "${CPOD_DOWNLOAD_DIR:-$HOME/podcasts}/urls.txt"
 
 =head1 SEE ALSO
 

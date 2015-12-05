@@ -16,11 +16,12 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
-	"github.com/nmeum/cpod/store"
 	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/go-feedparser"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -40,8 +41,8 @@ var (
 )
 
 var (
-	logger      = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
-	downloadDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
+	logger    = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
+	targetDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
 )
 
 func main() {
@@ -50,45 +51,35 @@ func main() {
 		logger.Fatal(appVersion)
 	}
 
-	storeDir := filepath.Join(util.EnvDefault("XDG_CONFIG_HOME", ".config"), appName)
 	lockPath := filepath.Join(os.TempDir(), fmt.Sprintf("%s-%s", appName, util.Username()))
-
 	if err := util.Lock(lockPath); os.IsExist(err) {
 		logger.Fatalf("database is locked, remove %q to force unlock\n", lockPath)
 	} else if err != nil {
 		logger.Fatal(err)
 	}
 
-	storage, err := store.Load(filepath.Join(storeDir, "urls"))
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	update(storage)
+	update()
 	if err := os.Remove(lockPath); err != nil {
 		logger.Fatal(err)
 	}
 }
 
-func update(storage *store.Store) {
+func update() {
 	var wg sync.WaitGroup
 	var counter int
 
-	for cast := range storage.Fetch() {
+	feeds := make(chan feedparser.Feed)
+	go fetchFeeds(feeds)
+
+	for cast := range feeds {
 		wg.Add(1)
 		counter++
 
-		go func(p store.Podcast) {
+		go func(feed feedparser.Feed) {
 			defer func() {
 				wg.Done()
 				counter--
 			}()
-
-			feed := p.Feed
-			if p.Error != nil {
-				logger.Println(p.Error)
-				return
-			}
 
 			items, err := newItems(feed)
 			if err != nil {
@@ -116,6 +107,48 @@ func update(storage *store.Store) {
 	}
 
 	wg.Wait()
+}
+
+func fetchFeeds(och chan<- feedparser.Feed) {
+	file, err := os.Open(filepath.Join(targetDir, "urls.txt"))
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer file.Close()
+
+	urlChan := make(chan string)
+	go func(r io.Reader) {
+		scanner := bufio.NewScanner(r)
+		for scanner.Scan() {
+			urlChan <- scanner.Text()
+		}
+
+		if err := scanner.Err(); err != nil {
+			logger.Fatal(err)
+		}
+
+		close(urlChan)
+	}(file)
+
+	for url := range urlChan {
+		resp, err := util.Get(url)
+		if err != nil {
+			logger.Println(err)
+			continue
+		}
+
+		reader := resp.Body
+		defer reader.Close()
+
+		feed, err := feedparser.Parse(reader)
+		if err != nil {
+			logger.Println(err)
+		} else {
+			och <- feed
+		}
+	}
+
+	close(och)
 }
 
 func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
@@ -149,7 +182,7 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		return err
 	}
 
-	target := filepath.Join(downloadDir, title)
+	target := filepath.Join(targetDir, title)
 	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 		return err
 	}
@@ -176,7 +209,7 @@ func readMarker(name string) (marker time.Time, err error) {
 		return
 	}
 
-	file, err := os.Open(filepath.Join(downloadDir, name, ".latest"))
+	file, err := os.Open(filepath.Join(targetDir, name, ".latest"))
 	if err != nil {
 		return
 	}
@@ -198,7 +231,7 @@ func writeMarker(name string, latest time.Time) error {
 		return err
 	}
 
-	path := filepath.Join(downloadDir, name, ".latest")
+	path := filepath.Join(targetDir, name, ".latest")
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return err
 	}
