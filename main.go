@@ -88,10 +88,11 @@ func update() {
 			}
 
 			for _, item := range items {
-				if err := getItem(feed, item); err != nil {
-					logger.Println(err)
-					continue
-				}
+				wg.Add(1)
+				go func(i feedparser.Item) {
+					getItem(feed, item)
+					wg.Done()
+				}(item)
 			}
 		}(cast)
 
@@ -199,10 +200,10 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 	name, err := util.Escape(item.Title)
 	if err == nil {
 		newfp := filepath.Join(target, name+filepath.Ext(fp))
-		if err = os.Rename(fp, newfp); err != nil {
-			return err
-		} else {
+		if err = os.Rename(fp, newfp); err == nil {
 			fp = newfp
+		} else {
+			return err
 		}
 	}
 
