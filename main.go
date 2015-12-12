@@ -42,13 +42,15 @@ var (
 
 var (
 	logger    = log.New(os.Stderr, fmt.Sprintf("%s: ", appName), 0)
-	targetDir = util.EnvDefault("CPOD_DOWNLOAD_DIR", "podcasts")
+	targetDir = filepath.Join(util.HomeDir(), "podcasts")
 )
 
 func main() {
 	flag.Parse()
 	if *version {
 		logger.Fatal(appVersion)
+	} else if flag.NArg() <= 1 {
+		targetDir = flag.Arg(0)
 	}
 
 	lockPath := filepath.Join(os.TempDir(), fmt.Sprintf("%s-%s", appName, util.Username()))

@@ -21,7 +21,6 @@ import (
 	"os"
 	"os/signal"
 	"os/user"
-	"path/filepath"
 	"strings"
 	"unicode"
 )
@@ -81,15 +80,10 @@ func Escape(name string) (escaped string, err error) {
 	return
 }
 
-// EnvDefault returns the value of the given environment variable
-// key if it is not empty. If it is empty it returns the fallback
-// as an absolute path joined with the users home.
-func EnvDefault(key, fallback string) string {
-	dir := os.Getenv(key)
-	if len(dir) > 0 {
-		return dir
-	}
-
+// HomeDir returns the absolute path of the users home directory. It
+// tries to determine the path using os/user first and if that doesn't
+// work it returns the value of the HOME environment variable.
+func HomeDir() string {
 	var home string
 	user, err := user.Current()
 	if err == nil {
@@ -98,7 +92,7 @@ func EnvDefault(key, fallback string) string {
 		home = os.Getenv("HOME")
 	}
 
-	return filepath.Join(home, fallback)
+	return home
 }
 
 // Username returns the username of the current user. It tries to
