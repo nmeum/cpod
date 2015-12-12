@@ -160,7 +160,9 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	latestFi, err := findLatest(filepath.Join(targetDir, title))
 	if err == nil {
 		latest = latestFi.ModTime()
-	} else if !os.IsNotExist(err) {
+	} else if os.IsNotExist(err) {
+		err = nil
+	} else {
 		return
 	}
 
