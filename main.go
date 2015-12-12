@@ -206,8 +206,7 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		}
 	}
 
-	err = os.Chtimes(fp, item.PubDate, item.PubDate)
-	return nil
+	return os.Chtimes(fp, item.PubDate, item.PubDate)
 }
 
 func findLatest(fp string) (fi os.FileInfo, err error) {
