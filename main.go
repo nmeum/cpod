@@ -87,16 +87,10 @@ func update() {
 				return
 			}
 
-			for i := len(items) - 1; i >= 0; i-- {
-				item := items[i]
+			for _, item := range items {
 				if err := getItem(feed, item); err != nil {
 					logger.Println(err)
-					break
-				}
-
-				if err := writeMarker(feed.Title, item.PubDate); err != nil {
-					logger.Println(err)
-					break
+					continue
 				}
 			}
 		}(cast)
@@ -130,32 +124,42 @@ func fetchFeeds(och chan<- feedparser.Feed) {
 		close(urlChan)
 	}(file)
 
+	var wg sync.WaitGroup
 	for url := range urlChan {
-		resp, err := util.Get(url)
-		if err != nil {
-			logger.Println(err)
-			continue
-		}
+		go func(u string) {
+			resp, err := util.Get(u)
+			if err != nil {
+				logger.Println(err)
+				return
+			}
 
-		reader := resp.Body
-		defer reader.Close()
+			reader := resp.Body
+			defer reader.Close()
 
-		feed, err := feedparser.Parse(reader)
-		if err != nil {
-			logger.Println(err)
-		} else {
-			och <- feed
-		}
+			feed, err := feedparser.Parse(reader)
+			if err != nil {
+				logger.Println(err)
+			} else {
+				och <- feed
+			}
+		}(url)
 	}
 
+	wg.Wait()
 	close(och)
 }
 
 func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
-	unread, err := readMarker(cast.Title)
-	if os.IsNotExist(err) {
-		err = nil
-	} else if err != nil {
+	var latest time.Time
+	title, err := util.Escape(cast.Title)
+	if err != nil {
+		return
+	}
+
+	latestFi, err := findLatest(filepath.Join(targetDir, title))
+	if err == nil {
+		latest = latestFi.ModTime()
+	} else if !os.IsNotExist(err) {
 		return
 	}
 
@@ -164,7 +168,7 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	}
 
 	for _, item := range cast.Items {
-		if !item.PubDate.After(unread) {
+		if !item.PubDate.After(latest) {
 			break
 		}
 
@@ -197,54 +201,44 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		newfp := filepath.Join(target, name+filepath.Ext(fp))
 		if err = os.Rename(fp, newfp); err != nil {
 			return err
+		} else {
+			fp = newfp
 		}
 	}
 
+	err = os.Chtimes(fp, item.PubDate, item.PubDate)
 	return nil
 }
 
-func readMarker(name string) (marker time.Time, err error) {
-	name, err = util.Escape(name)
+func findLatest(fp string) (fi os.FileInfo, err error) {
+	dir, err := os.Open(fp)
+	if err != nil {
+		return
+	}
+	defer dir.Close()
+
+	files, err := dir.Readdir(0)
 	if err != nil {
 		return
 	}
 
-	file, err := os.Open(filepath.Join(targetDir, name, ".latest"))
-	if err != nil {
-		return
+	var latest *os.FileInfo
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".part" {
+			continue
+		}
+
+		t := (*latest).ModTime()
+		if latest == nil || file.ModTime().Before(t) {
+			latest = &file
+		}
 	}
 
-	defer file.Close()
-	var timestamp int64
-
-	if _, err = fmt.Fscanf(file, "%d\n", &timestamp); err != nil {
-		return
+	if latest == nil {
+		err = os.ErrNotExist
+	} else {
+		fi = *latest
 	}
 
-	marker = time.Unix(timestamp, 0)
 	return
-}
-
-func writeMarker(name string, latest time.Time) error {
-	name, err := util.Escape(name)
-	if err != nil {
-		return err
-	}
-
-	path := filepath.Join(targetDir, name, ".latest")
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return err
-	}
-
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
-	if _, err := fmt.Fprintf(file, "%d\n", latest.Unix()); err != nil {
-		return err
-	}
-
-	return nil
 }
