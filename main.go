@@ -69,7 +69,7 @@ func update() {
 	var counter int
 
 	feeds := make(chan feedparser.Feed)
-	go fetchFeeds(feeds)
+	go fetchFeeds(wg, feeds)
 
 	for cast := range feeds {
 		wg.Add(1)
@@ -90,7 +90,9 @@ func update() {
 			for _, item := range items {
 				wg.Add(1)
 				go func(i feedparser.Item) {
-					getItem(feed, item)
+					if err := getItem(feed, item); err != nil {
+						logger.Println(err)
+					}
 					wg.Done()
 				}(item)
 			}
@@ -104,7 +106,7 @@ func update() {
 	wg.Wait()
 }
 
-func fetchFeeds(och chan<- feedparser.Feed) {
+func fetchFeeds(wg sync.WaitGroup, ch chan<- feedparser.Feed) {
 	file, err := os.Open(filepath.Join(targetDir, "urls.txt"))
 	if err != nil {
 		logger.Fatal(err)
@@ -125,9 +127,10 @@ func fetchFeeds(och chan<- feedparser.Feed) {
 		close(urlChan)
 	}(file)
 
-	var wg sync.WaitGroup
 	for url := range urlChan {
+		wg.Add(1)
 		go func(u string) {
+			defer wg.Done()
 			resp, err := util.Get(u)
 			if err != nil {
 				logger.Println(err)
@@ -141,13 +144,13 @@ func fetchFeeds(och chan<- feedparser.Feed) {
 			if err != nil {
 				logger.Println(err)
 			} else {
-				och <- feed
+				ch <- feed
 			}
 		}(url)
 	}
 
 	wg.Wait()
-	close(och)
+	close(ch)
 }
 
 func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
