@@ -49,7 +49,7 @@ func main() {
 	flag.Parse()
 	if *version {
 		logger.Fatal(appVersion)
-	} else if flag.NArg() <= 1 {
+	} else if flag.NArg() >= 1 {
 		targetDir = flag.Arg(0)
 	}
 
@@ -71,7 +71,7 @@ func update() {
 	var counter int
 
 	feeds := make(chan feedparser.Feed)
-	go fetchFeeds(wg, feeds)
+	go fetchFeeds(feeds)
 
 	for cast := range feeds {
 		wg.Add(1)
@@ -108,7 +108,7 @@ func update() {
 	wg.Wait()
 }
 
-func fetchFeeds(wg sync.WaitGroup, ch chan<- feedparser.Feed) {
+func fetchFeeds(ch chan<- feedparser.Feed) {
 	file, err := os.Open(filepath.Join(targetDir, "urls.txt"))
 	if err != nil {
 		logger.Fatal(err)
@@ -129,6 +129,7 @@ func fetchFeeds(wg sync.WaitGroup, ch chan<- feedparser.Feed) {
 		close(urlChan)
 	}(file)
 
+	var wg sync.WaitGroup
 	for url := range urlChan {
 		wg.Add(1)
 		go func(u string) {
