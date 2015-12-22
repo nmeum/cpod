@@ -4,7 +4,7 @@ cpod - cron(8) friendly podcatcher
 
 =head1 SYNOPSIS
 
-B<cpod> [B<-h>] [B<-p> I<number>] [B<-r> I<number>] [B<-v>]
+B<cpod> [B<-h>] [B<-p> I<number>] [B<-r> I<number>] [B<-v>] [B<dir>]
 
 =head1 DESCRIPTION
 
@@ -20,10 +20,16 @@ next time you invoke it will automatically resume unfinished downloads
 unless those unfinished downloads are no longer part of your episode
 scope.
 
+Downloaded episodes are stored in I<~/podcasts> by default, you can
+specify an alternative directory by passing its path as the first
+command line argument to cpod.
+
 cpod is using a plain text file to store your podcast subscriptions. You
-need to manually create this file before starting cpod. Open the file
-with your favorite text editor and add your desired URLs (one per line).
-The file path is documented in the B<FILES> section below.
+need to manually create this file before starting cpod, it needs to be
+called I<urls.txt> and has to be located in your download directory.
+Open the file with your favorite text editor and add your desired URLs
+(one per line). The file path is documented in the B<FILES> section
+below.
 
 For OPML import and export two separated optional binaries are provided.
 If you installed them take a look at cpod-import(1) and cpod-export(1)
@@ -51,16 +57,6 @@ Display version number and exit.
 
 =back
 
-=head1 ENVIRONMENT
-
-=over 4
-
-=item B<CPOD_DOWNLOAD_DIR>
-
-The download directory (default: ~/podcasts).
-
-=back
-
 =head1 FILES
 
 =over 4
@@ -71,7 +67,7 @@ Default podcast download directory.
 
 =item I<~/podcasts/urls.txt>
 
-Plain text file containing all subscribed feeds.
+Plain text file containing subscriptions.
 
 =back
 
@@ -87,7 +83,7 @@ Download the most recent episodes of each feed:
 
 Subscribe to a new podcast:
 
-	echo "URL" >> "${CPOD_DOWNLOAD_DIR:-$HOME/podcasts}/urls.txt"
+	echo "URL" >> "$HOME"/podcasts/urls.txt
 
 =head1 SEE ALSO
 
