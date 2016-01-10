@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,7 +39,13 @@ func TestLoad(t *testing.T) {
 		URL:  "http://chaosradio.ccc.de/chaosradio-latest.rss",
 	}
 
-	o, err := Load("testdata/testLoad.opml")
+	file, err := os.Open("testdata/testLoad.opml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	o, err := Load(file)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +100,13 @@ func TestSave(t *testing.T) {
 	}
 	defer os.Remove(testPath)
 
-	loaded, err := Load(testPath)
+	file, err := os.Open(testPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+
+	loaded, err := Load(file)
 	if err != nil {
 		t.Fatal(err)
 	}

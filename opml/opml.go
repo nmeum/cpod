@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package opml
 import (
 	"encoding/xml"
 	"golang.org/x/net/html/charset"
+	"io"
 	"os"
 	"time"
 )
@@ -68,17 +69,10 @@ func Create(title string) *OPML {
 	}
 }
 
-// Load reads an existing OPML document located at the given path.
-func Load(path string) (o *OPML, err error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	decoder := xml.NewDecoder(file)
+// Parse parses an existing OPML using the given reader.
+func Load(r io.Reader) (o *OPML, err error) {
+	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = charset.NewReaderLabel
-
 	if err = decoder.Decode(&o); err != nil {
 		return
 	}
