@@ -17,7 +17,6 @@ package opml
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -87,31 +86,5 @@ func TestAdd(t *testing.T) {
 
 	if len(o.Outlines) != 1 {
 		t.Fatalf("Expected %d - got %d", 1, len(o.Outlines))
-	}
-}
-
-func TestSave(t *testing.T) {
-	o := Create("Podcasts")
-	o.Add("Somecast", "rss", "http://somecast.io/feed.rss")
-
-	testPath := filepath.Join(os.TempDir(), "testSave.opml")
-	if err := o.Save(testPath); err != nil {
-		t.Fatal(err)
-	}
-	defer os.Remove(testPath)
-
-	file, err := os.Open(testPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer file.Close()
-
-	loaded, err := Load(file)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if loaded.Title != "Podcasts" {
-		t.Fatal(err)
 	}
 }

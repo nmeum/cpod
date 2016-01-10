@@ -21,7 +21,6 @@ import (
 	"encoding/xml"
 	"golang.org/x/net/html/charset"
 	"io"
-	"os"
 	"time"
 )
 
@@ -90,29 +89,4 @@ func (o *OPML) Add(text, ftype, url string) {
 	}
 
 	o.Outlines = append(o.Outlines, outline)
-}
-
-// Save writes an indented version of the OPML document to the given
-// file path.
-func (o *OPML) Save(path string) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
-	data, err := xml.MarshalIndent(o, "", "\t")
-	if err != nil {
-		return err
-	}
-
-	if _, err = file.WriteString(xml.Header); err != nil {
-		return err
-	}
-
-	if _, err = file.Write(data); err != nil {
-		return err
-	}
-
-	return err
 }
