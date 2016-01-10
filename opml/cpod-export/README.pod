@@ -4,11 +4,11 @@ cpod-export - OPML export for cpod(1)
 
 =head1 SYNOPSIS
 
-B<cpod-export> I<URLFILE>
+B<cpod-export> I<URLFILE>B<...>
 
 =head1 DESCRIPTION
 
-cpod-export reads the specfied I<URLFILE> line by line, fetches each
+cpod-export reads the specfied url files line by line, fetches each
 feed and transform it into an OPML outline. Afterwards those OPML
 outlines are combined into an OPML XML document and written to stdout.
 You could redirect stdout to a file in order to create an OPML file

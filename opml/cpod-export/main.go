@@ -1,4 +1,4 @@
-f/ Copyright (C) 2013-2016 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import (
 const title = "Podcast subscriptions"
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "USAGE: cpod-export URLFILE\n")
+	fmt.Fprintf(os.Stderr, "USAGE: cpod-export URLFILE...\n")
 	os.Exit(1)
 }
 
@@ -67,19 +67,22 @@ func main() {
 		usage()
 	}
 
-	file, err := os.Open(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
 	var urls []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		urls = append(urls, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
+	for _, fp := range os.Args[1:] {
+		file, err := os.Open(fp)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			urls = append(urls, scanner.Text())
+		}
+
+		if err := scanner.Err(); err != nil {
+			panic(err)
+		}
 	}
 
 	data, err := xml.MarshalIndent(createOpml(urls), "", "\t")
