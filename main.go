@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/nmeum/cpod/util"
 	"github.com/nmeum/go-feedparser"
+	"html"
 	"io"
 	"log"
 	"os"
@@ -82,6 +83,13 @@ func update() {
 				wg.Done()
 				counter--
 			}()
+
+			title, err := util.Escape(html.UnescapeString(feed.Title))
+			if err != nil {
+				return
+			} else {
+				feed.Title = title
+			}
 
 			items, err := newItems(feed)
 			if err != nil {
@@ -158,12 +166,7 @@ func fetchFeeds(ch chan<- feedparser.Feed) {
 
 func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 	var latest time.Time
-	title, err := util.Escape(cast.Title)
-	if err != nil {
-		return
-	}
-
-	latestFi, err := findLatest(filepath.Join(targetDir, title))
+	latestFi, err := findLatest(filepath.Join(targetDir, cast.Title))
 	if err == nil {
 		latest = latestFi.ModTime()
 	} else if os.IsNotExist(err) {
@@ -190,12 +193,7 @@ func newItems(cast feedparser.Feed) (items []feedparser.Item, err error) {
 }
 
 func getItem(cast feedparser.Feed, item feedparser.Item) error {
-	title, err := util.Escape(cast.Title)
-	if err != nil {
-		return err
-	}
-
-	target := filepath.Join(targetDir, title)
+	target := filepath.Join(targetDir, cast.Title)
 	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 		return err
 	}
@@ -205,7 +203,7 @@ func getItem(cast feedparser.Feed, item feedparser.Item) error {
 		return err
 	}
 
-	name, err := util.Escape(item.Title)
+	name, err := util.Escape(html.UnescapeString(item.Title))
 	if err == nil {
 		newfp := filepath.Join(target, name+filepath.Ext(fp))
 		if err = os.Rename(fp, newfp); err == nil {

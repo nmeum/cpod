@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@ package util
 
 import (
 	"errors"
-	"html"
 	"os"
 	"os/signal"
 	"os/user"
@@ -46,9 +45,7 @@ func Lock(path string) (err error) {
 }
 
 // Escape escapes the given data to make sure it is safe to use it as a
-// filename. It also replaces spaces and other seperation characters
-// with the '-' character. It returns an error if the escaped string is
-// empty.
+// filename. It returns an error if the escaped string is empty.
 func Escape(name string) (escaped string, err error) {
 	mfunc := func(r rune) rune {
 		switch {
@@ -56,22 +53,25 @@ func Escape(name string) (escaped string, err error) {
 			return r
 		case unicode.IsNumber(r):
 			return r
+		case unicode.IsPunct(r) && r != os.PathSeparator:
+			return r
 		case unicode.IsSpace(r):
-			return '-'
-		case unicode.IsPunct(r):
-			return '-'
+			return ' '
 		}
 
 		return -1
 	}
 
-	escaped = strings.Map(mfunc, html.UnescapeString(name))
-	for strings.Contains(escaped, "--") {
-		escaped = strings.Replace(escaped, "--", "-", -1)
-	}
+	escaped = strings.Map(mfunc, name)
+	escaped = strings.TrimSpace(escaped)
 
-	escaped = strings.TrimPrefix(escaped, "-")
-	escaped = strings.TrimSuffix(escaped, "-")
+	for len(escaped) > 0 && escaped[0] == '.' {
+		if len(escaped) >= 1 {
+			escaped = escaped[1:]
+		} else {
+			escaped = ""
+		}
+	}
 
 	if len(escaped) <= 0 {
 		err = errors.New("couldn't escape title")

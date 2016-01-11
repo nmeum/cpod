@@ -1,4 +1,4 @@
-// Copyright (C) 2013-2015 Sören Tempel
+// Copyright (C) 2013-2016 Sören Tempel
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ func TestLock2(t *testing.T) {
 	}
 }
 
-func TestEscape(t *testing.T) {
+func TestEscape1(t *testing.T) {
 	type testpair struct {
 		unescaped string
 		escaped   string
@@ -63,10 +63,11 @@ func TestEscape(t *testing.T) {
 
 	tests := []testpair{
 		{"$$foo /", "foo"},
-		{"Foo bar, baz!", "Foo-bar-baz"},
-		{"LNP007: Foobar!", "LNP007-Foobar"},
-		{"B$:(=== >$-%)/A/R", "B-A-R"},
+		{"Foo, bar, baz!", "Foo, bar, baz!"},
+		{"LNP007: Foobar!", "LNP007: Foobar!"},
+		{"B$:(=== >$-%)/A/R", "B:( -%)AR"},
 		{"foobar  ", "foobar"},
+		{"../foo..", "foo.."},
 	}
 
 	for _, test := range tests {
@@ -78,5 +79,11 @@ func TestEscape(t *testing.T) {
 		if e != test.escaped {
 			t.Fatalf("Expected %q - got %q", test.escaped, e)
 		}
+	}
+}
+
+func TestEscape2(t *testing.T) {
+	if _, err := Escape(".."); err == nil {
+		t.Fail()
 	}
 }
