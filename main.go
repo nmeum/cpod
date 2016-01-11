@@ -86,6 +86,7 @@ func update() {
 
 			title, err := util.Escape(html.UnescapeString(feed.Title))
 			if err != nil {
+				logger.Println(err)
 				return
 			} else {
 				feed.Title = title
