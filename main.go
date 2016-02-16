@@ -68,20 +68,29 @@ func main() {
 }
 
 func update() {
-	var wg sync.WaitGroup
 	var counter int
+	cond := sync.NewCond(new(sync.Mutex))
 
 	feeds := make(chan feedparser.Feed)
 	go fetchFeeds(feeds)
 
+	var wg sync.WaitGroup
 	for cast := range feeds {
-		wg.Add(1)
+		if *limit > 0 && counter >= *limit {
+			cond.Wait()
+		}
+
 		counter++
+		wg.Add(1)
 
 		go func(feed feedparser.Feed) {
 			defer func() {
 				wg.Done()
 				counter--
+
+				if *limit > 0 && counter < *limit {
+					cond.Signal()
+				}
 			}()
 
 			title, err := util.Escape(html.UnescapeString(feed.Title))
@@ -104,10 +113,6 @@ func update() {
 				}
 			}
 		}(cast)
-
-		for *limit > 0 && counter >= *limit {
-			time.Sleep(3 * time.Second)
-		}
 	}
 
 	wg.Wait()
