@@ -235,8 +235,7 @@ func findLatest(fp string) (fi os.FileInfo, err error) {
 			continue
 		}
 
-		t := (*latest).ModTime()
-		if latest == nil || file.ModTime().Before(t) {
+		if latest == nil || file.ModTime().Before((*latest).ModTime()) {
 			latest = &file
 		}
 	}
