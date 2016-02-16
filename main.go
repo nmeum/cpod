@@ -99,13 +99,9 @@ func update() {
 			}
 
 			for _, item := range items {
-				wg.Add(1)
-				go func(i feedparser.Item) {
-					if err := getItem(feed, item); err != nil {
-						logger.Println(err)
-					}
-					wg.Done()
-				}(item)
+				if err := getItem(feed, item); err != nil {
+					logger.Println(err)
+				}
 			}
 		}(cast)
 
