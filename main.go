@@ -110,6 +110,7 @@ func update() {
 			for _, item := range items {
 				if err := getItem(feed, item); err != nil {
 					logger.Println(err)
+					return
 				}
 			}
 		}(cast)
