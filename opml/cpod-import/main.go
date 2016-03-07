@@ -41,7 +41,7 @@ func load(files []string) (out []opml.Outline, err error) {
 			return
 		}
 
-		for _, o := range op.Outlines {
+		for _, o := range op.Body.Outlines {
 			out = append(out, o)
 		}
 	}

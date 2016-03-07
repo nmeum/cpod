@@ -21,13 +21,12 @@ import (
 	"encoding/xml"
 	"golang.org/x/net/html/charset"
 	"io"
-	"time"
 )
 
 // OPML version supported by this library.
-const version = "2.0"
+const Version = "2.0"
 
-// OPML represent an OPML document.
+// Root element of an OPML document.
 type OPML struct {
 	// XML name.
 	XMLName xml.Name `xml:"opml"`
@@ -35,18 +34,39 @@ type OPML struct {
 	// OPML standard version implemented by this file.
 	Version string `xml:"version,attr"`
 
+	// OPML head element of this document.
+	Head Head `xml:"head"`
+
+	// OPML body element of this document.
+	Body Body `xml:"body"`
+}
+
+// Head element containg metadata.
+type Head struct {
+	// XML name.
+	XMLName xml.Name `xml:"head"`
+
 	// Title of the OPML document.
-	Title string `xml:"head>title"`
+	Title string `xml:"title"`
 
 	// Time the document was created.
-	Created string `xml:"head>dateCreated"`
+	Created string `xml:"dateCreated"`
+}
+
+// Body element containg outlines.
+type Body struct {
+	// XML name.
+	XMLName xml.Name `xml:"body"`
 
 	// Array of outlines, each represents a subscription.
-	Outlines []Outline `xml:"body>outline"`
+	Outlines []Outline `xml:"outline"`
 }
 
 // Outline represents an arbitrary OPML outline.
 type Outline struct {
+	// XML name.
+	XMLName xml.Name `xml:"outline"`
+
 	// Text attribute, might contain HTML markup.
 	Text string `xml:"text,attr"`
 
@@ -55,17 +75,6 @@ type Outline struct {
 
 	// Arbitrary outline URL.
 	URL string `xml:"xmlUrl,attr"`
-}
-
-// Create returns a new OPML document with the given title. However,
-// this is just syntax sugar. A file is only written after a call Save,
-// it's the callers responsibility to do so if desired.
-func Create(title string) *OPML {
-	return &OPML{
-		Version: version,
-		Title:   title,
-		Created: time.Now().Format(time.RFC1123Z),
-	}
 }
 
 // Parse parses an existing OPML using the given reader.
@@ -77,16 +86,4 @@ func Load(r io.Reader) (o *OPML, err error) {
 	}
 
 	return
-}
-
-// Add appends a new outline to the OPML document, even if the outline
-// is already a part of the document.
-func (o *OPML) Add(text, ftype, url string) {
-	outline := Outline{
-		Text: text,
-		Type: ftype,
-		URL:  url,
-	}
-
-	o.Outlines = append(o.Outlines, outline)
 }

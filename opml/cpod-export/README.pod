@@ -16,8 +16,7 @@ which can then be imported by a different application.
 
 It uses goroutines to fetch all feeds concurrently and is thus
 relatively fast. If you want to import an existing OPML file take a look
-at cpod-import(1). However, currently the XML document is only written
-to stdout after all feeds have been fetched.
+at cpod-import(1).
 
 =head1 SEE ALSO
 

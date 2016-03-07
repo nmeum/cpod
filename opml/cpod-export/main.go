@@ -24,6 +24,7 @@ import (
 	"github.com/nmeum/go-feedparser"
 	"os"
 	"sync"
+	"time"
 )
 
 // OPML document title
@@ -34,32 +35,57 @@ func usage() {
 	os.Exit(1)
 }
 
-func createOpml(urls []string) *opml.OPML {
+func encodeOutline(url string, enc *xml.Encoder) {
+	resp, err := util.Get(url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+		return
+	}
+	defer resp.Body.Close()
+
+	feed, err := feedparser.Parse(resp.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+	}
+
+	enc.Encode(opml.Outline{
+		Text: feed.Title,
+		Type: feed.Type,
+		URL:  url,
+	})
+}
+
+func encodeOPML(enc *xml.Encoder, urls []string) {
+	rootElem := xml.StartElement{Name: xml.Name{Local: "opml"}}
+	rootElem.Attr = []xml.Attr{
+		{Name: xml.Name{Local: "version"}, Value: opml.Version},
+	}
+
+	bodyElem := xml.StartElement{Name: xml.Name{Local: "body"}}
+	head := opml.Head{
+		Title:   title,
+		Created: time.Now().Format(time.RFC1123Z),
+	}
+
+	enc.EncodeToken(rootElem)
+	enc.Encode(head)
+	enc.EncodeToken(bodyElem)
+
+	enc.Flush()
 	var wg sync.WaitGroup
-	opmlFile := opml.Create(title)
 
+	wg.Add(len(urls))
 	for _, url := range urls {
-		wg.Add(1)
 		go func(u string) {
-			defer wg.Done()
-			resp, err := util.Get(u)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-				return
-			}
-			defer resp.Body.Close()
-
-			feed, err := feedparser.Parse(resp.Body)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-			}
-
-			opmlFile.Add(feed.Title, feed.Type, u)
+			encodeOutline(u, enc)
+			wg.Done()
 		}(url)
 	}
 
 	wg.Wait()
-	return opmlFile
+	enc.EncodeToken(bodyElem.End())
+	enc.EncodeToken(rootElem.End())
+	enc.Flush()
 }
 
 func main() {
@@ -85,10 +111,5 @@ func main() {
 		}
 	}
 
-	data, err := xml.MarshalIndent(createOpml(urls), "", "\t")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(string(data))
+	encodeOPML(xml.NewEncoder(os.Stdout), urls)
 }
