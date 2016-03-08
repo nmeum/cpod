@@ -76,13 +76,15 @@ func update() {
 
 	var wg sync.WaitGroup
 	for cast := range feeds {
-		if *limit > 0 && counter >= *limit {
+		cond.L.Lock()
+		for *limit > 0 && counter >= *limit {
 			cond.Wait()
 		}
 
 		counter++
-		wg.Add(1)
+		cond.L.Unlock()
 
+		wg.Add(1)
 		go func(feed feedparser.Feed) {
 			defer func() {
 				wg.Done()
