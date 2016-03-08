@@ -16,26 +16,17 @@
 package opml
 
 import (
+	"encoding/xml"
 	"os"
 	"testing"
 )
 
-func TestCreate(t *testing.T) {
-	o := Create("Test subscriptions")
-	if o.Title != "Test subscriptions" {
-		t.Fatalf("Expected %q - got %q", "Test subscriptions", o.Title)
-	}
-
-	if o.Version != version {
-		t.Fatalf("Expected %q - got %q", version, o.Version)
-	}
-}
-
 func TestLoad(t *testing.T) {
 	outline := Outline{
-		Text: "Chaosradio",
-		Type: "rss",
-		URL:  "http://chaosradio.ccc.de/chaosradio-latest.rss",
+		XMLName: xml.Name{Local: "outline"},
+		Text:    "Chaosradio",
+		Type:    "rss",
+		URL:     "http://chaosradio.ccc.de/chaosradio-latest.rss",
 	}
 
 	file, err := os.Open("testdata/testLoad.opml")
@@ -49,42 +40,23 @@ func TestLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(o.Outlines) != 1 {
-		t.Fatalf("Expected %d - got %d", 1, len(o.Outlines))
+	if len(o.Body.Outlines) != 1 {
+		t.Fatalf("Expected %d - got %d", 1, len(o.Body.Outlines))
 	}
 
-	if o.Outlines[0] != outline {
-		t.Fatalf("Expected %q - got %q", outline, o.Outlines[0])
+	if o.Body.Outlines[0] != outline {
+		t.Fatalf("Expected %q - got %q", outline, o.Body.Outlines[0])
 	}
 
-	if o.Version != version {
+	if o.Version != Version {
 		t.Fatalf("Expected %q - got %q", "2.0", o.Version)
 	}
 
-	if o.Title != "Subscriptions" {
-		t.Fatalf("Expected %q - got %q", "Subscriptions", o.Title)
+	if o.Head.Title != "Subscriptions" {
+		t.Fatalf("Expected %q - got %q", "Subscriptions", o.Head.Title)
 	}
 
-	if o.Created != "Wed, 15 May 2013 19:30:58 +0200" {
-		t.Fatalf("Expected %q - got %q", "Wed, 15 May 2013 19:30:58 +0200", o.Created)
-	}
-}
-
-func TestAdd(t *testing.T) {
-	testOutline := Outline{
-		Text: "Testcast",
-		Type: "atom",
-		URL:  "http://testcast.com/atom-feed.xml",
-	}
-
-	o := new(OPML)
-	o.Add("Testcast", "atom", "http://testcast.com/atom-feed.xml")
-
-	if o.Outlines[0] != testOutline {
-		t.Fatalf("Expected %q - got %q", testOutline, o.Outlines[0])
-	}
-
-	if len(o.Outlines) != 1 {
-		t.Fatalf("Expected %d - got %d", 1, len(o.Outlines))
+	if o.Head.Created != "Wed, 15 May 2013 19:30:58 +0200" {
+		t.Fatalf("Expected %q - got %q", "Wed, 15 May 2013 19:30:58 +0200", o.Head.Created)
 	}
 }
