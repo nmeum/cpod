@@ -46,6 +46,7 @@ func encodeOutline(url string, enc *xml.Encoder) {
 	feed, err := feedparser.Parse(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+		return
 	}
 
 	enc.Encode(opml.Outline{
