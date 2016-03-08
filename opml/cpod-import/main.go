@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/nmeum/cpod/opml"
 	"os"
+	"sync"
 )
 
 func usage() {
@@ -26,27 +27,34 @@ func usage() {
 	os.Exit(1)
 }
 
-func load(files []string) (out []opml.Outline, err error) {
-	for _, fp := range files {
-		var file *os.File
-		file, err = os.Open(fp)
-		if err != nil {
-			return
-		}
-		defer file.Close()
+func loadFiles(ch chan<- opml.Outline, files []string) {
+	var wg sync.WaitGroup
+	wg.Add(len(files))
 
-		var op *opml.OPML
-		op, err = opml.Load(file)
-		if err != nil {
-			return
-		}
+	for _, path := range files {
+		go func(fp string) {
+			defer wg.Done()
+			file, err := os.Open(fp)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+				return
+			}
+			defer file.Close()
 
-		for _, o := range op.Body.Outlines {
-			out = append(out, o)
-		}
+			op, err := opml.Load(file)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+				return
+			}
+
+			for _, out := range op.Body.Outlines {
+				ch <- out
+			}
+		}(path)
 	}
 
-	return
+	wg.Wait()
+	close(ch)
 }
 
 func main() {
@@ -54,12 +62,10 @@ func main() {
 		usage()
 	}
 
-	outlines, err := load(os.Args[1:])
-	if err != nil {
-		panic(err)
-	}
+	ch := make(chan opml.Outline)
+	go loadFiles(ch, os.Args[1:])
 
-	for _, outline := range outlines {
-		fmt.Println(outline.URL)
+	for out := range ch {
+		fmt.Println(out.URL)
 	}
 }
